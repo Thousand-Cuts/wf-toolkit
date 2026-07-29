@@ -1,0 +1,56 @@
+name: Finding report
+description: File a verified-behavior finding — something Workfront actually does that the knowledge files don't cover yet.
+title: "[finding] "
+labels: ["finding"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Findings are how this toolkit grows. A good report is one someone else can verify:
+        what you attempted, what the documentation claimed, what actually happened.
+        Findings are verified against a live tenant before they enter the knowledge files.
+  - type: input
+    id: area
+    attributes:
+      label: Area
+      description: Which skill/knowledge area (text mode, API, calc fields, custom forms, business rules, permissions, reports)
+      placeholder: custom forms
+    validations:
+      required: true
+  - type: textarea
+    id: attempted
+    attributes:
+      label: What was attempted
+      description: The exact operation — request, formula, or text-mode block. Redact tenant hostnames and IDs.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What the docs claim
+      description: What official documentation (or this toolkit's knowledge files) says should happen — link it if you can.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What actually happened
+      description: The real behavior, error text included. If you found a workaround, include it.
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Observed on
+      options:
+        - production tenant
+        - preview sandbox
+        - dedicated sandbox
+        - multiple environments
+    validations:
+      required: true
+  - type: input
+    id: apiver
+    attributes:
+      label: API version / surface
+      placeholder: v17.0 REST, or "in-product text mode"

@@ -125,3 +125,19 @@ Community resource, not an official Adobe product. Always verify syntax against 
 ## License
 
 MIT — see `LICENSE`.
+
+## Finding reports
+
+Workfront's real behavior outruns its documentation. When a session runs into
+behavior the knowledge files don't cover, file a
+[finding report](../../issues/new?template=finding-report.yml) — what was
+attempted, what the docs claimed, what actually happened. Findings are
+verified against a live tenant before they enter the knowledge files, so the
+record stays trustworthy. The verified-gotcha convention this repo uses is
+described in [the field report that introduced it](https://thousandcuts.ai/guides/workfront-mcp-claude).
+
+## Maintained by
+
+[Thousand Cuts](https://thousandcuts.ai) — AI automation for creative and
+marketing operations. The toolkit's private tier (platform assessment, bulk-write
+safety harness, Fusion audit rules) is part of our delivery practice.
