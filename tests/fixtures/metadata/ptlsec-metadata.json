@@ -1,0 +1,1189 @@
+{
+  "name": "PortalSection",
+  "label": "Report",
+  "objCode": "PTLSEC",
+  "flags": [
+    "PUBLIC_SHARABLE",
+    "REPORTABLE",
+    "SHARABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/ptlsec/metadata",
+  "fields": {
+    "ID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessorIDs": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "Accessor IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "appGlobalID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Global ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "controllerClass": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Controller",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "currency": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Currency",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "dashboards": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "Dashboards",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "map",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "defaultTab": {
+      "label": "Default Tab",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.AggregateReportTabEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Default",
+          "value": "D"
+        },
+        {
+          "label": "Summary",
+          "value": "S"
+        },
+        {
+          "label": "Matrix",
+          "value": "M"
+        },
+        {
+          "label": "Chart",
+          "value": "C"
+        }
+      ]
+    },
+    "definition": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "definition",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "map",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "description": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Description",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "descriptionKey": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Description Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "enablePromptSecurity": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Enable Prompt Security",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "enteredByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Entered By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "extRefID": {
+      "label": "External Reference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "filterControl": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Filter Control",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionControlEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Not Sticky",
+          "value": 1
+        },
+        {
+          "label": "Disabled",
+          "value": 2
+        }
+      ]
+    },
+    "filterID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Filter ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "folderName": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "folderName",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "forceLoad": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Force Load",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ganttOpen": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ganttOpen",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "globalUIKey": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "UI Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "groupByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Grouping ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "groupControl": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Group Control",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionControlEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Not Sticky",
+          "value": 1
+        },
+        {
+          "label": "Disabled",
+          "value": 2
+        }
+      ]
+    },
+    "isAppGlobalCopiable": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isAppGlobalCopiable",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isAppGlobalEditable": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Global and Editable",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isNewFormat": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "isNewFormat",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isPublic": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Public",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isReport": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Report",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isStandalone": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Standalone",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "maxResults": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Max Results",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "methodName": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Method Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "modDate": {
+      "flags": [
+        "AUTO_LOAD",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "READ_ONLY"
+      ],
+      "label": "Date Modified",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "name": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "nameKey": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Name Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objInterface": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Object Interface",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objObjCode": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Scope",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "preferenceID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Preference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "publicRunAsUserID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Public Run As User ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "publicToken": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "publicToken",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "reportFolderID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Personal Folder ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "reportType": {
+      "label": "Report Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.ReportTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Chart",
+          "value": "C"
+        },
+        {
+          "label": "Aggregate",
+          "value": "A"
+        },
+        {
+          "label": "Matrix",
+          "value": "M"
+        },
+        {
+          "label": "List",
+          "value": "L"
+        },
+        {
+          "label": "Tile",
+          "value": "T"
+        }
+      ]
+    },
+    "runAsUserID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Run As User ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "scheduledReportID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Delivery ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityAncestorsDisabled": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityAncestorsDisabled",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootID": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "securityRootID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootObjCode": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "securityRootObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "showPrompts": {
+      "label": "Show Prompts",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "sortBy": {
+      "label": "Sort by",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "sortBy2": {
+      "label": "Second Sort by",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "sortBy3": {
+      "label": "Third Sort by",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "sortType": {
+      "label": "Sort Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionSortTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "enum.portalsectionsorttypeenum.asc",
+          "value": "asc"
+        },
+        {
+          "label": "enum.portalSectionSortTypeenum.desc",
+          "value": "desc"
+        }
+      ]
+    },
+    "sortType2": {
+      "label": "Second Sort Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionSortTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "enum.portalsectionsorttypeenum.asc",
+          "value": "asc"
+        },
+        {
+          "label": "enum.portalSectionSortTypeenum.desc",
+          "value": "desc"
+        }
+      ]
+    },
+    "sortType3": {
+      "label": "Third Sort Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionSortTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "enum.portalsectionsorttypeenum.asc",
+          "value": "asc"
+        },
+        {
+          "label": "enum.portalSectionSortTypeenum.desc",
+          "value": "desc"
+        }
+      ]
+    },
+    "specialView": {
+      "label": "specialView",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.lists.ReportDefinition$SpecialTabType",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Gantt",
+          "value": "GANTT"
+        },
+        {
+          "label": "Milestone",
+          "value": "MILESTONE"
+        },
+        {
+          "label": "Resource Grid",
+          "value": "RESOURCE_GRID"
+        }
+      ]
+    },
+    "toolBar": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Toolbar",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "uiObjCode": {
+      "label": "Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "viewControl": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "View Control",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PortalSectionControlEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Not Sticky",
+          "value": 1
+        },
+        {
+          "label": "Disabled",
+          "value": 2
+        }
+      ]
+    },
+    "viewID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "View ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "width": {
+      "label": "Width",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "references": {
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "enteredBy": {
+      "label": "Entered By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "filter": {
+      "label": "Filter",
+      "typeObjCode": "UIFT",
+      "targetTypeObjCode": null,
+      "fieldType": "UIFilter",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uift/metadata"
+    },
+    "groupBy": {
+      "label": "Grouping",
+      "typeObjCode": "UIGB",
+      "targetTypeObjCode": null,
+      "fieldType": "UIGroupBy",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uigb/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "publicRunAsUser": {
+      "label": "Public Run As User",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "reportFolder": {
+      "label": "Personal Folder",
+      "typeObjCode": "RPTFDR",
+      "targetTypeObjCode": null,
+      "fieldType": "ReportFolder",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/rptfdr/metadata"
+    },
+    "runAsUser": {
+      "label": "Run As User",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "scheduledReport": {
+      "label": "Scheduled Report",
+      "typeObjCode": "SCHREP",
+      "targetTypeObjCode": null,
+      "fieldType": "ScheduledReport",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/schrep/metadata"
+    },
+    "statisticInfo": {
+      "label": "Report Statistics",
+      "typeObjCode": "PLSVST",
+      "targetTypeObjCode": null,
+      "fieldType": "PortalSectionStatisticInfo",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/plsvst/metadata"
+    },
+    "view": {
+      "label": "View",
+      "typeObjCode": "UIVW",
+      "targetTypeObjCode": null,
+      "fieldType": "UIView",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uivw/metadata"
+    }
+  },
+  "collections": {
+    "accessRules": {
+      "label": "accessRules",
+      "typeObjCode": "ACSRUL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessRule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acsrul/metadata"
+    },
+    "lastViewers": {
+      "label": "Last 10 Viewers",
+      "typeObjCode": "PLSLSV",
+      "targetTypeObjCode": null,
+      "fieldType": "PortalSectionLastViewer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/plslsv/metadata"
+    },
+    "linkedRoles": {
+      "label": "linkedRoles",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "linkedTeams": {
+      "label": "linkedTeams",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "linkedUsers": {
+      "label": "Linked Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "portalTabSections": {
+      "label": "portalTabSections",
+      "typeObjCode": "PRTBSC",
+      "targetTypeObjCode": null,
+      "fieldType": "PortalTabSection",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prtbsc/metadata"
+    },
+    "scheduledReports": {
+      "label": "Scheduled Reports",
+      "typeObjCode": "SCHREP",
+      "targetTypeObjCode": null,
+      "fieldType": "ScheduledReport",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/schrep/metadata"
+    }
+  },
+  "search": {
+    "accessLevelMM": {
+      "label": "Access Level",
+      "typeObjCode": "ACSLVL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessLevel",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acslvl/metadata"
+    },
+    "displayDescription": {
+      "label": "Display Description",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "displayName": {
+      "label": "Display Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "linkedCustomersMM": {
+      "label": "Linked Customers",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "linkedPortalTabsMM": {
+      "label": "Linked Portal Tabs",
+      "typeObjCode": "PTLTAB",
+      "targetTypeObjCode": null,
+      "fieldType": "PortalTab",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ptltab/metadata"
+    },
+    "linkedRoleIDs": {
+      "label": "Linked Role IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "linkedTeamIDs": {
+      "label": "Linked Team IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "linkedUsersMM": {
+      "label": "Linked Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "portalTabsMM": {
+      "label": "Dashboards",
+      "typeObjCode": "PTLTAB",
+      "targetTypeObjCode": null,
+      "fieldType": "PortalTab",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ptltab/metadata"
+    },
+    "scheduledReportsOM": {
+      "label": "Scheduled Report",
+      "typeObjCode": "SCHREP",
+      "targetTypeObjCode": null,
+      "fieldType": "ScheduledReport",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/schrep/metadata"
+    }
+  },
+  "actions": {
+    "exportFusionChartToPDF": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "pngByteArray",
+          "type": "byte[]"
+        },
+        {
+          "name": "fileName",
+          "type": "string"
+        },
+        {
+          "name": "reportName",
+          "type": "string"
+        }
+      ],
+      "label": "exportFusionChartToPDF",
+      "resultType": "string"
+    },
+    "getPK": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objCode",
+          "type": "string"
+        }
+      ],
+      "label": "getPK",
+      "resultType": "string"
+    },
+    "getReportFromCache": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "backgroundJobID",
+          "type": "string"
+        }
+      ],
+      "label": "getReportFromCache",
+      "resultType": "map"
+    },
+    "isReportFilterable": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "queryClassObjCode",
+          "type": "string"
+        },
+        {
+          "name": "objCode",
+          "type": "string"
+        },
+        {
+          "name": "objID",
+          "type": "string"
+        }
+      ],
+      "label": "isReportFilterable",
+      "resultType": "java.lang.Boolean"
+    },
+    "linkCustomer": {
+      "flags": [],
+      "label": "linkCustomer"
+    },
+    "unlinkCustomer": {
+      "flags": [],
+      "label": "unlinkCustomer"
+    }
+  },
+  "queries": {
+    "getReportAsUser": {
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        },
+        {
+          "name": "ID",
+          "type": "string"
+        }
+      ],
+      "label": "getReportAsUser"
+    }
+  },
+  "operations": [
+    "add",
+    "copy",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "report",
+    "search"
+  ]
+}

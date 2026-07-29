@@ -1,0 +1,30 @@
+{
+  "_notes": "Minimal TASK-level form with one SLCT (single-select dropdown) parameter — the smallest viable example. Illustrates the minimum required call sequence (Category POST + Parameter POST + 4 ParameterOption POSTs + Category PUT for link = 7 calls total, or 4 with bulk-options POST).",
+  "category": {
+    "name": "[wf-api-verify] Task Effort Band",
+    "objTypes": ["TASK"],
+    "description": "Bucket effort into S/M/L/XL for capacity planning."
+  },
+  "parameters": [
+    {
+      "name": "wf_verify_effort_band",
+      "label": "Effort Band",
+      "dataType": "TEXT",
+      "displayType": "SLCT",
+      "isRequired": false,
+      "options": [
+        {"label": "S — under 4h", "value": "s", "displayOrder": 1},
+        {"label": "M — 4-16h", "value": "m", "displayOrder": 2},
+        {"label": "L — 16-40h", "value": "l", "displayOrder": 3},
+        {"label": "XL — over 40h", "value": "xl", "displayOrder": 4}
+      ]
+    }
+  ],
+  "categoryParameters_link_step": {
+    "updates": {
+      "categoryParameters": [
+        {"parameterName": "wf_verify_effort_band", "displayOrder": 1}
+      ]
+    }
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "description": "USER report with $$TODAY-30d session token + asPercent column. reportType=L. Shape and token pattern verified against a private empirical survey corpus (not shipped with this repo).",
+  "calls": [
+    {
+      "step": 1,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uift",
+      "body": {
+        "name": "User Activity 30d — filter",
+        "uiObjCode": "USER",
+        "filterType": "REPORT",
+        "isReport": true,
+        "isText": false,
+        "isSavedSearch": false,
+        "definition": {
+          "lastLoginDate": "$$TODAY-30d",
+          "lastLoginDate_Mod": "gte",
+          "isActive": "true",
+          "isActive_Mod": "eq"
+        }
+      },
+      "note": "$$TODAY-30d resolves at run time to 30 days ago in the destination tenant's timezone. Tenant-neutral; passes through sanitizer unchanged."
+    },
+    {
+      "step": 2,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uivw",
+      "body": {
+        "name": "User Activity 30d — view",
+        "uiObjCode": "USER",
+        "layoutType": "LIST",
+        "uiviewType": "LIST",
+        "isReport": true,
+        "isText": false,
+        "isNewFormat": true,
+        "definition": {
+          "column": [
+            {
+              "namekey": "name.abbr",
+              "linkedname": "direct",
+              "valuefield": "name",
+              "valueformat": "HTML",
+              "width": "200"
+            },
+            {
+              "namekey": "emailaddr",
+              "linkedname": "direct",
+              "valuefield": "emailAddr",
+              "valueformat": "string",
+              "width": "200"
+            },
+            {
+              "namekey": "lastlogindate",
+              "linkedname": "direct",
+              "valuefield": "lastLoginDate",
+              "valueformat": "atDate",
+              "width": "120"
+            },
+            {
+              "namekey": "view.relatedcolumn",
+              "namekeyargkey": ["homeGroup", "name"],
+              "linkedname": "homeGroup",
+              "valuefield": "homeGroup:name",
+              "valueformat": "string",
+              "width": "180"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "step": 3,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/report",
+      "body": {
+        "name": "User Activity (Last 30 Days)",
+        "uiObjCode": "USER",
+        "reportType": "L",
+        "isReport": true,
+        "filterID": "<UIFT ID>",
+        "groupByID": null,
+        "viewID": "<UIVW ID>",
+        "maxResults": 15,
+        "isStandalone": false
+      }
+    }
+  ]
+}

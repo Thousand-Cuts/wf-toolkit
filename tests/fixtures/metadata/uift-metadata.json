@@ -1,0 +1,501 @@
+{
+  "name": "UIFilter",
+  "label": "Filter",
+  "objCode": "UIFT",
+  "flags": [
+    "REPORTABLE",
+    "SHARABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/uift/metadata",
+  "fields": {
+    "ID": {
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessorIDs": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Accessor IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "appGlobalID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Global ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "definition": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "definition",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "map",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "displayName": {
+      "flags": [
+        "AUTO_LOAD",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Display Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "enteredByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Entered By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "filterType": {
+      "label": "filterType",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.FilterType",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "filter.standard",
+          "value": "STANDARD"
+        },
+        {
+          "label": "filter.report",
+          "value": "REPORT"
+        },
+        {
+          "label": "filter.calendar",
+          "value": "CALENDAR"
+        },
+        {
+          "label": "filter.docCentral",
+          "value": "DOC_CENTRAL"
+        }
+      ]
+    },
+    "globalUIKey": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "UI Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isAppGlobalEditable": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Global and Editable",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isPublic": {
+      "label": "Is Public",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isReport": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Report",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isSavedSearch": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Saved Search",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isText": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Text",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "modDate": {
+      "flags": [
+        "AUTO_LOAD",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Date Modified",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "msgKey": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Message Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "name": {
+      "label": "Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objObjCode": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Scope",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "preferenceID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Preference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootID": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootObjCode": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "uiObjCode": {
+      "label": "Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "references": {
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "enteredBy": {
+      "label": "Entered By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    }
+  },
+  "collections": {
+    "accessRules": {
+      "label": "accessRules",
+      "typeObjCode": "ACSRUL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessRule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acsrul/metadata"
+    },
+    "linkedRoles": {
+      "label": "linkedRoles",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "linkedTeams": {
+      "label": "linkedTeams",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "linkedUsers": {
+      "label": "Linked Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "users": {
+      "label": "Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    }
+  },
+  "search": {
+    "linkedRoleIDs": {
+      "label": "Linked Role IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "linkedTeamIDs": {
+      "label": "Linked Team IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "linkedUsersMM": {
+      "label": "Linked Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "nameKey": {
+      "label": "Name Key",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "actions": {
+    "addJoinForNullableFields": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objCode",
+          "type": "string"
+        },
+        {
+          "name": "filterMap",
+          "type": "map"
+        }
+      ],
+      "label": "addJoinForNullableFields",
+      "resultType": "map"
+    },
+    "disableSystemWideVisibility": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "filterIDs",
+          "type": "string[]"
+        }
+      ],
+      "label": "disableSystemWideVisibility"
+    },
+    "enableSystemWideVisibility": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "filterIDs",
+          "type": "string[]"
+        }
+      ],
+      "label": "enableSystemWideVisibility"
+    }
+  },
+  "queries": {
+    "filtersForObjCode": {
+      "arguments": [
+        {
+          "name": "objCode",
+          "type": "string"
+        },
+        {
+          "name": "filterType",
+          "type": "string"
+        }
+      ],
+      "label": "filtersForObjCode"
+    }
+  },
+  "operations": [
+    "add",
+    "copy",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "report",
+    "search"
+  ]
+}

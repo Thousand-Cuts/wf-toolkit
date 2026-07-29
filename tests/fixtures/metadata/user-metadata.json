@@ -1,0 +1,2252 @@
+{
+  "name": "User",
+  "label": "User",
+  "objCode": "USER",
+  "flags": [
+    "DATA_EXTENDIBLE",
+    "REPORTABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata",
+  "fields": {
+    "ID": {
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessLevelID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Access Level ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualDeactivationDate": {
+      "label": "actualDeactivationDate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "address": {
+      "label": "Address",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "address2": {
+      "label": "Address2",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "alignAccessType": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "alignAccessType",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "apiKeyCreateDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "apiKeyCreateDate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "avatarDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Profile Photo Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "avatarDownloadURL": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "avatarDownloadURL",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "avatarSize": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Profile Photo Size",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "avatarX": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Profile Photo X",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "avatarY": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Profile Photo Y",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "billingPerHour": {
+      "flags": [
+        "CURRENCY"
+      ],
+      "label": "Billing Per Hour",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "categoryID": {
+      "label": "Category ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "city": {
+      "label": "City",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "companyID": {
+      "label": "Company ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "costPerHour": {
+      "flags": [
+        "CURRENCY"
+      ],
+      "label": "Cost Per Hour",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "country": {
+      "label": "Country",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "defaultHourTypeID": {
+      "label": "Default Hour Type ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "defaultInterface": {
+      "label": "Default Interface",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.UserInterfaceEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Default",
+          "value": 0
+        },
+        {
+          "label": "Project Management Home",
+          "value": 1
+        },
+        {
+          "label": "TeamHome",
+          "value": 2
+        },
+        {
+          "label": "Early Access",
+          "value": 3
+        }
+      ]
+    },
+    "delegationToID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "delegationToID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "emailAddr": {
+      "label": "Email Address",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "enteredByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Entered By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "entryDate": {
+      "label": "Entry Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "extRefID": {
+      "label": "External Reference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "firstName": {
+      "label": "First name(s)",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "fte": {
+      "label": "FTE",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasAPIAccess": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has API Access",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasDocuments": {
+      "label": "Has Documents",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasNotes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Notes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasPassword": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "hasPassword",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasProofLicense": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Proof License",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasReservedTimes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Time Off",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "homeGroupID": {
+      "label": "Home Group ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "homeTeamID": {
+      "label": "Home Team ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isActive": {
+      "label": "Is Active",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isAdmin": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "Is Admin",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isBoxAuthenticated": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isBoxAuthenticated",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isDropBoxAuthenticated": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isDropBoxAuthenticated",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isGoogleAuthenticated": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isGoogleAuthenticated",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isSharePointAuthenticated": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isSharePointAuthenticated",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isWebDAMAuthenticated": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "isWebDAMAuthenticated",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastEnteredNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Entered Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastLoginDate": {
+      "label": "Last Login Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastName": {
+      "label": "Last name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "latestUpdateNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Latest Update Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "layoutTemplateID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Layout Template ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "licenseType": {
+      "label": "License",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.LicenseTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Standard",
+          "value": "F"
+        },
+        {
+          "label": "Light",
+          "value": "C"
+        },
+        {
+          "label": "Contributor",
+          "value": "R"
+        },
+        {
+          "label": "External",
+          "value": "X"
+        }
+      ]
+    },
+    "locale": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Locale",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "logTimeInDays": {
+      "label": "logTimeInDays",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "loginCount": {
+      "label": "Login Count",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "managerID": {
+      "label": "Manager ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "mobilePhoneNumber": {
+      "label": "Mobile Phone",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "myInfo": {
+      "label": "Talk to Me About",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "name": {
+      "label": "Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "password": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Password",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "passwordDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Password Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "persona": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Persona",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "phoneExtension": {
+      "label": "Extension",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "phoneNumber": {
+      "label": "Phone number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "portalProfileID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Portal Profile ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "postalCode": {
+      "label": "Postal code",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "registrationExpireDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Registration Expiration Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "resetPasswordExpireDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Reset Password Expire Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "resourcePoolID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Legacy Resource Pool ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "roleID": {
+      "label": "Role ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "scheduleID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Schedule ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "scheduledDeactivationDate": {
+      "label": "Scheduled Deactivation Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ssoAccessOnly": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "SSO Access Only",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ssoUsername": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "SSO Username",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "state": {
+      "label": "State",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "statusUpdate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Status Update",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "timeZone": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Time zone",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "timesheetProfileID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Timesheet Profile ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "title": {
+      "label": "Title",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "uiTemplateID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Layout Template ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "username": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Username",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "webDAVProfile": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Web DAV Profile",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.WebDAVProjectEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "All Projects",
+          "value": "ALL"
+        },
+        {
+          "label": "Current Projects",
+          "value": "CUR"
+        },
+        {
+          "label": "Favorite Projects",
+          "value": "FAV"
+        }
+      ]
+    },
+    "workHoursPerDay": {
+      "label": "workHoursPerDay",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workTime": {
+      "label": "Work Time",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "references": {
+    "accessLevel": {
+      "label": "Access level",
+      "typeObjCode": "ACSLVL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessLevel",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acslvl/metadata"
+    },
+    "category": {
+      "label": "Category",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata"
+    },
+    "company": {
+      "label": "Company",
+      "typeObjCode": "CMPY",
+      "targetTypeObjCode": null,
+      "fieldType": "Company",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cmpy/metadata"
+    },
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "defaultHourType": {
+      "label": "Default Hour Type",
+      "typeObjCode": "HOURT",
+      "targetTypeObjCode": null,
+      "fieldType": "HourType",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/hourt/metadata"
+    },
+    "delegationTo": {
+      "label": "delegationTo",
+      "typeObjCode": "USRDEL",
+      "targetTypeObjCode": null,
+      "fieldType": "UserDelegation",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrdel/metadata"
+    },
+    "effectiveLayoutTemplate": {
+      "label": "effectiveLayoutTemplate",
+      "typeObjCode": "LYTMPL",
+      "targetTypeObjCode": null,
+      "fieldType": "LayoutTemplate",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/lytmpl/metadata"
+    },
+    "enteredBy": {
+      "label": "Entered By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "highPriorityWorkItem": {
+      "label": "High Priority Work Item",
+      "typeObjCode": "WRKITM",
+      "targetTypeObjCode": null,
+      "fieldType": "WorkItem",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/wrkitm/metadata"
+    },
+    "homeGroup": {
+      "label": "Home Group",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "homeTeam": {
+      "label": "Home Team",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "lastEnteredNote": {
+      "label": "Last Entered Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastNote": {
+      "label": "Last Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastStatusNote": {
+      "label": "Last Status Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "latestUpdateNote": {
+      "label": "Last Update Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "layoutTemplate": {
+      "label": "Layout Template",
+      "typeObjCode": "LYTMPL",
+      "targetTypeObjCode": null,
+      "fieldType": "LayoutTemplate",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/lytmpl/metadata"
+    },
+    "manager": {
+      "label": "Manager",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "resourcePool": {
+      "label": "Legacy Resource Pool",
+      "typeObjCode": "RSPOOL",
+      "targetTypeObjCode": null,
+      "fieldType": "ResourcePool",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/rspool/metadata"
+    },
+    "role": {
+      "label": "Job Role",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "schedule": {
+      "label": "Schedule",
+      "typeObjCode": "SCHED",
+      "targetTypeObjCode": null,
+      "fieldType": "Schedule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/sched/metadata"
+    },
+    "uiTemplate": {
+      "label": "Layout Template",
+      "typeObjCode": "UITMPL",
+      "targetTypeObjCode": null,
+      "fieldType": "UITemplate",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uitmpl/metadata"
+    },
+    "userApproval": {
+      "label": "User Approval",
+      "typeObjCode": "USRAPV",
+      "targetTypeObjCode": null,
+      "fieldType": "UserApproval",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrapv/metadata"
+    }
+  },
+  "collections": {
+    "delegationsFrom": {
+      "label": "delegationsFrom",
+      "typeObjCode": "USRDEL",
+      "targetTypeObjCode": null,
+      "fieldType": "UserDelegation",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrdel/metadata"
+    },
+    "directReports": {
+      "label": "Direct Reports",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "documentRequests": {
+      "label": "Document Requests",
+      "typeObjCode": "DOCREQ",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentRequest",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docreq/metadata"
+    },
+    "documents": {
+      "label": "Documents",
+      "typeObjCode": "DOCU",
+      "targetTypeObjCode": null,
+      "fieldType": "Document",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docu/metadata"
+    },
+    "favorites": {
+      "label": "Favorites",
+      "typeObjCode": "FVRITE",
+      "targetTypeObjCode": null,
+      "fieldType": "Favorite",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/fvrite/metadata"
+    },
+    "hourTypes": {
+      "label": "Hour Types",
+      "typeObjCode": "HOURT",
+      "targetTypeObjCode": null,
+      "fieldType": "HourType",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/hourt/metadata"
+    },
+    "loginAsAccessRules": {
+      "label": "loginAsAccessRules",
+      "typeObjCode": "LGACRL",
+      "targetTypeObjCode": null,
+      "fieldType": "LoginAsAccessRule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/lgacrl/metadata"
+    },
+    "messages": {
+      "label": "Messages",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "objectCategories": {
+      "label": "objectCategories",
+      "typeObjCode": "OBJCAT",
+      "targetTypeObjCode": null,
+      "fieldType": "ObjectCategory",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/objcat/metadata"
+    },
+    "rates": {
+      "label": "Rates",
+      "typeObjCode": "RATE",
+      "targetTypeObjCode": null,
+      "fieldType": "Rate",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/rate/metadata"
+    },
+    "reservedTimes": {
+      "label": "Time Off Records",
+      "typeObjCode": "RESVT",
+      "targetTypeObjCode": null,
+      "fieldType": "ReservedTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/resvt/metadata"
+    },
+    "resourcePools": {
+      "label": "Resource Pools",
+      "typeObjCode": "RSPL",
+      "targetTypeObjCode": null,
+      "fieldType": "RsrcPool",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/rspl/metadata"
+    },
+    "teams": {
+      "label": "Teams",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "timesheetProfileHourTypes": {
+      "label": "timesheetProfileHourTypes",
+      "typeObjCode": "HOURT",
+      "targetTypeObjCode": null,
+      "fieldType": "HourType",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/hourt/metadata"
+    },
+    "uiFilters": {
+      "label": "Filters",
+      "typeObjCode": "UIFT",
+      "targetTypeObjCode": null,
+      "fieldType": "UIFilter",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uift/metadata"
+    },
+    "uiGroupBys": {
+      "label": "Groupings",
+      "typeObjCode": "UIGB",
+      "targetTypeObjCode": null,
+      "fieldType": "UIGroupBy",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uigb/metadata"
+    },
+    "uiViews": {
+      "label": "Views",
+      "typeObjCode": "UIVW",
+      "targetTypeObjCode": null,
+      "fieldType": "UIView",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/uivw/metadata"
+    },
+    "updates": {
+      "label": "Updates",
+      "typeObjCode": "UPDATE",
+      "targetTypeObjCode": null,
+      "fieldType": "Update",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/update/metadata"
+    },
+    "userGroups": {
+      "label": "User Group",
+      "typeObjCode": "USRGPS",
+      "targetTypeObjCode": null,
+      "fieldType": "UserGroups",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrgps/metadata"
+    },
+    "userLocations": {
+      "label": "userLocations",
+      "typeObjCode": "USRLOC",
+      "targetTypeObjCode": null,
+      "fieldType": "UserLocation",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrloc/metadata"
+    },
+    "userPrefValues": {
+      "label": "userPrefValues",
+      "typeObjCode": "USERPF",
+      "targetTypeObjCode": null,
+      "fieldType": "UserPrefValue",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/userpf/metadata"
+    },
+    "userRoles": {
+      "label": "userRoles",
+      "typeObjCode": "USRROL",
+      "targetTypeObjCode": null,
+      "fieldType": "UserRole",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrrol/metadata"
+    },
+    "workItems": {
+      "label": "Work Items",
+      "typeObjCode": "WRKITM",
+      "targetTypeObjCode": null,
+      "fieldType": "WorkItem",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/wrkitm/metadata"
+    }
+  },
+  "search": {
+    "notes": {
+      "label": "Notes",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "objectCategoriesMM": {
+      "label": "Categories",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata",
+      "collectionSelector": "objectCategories:category"
+    },
+    "otherGroupIDs": {
+      "label": "Other Group IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "otherGroups": {
+      "label": "Other Groups",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "projectsMM": {
+      "label": "Projects",
+      "typeObjCode": "PROJ",
+      "targetTypeObjCode": null,
+      "fieldType": "Project",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/proj/metadata"
+    },
+    "roleIDs": {
+      "label": "Role IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "roles": {
+      "label": "Job Roles",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "teamIDs": {
+      "label": "Team IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "templatesMM": {
+      "label": "Templates",
+      "typeObjCode": "TMPL",
+      "targetTypeObjCode": null,
+      "fieldType": "Template",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/tmpl/metadata"
+    },
+    "userNotes": {
+      "label": "User Notes",
+      "typeObjCode": "USRNOT",
+      "targetTypeObjCode": null,
+      "fieldType": "UserNote",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/usrnot/metadata"
+    }
+  },
+  "custom": {
+    "Assigned Allocation - A&S FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - BTM FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - Europe FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - Expat & Travel FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - IPMI FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - MS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - NAM FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - USNAS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Employee Type": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "FTE",
+          "value": "FTE"
+        },
+        {
+          "label": "Freelance",
+          "value": "Freelance"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "27e69cf0c1d8621538abf002236faa54",
+          "name": "User Custom Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Europe Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Europe FTE Value v2": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - NAM Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - NAM FTE Value": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Planned Task FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Planned Task Level FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Quarterly User Target Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Role Capacity for Charts - Quarter": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Set User FTE Percentage": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Total Allocated Markets Percentage": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - USNAS Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - USNAS FTE Value": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - User Job Role Name": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Hours - Quarterly User Target Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Hours - Role Capacity for Charts - Quarter": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Skill Set": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Video",
+          "value": "Video"
+        },
+        {
+          "label": "HTML",
+          "value": "HTML"
+        },
+        {
+          "label": "Web Development",
+          "value": "Web Development"
+        },
+        {
+          "label": "Social Media",
+          "value": "Social Media"
+        },
+        {
+          "label": "Digital Graphics",
+          "value": "Digital Graphics"
+        },
+        {
+          "label": "Powerpoint",
+          "value": "Powerpoint"
+        },
+        {
+          "label": "Print Production",
+          "value": "Print Production"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "46c225979fe9338e0cfe3c8734005976",
+          "name": "Events - Skill Set",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Sum Allocation - All Regions FY24 v2": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TESTER - Date Calc Field": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Total Allocated Hours FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Hour Type Charting": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Hours Type Test": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Europe",
+          "value": "Europe"
+        },
+        {
+          "label": "NAM",
+          "value": "NAM"
+        },
+        {
+          "label": "USNAS",
+          "value": "USNAS"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Sum Allocation - All Regions": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - USNAS Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - A&S FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - BTM FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - Europe Overall Allocation FY24 v2": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - Expat & Travel FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - IPMI FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - MS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - NAM Overall Allocation FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User - USNAS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User Avatar URL": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "27e69cf0c1d8621538abf002236faa54",
+          "name": "User Custom Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "User Weekly Capacity": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "d40f2f5bdab3c999015c9a76acf474a6",
+          "name": "Globex - User Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "test111": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "27e69cf0c1d8621538abf002236faa54",
+          "name": "User Custom Form",
+          "objCode": "CTGY"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "addMobileDevice": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "token",
+          "type": "string"
+        },
+        {
+          "name": "deviceType",
+          "type": "string"
+        }
+      ],
+      "label": "addMobileDevice",
+      "resultType": "map"
+    },
+    "assignUserToken": {
+      "flags": [],
+      "label": "assignUserToken",
+      "resultType": "string"
+    },
+    "calculateDataExtension": {
+      "flags": [],
+      "label": "calculateDataExtension"
+    },
+    "clearAllApiKeys": {
+      "flags": [],
+      "label": "clearAllApiKeys",
+      "resultType": "string"
+    },
+    "clearApiKey": {
+      "flags": [],
+      "label": "clearApiKey",
+      "resultType": "string"
+    },
+    "completeUserRegistration": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "firstName",
+          "type": "string"
+        },
+        {
+          "name": "lastName",
+          "type": "string"
+        },
+        {
+          "name": "token",
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "newPassword",
+          "type": "string"
+        }
+      ],
+      "label": "completeUserRegistration"
+    },
+    "generateApiKey": {
+      "flags": [],
+      "label": "generateApiKey",
+      "resultType": "string"
+    },
+    "getApiKey": {
+      "flags": [],
+      "label": "getApiKey",
+      "resultType": "string"
+    },
+    "getAvailableActions": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objCode",
+          "type": "string"
+        }
+      ],
+      "label": "getAvailableActions",
+      "resultType": "string[]"
+    },
+    "getUserAccessPermissionsByObjCode": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "ids",
+          "type": "string"
+        },
+        {
+          "name": "objCode",
+          "type": "string"
+        }
+      ],
+      "label": "getUserAccessPermissionsByObjCode",
+      "resultType": "map"
+    },
+    "getUserCustomLabels": {
+      "flags": [],
+      "label": "getUserCustomLabels",
+      "resultType": "map"
+    },
+    "getUsersAvailableTime": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "fromDate",
+          "type": "string"
+        },
+        {
+          "name": "toDate",
+          "type": "string"
+        }
+      ],
+      "label": "getUsersAvailableTime",
+      "resultType": "map"
+    },
+    "hasAnyAccess": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objCode",
+          "type": "string"
+        },
+        {
+          "name": "actionType",
+          "type": "string"
+        }
+      ],
+      "label": "hasAnyAccess",
+      "resultType": "java.lang.Boolean"
+    },
+    "hasGrantLoginAsAccess": {
+      "flags": [],
+      "label": "hasGrantLoginAsAccess",
+      "resultType": "java.lang.Boolean"
+    },
+    "isUserAdmin": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        },
+        {
+          "name": "adminID",
+          "type": "string"
+        }
+      ],
+      "label": "isUserAdmin",
+      "resultType": "java.lang.Boolean"
+    },
+    "isUserTerminologyActive": {
+      "flags": [],
+      "label": "isUserTerminologyActive",
+      "resultType": "java.lang.Boolean"
+    },
+    "removeMobileDevice": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "token",
+          "type": "string"
+        }
+      ],
+      "label": "removeMobileDevice",
+      "resultType": "map"
+    },
+    "resetRopgPassword": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "newPassword",
+          "type": "string"
+        }
+      ],
+      "label": "resetRopgPassword"
+    },
+    "sendInvitationEmail": {
+      "flags": [],
+      "label": "sendInvitationEmail"
+    },
+    "shouldShowProofHQNavButton": {
+      "flags": [],
+      "label": "shouldShowProofHQNavButton",
+      "resultType": "java.lang.Boolean"
+    }
+  },
+  "queries": {
+    "userAdmins": {
+      "label": "userAdmins"
+    }
+  },
+  "operations": [
+    "add",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "replace",
+    "report",
+    "search"
+  ]
+}

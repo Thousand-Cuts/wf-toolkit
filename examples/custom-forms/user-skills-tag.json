@@ -1,0 +1,34 @@
+{
+  "_notes": "USER-level form using CHCK (multi-select checkboxes) parameter. Demonstrates that org-level objects (User) accept custom forms the same way work objects do. Useful for tracking skills, certifications, or other user-attributes. Verified against Phase A findings — displayType=CHCK is the canonical 4-letter code; SLCT is single-select, CHCK is multi.",
+  "category": {
+    "name": "[wf-api-verify] User Skills Tag",
+    "objTypes": ["USER"],
+    "description": "Track user skills as a multi-select tag list."
+  },
+  "parameters": [
+    {
+      "name": "wf_verify_skills",
+      "label": "Skills",
+      "dataType": "TEXT",
+      "displayType": "CHCK",
+      "options": [
+        {"label": "Python", "value": "python", "displayOrder": 1},
+        {"label": "TypeScript", "value": "typescript", "displayOrder": 2},
+        {"label": "Workfront Admin", "value": "wf_admin", "displayOrder": 3},
+        {"label": "Workfront API", "value": "wf_api", "displayOrder": 4},
+        {"label": "Workfront Fusion", "value": "wf_fusion", "displayOrder": 5},
+        {"label": "Solution Design", "value": "solution_design", "displayOrder": 6},
+        {"label": "Change Management", "value": "change_mgmt", "displayOrder": 7},
+        {"label": "Project Management", "value": "pm", "displayOrder": 8}
+      ]
+    }
+  ],
+  "categoryParameters_link_step": {
+    "updates": {
+      "categoryParameters": [
+        {"parameterName": "wf_verify_skills", "displayOrder": 1}
+      ]
+    }
+  },
+  "_TODO_phase_a_widen": "Phase A only tested PROJ; USER-level forms are likely identical but worth a sandbox confirm. The (TEXT, CHCK) combination is empirically valid (34 production examples in a sampled reference instance)."
+}

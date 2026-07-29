@@ -1,0 +1,2268 @@
+{
+  "name": "Document",
+  "label": "Document",
+  "objCode": "DOCU",
+  "flags": [
+    "DATA_EXTENDIBLE",
+    "PUBLIC_SHARABLE",
+    "REPORTABLE",
+    "RESTORABLE",
+    "SHARABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/docu/metadata",
+  "fields": {
+    "ID": {
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessorIDs": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "Accessor IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "advancedProofingOptions": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "advancedProofingOptions",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "categoryID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Category ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "checkOutTimestamp": {
+      "label": "checkOutTimestamp",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "checkedOutByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "checkedOutByID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "createProof": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "createProof",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "currentVersionID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Current Version ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "description": {
+      "label": "Description",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "docObjCode": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Document Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "documentProviderID": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "documentProviderID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "documentRequestID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "documentRequestID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "downloadURL": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "downloadURL",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "extRefID": {
+      "label": "External Reference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "externalIntegrationType": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "External Integration Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "fileType": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "File Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "folderIDs": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "folderIDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "handle": {
+      "flags": [
+        "WRITE_ONLY",
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "handle",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasNotes": {
+      "label": "Has Notes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isPrivate": {
+      "label": "Is Private",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isPublic": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Public",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "iterationID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Iteration ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastModDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Modified",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastSyncDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "lastSyncDate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastVersionNum": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Version Number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "name": {
+      "label": "Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "objID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "opTaskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Request ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ownerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Owner ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "portfolioID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Portfolio ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "previewURL": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ"
+      ],
+      "label": "previewURL",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "programID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Program ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Project ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "publicToken": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "publicToken",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceNumber": {
+      "label": "Reference Number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjCode": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "referenceObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjID": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "referenceObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjectClosed": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "referenceObjectClosed",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjectName": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY"
+      ],
+      "label": "referenceObjectName",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "releaseVersionID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Release Version ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootID": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "securityRootID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootObjCode": {
+      "flags": [
+        "NOT_GROUPABLE",
+        "READ_ONLY"
+      ],
+      "label": "securityRootObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "taskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Task ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "templateID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Template ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "templateTaskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Template Task ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "topDocObjCode": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Top Document Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "topObjID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Top ObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "userID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "User ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "references": {
+    "category": {
+      "label": "Category",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata"
+    },
+    "checkedOutBy": {
+      "label": "checkedOutBy",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "currentVersion": {
+      "label": "Current Version",
+      "typeObjCode": "DOCV",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentVersion",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docv/metadata"
+    },
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "documentRequest": {
+      "label": "Document Request",
+      "typeObjCode": "DOCREQ",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentRequest",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docreq/metadata"
+    },
+    "iteration": {
+      "label": "Iteration",
+      "typeObjCode": "ITRN",
+      "targetTypeObjCode": null,
+      "fieldType": "Iteration",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/itrn/metadata"
+    },
+    "lastNote": {
+      "label": "Last Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "opTask": {
+      "label": "Request",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "owner": {
+      "label": "Owner",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "portfolio": {
+      "label": "Portfolio",
+      "typeObjCode": "PORT",
+      "targetTypeObjCode": null,
+      "fieldType": "Portfolio",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/port/metadata"
+    },
+    "program": {
+      "label": "Program",
+      "typeObjCode": "PRGM",
+      "targetTypeObjCode": null,
+      "fieldType": "Program",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prgm/metadata"
+    },
+    "project": {
+      "label": "Project",
+      "typeObjCode": "PROJ",
+      "targetTypeObjCode": null,
+      "fieldType": "Project",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/proj/metadata"
+    },
+    "releaseVersion": {
+      "label": "Release Version",
+      "typeObjCode": "DOCV",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentVersion",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docv/metadata"
+    },
+    "task": {
+      "label": "Task",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata"
+    },
+    "template": {
+      "label": "Template",
+      "typeObjCode": "TMPL",
+      "targetTypeObjCode": null,
+      "fieldType": "Template",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/tmpl/metadata"
+    },
+    "templateTask": {
+      "label": "Template Task",
+      "typeObjCode": "TTSK",
+      "targetTypeObjCode": null,
+      "fieldType": "TemplateTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ttsk/metadata"
+    },
+    "user": {
+      "label": "User",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    }
+  },
+  "collections": {
+    "accessRules": {
+      "label": "accessRules",
+      "typeObjCode": "ACSRUL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessRule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acsrul/metadata"
+    },
+    "approvals": {
+      "label": "Approvals",
+      "typeObjCode": "DOCAPL",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentApproval",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docapl/metadata"
+    },
+    "awaitingApprovals": {
+      "label": "awaitingApprovals",
+      "typeObjCode": "AWAPVL",
+      "targetTypeObjCode": null,
+      "fieldType": "AwaitingApproval",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/awapvl/metadata"
+    },
+    "folders": {
+      "label": "Folders",
+      "typeObjCode": "DOCFDR",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentFolder",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docfdr/metadata"
+    },
+    "groups": {
+      "label": "Groups",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "objectCategories": {
+      "label": "objectCategories",
+      "typeObjCode": "OBJCAT",
+      "targetTypeObjCode": null,
+      "fieldType": "ObjectCategory",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/objcat/metadata"
+    },
+    "subscribers": {
+      "label": "Subscribers",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "versions": {
+      "label": "versions",
+      "typeObjCode": "DOCV",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentVersion",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docv/metadata"
+    }
+  },
+  "search": {
+    "allApprovalsOM": {
+      "label": "All Approvals",
+      "typeObjCode": "DOCAPL",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentApproval",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docapl/metadata"
+    },
+    "documentShareUsersMM": {
+      "label": "Shared Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "groupIDs": {
+      "label": "Group IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isDir": {
+      "label": "Is Directory",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "issueID": {
+      "label": "issueID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "notes": {
+      "label": "Notes",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "objectCategoriesMM": {
+      "label": "Categories",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata",
+      "collectionSelector": "objectCategories:category"
+    },
+    "projectUsersOM": {
+      "label": "Project Users",
+      "typeObjCode": "PRTU",
+      "targetTypeObjCode": null,
+      "fieldType": "ProjectUser",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prtu/metadata"
+    },
+    "subscriberIDs": {
+      "label": "Subscriber IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "custom": {
+    "% Margin": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "APi Number": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Asset Type": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Digital",
+          "value": "Digital"
+        },
+        {
+          "label": "Event",
+          "value": "Event"
+        },
+        {
+          "label": "Print",
+          "value": "Print"
+        },
+        {
+          "label": "Social",
+          "value": "Social"
+        },
+        {
+          "label": "Video",
+          "value": "Video"
+        },
+        {
+          "label": "Web",
+          "value": "Web"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Asset kind": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "3D Model",
+          "value": "3D Model"
+        },
+        {
+          "label": "Audio",
+          "value": "Audio"
+        },
+        {
+          "label": "Document",
+          "value": "Document"
+        },
+        {
+          "label": "Image",
+          "value": "Image"
+        },
+        {
+          "label": "Video",
+          "value": "Video"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Audience": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "B2B",
+          "value": "B2B"
+        },
+        {
+          "label": "B2C",
+          "value": "B2C"
+        },
+        {
+          "label": "Internal",
+          "value": "Internal"
+        },
+        {
+          "label": "External",
+          "value": "External"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "CTA": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Buy Now",
+          "value": "Buy Now"
+        },
+        {
+          "label": "Join Us",
+          "value": "Join Us"
+        },
+        {
+          "label": "Register",
+          "value": "Register"
+        },
+        {
+          "label": "Visit URL",
+          "value": "Visit URL"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        },
+        {
+          "label": "Not Applicable",
+          "value": "Not Applicable"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Category": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Promotions",
+          "value": "Promotions"
+        },
+        {
+          "label": "Campaigns",
+          "value": "Campaigns"
+        },
+        {
+          "label": "Products",
+          "value": "Products"
+        },
+        {
+          "label": "Internal",
+          "value": "Internal"
+        },
+        {
+          "label": "External",
+          "value": "External"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Client Name": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Client Requested Due Date": {
+      "type": "date",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Color Scheme": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Monochrome",
+          "value": "Monochrome"
+        },
+        {
+          "label": "Vibrant",
+          "value": "Vibrant"
+        },
+        {
+          "label": "Neutral",
+          "value": "Neutral"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Cultural and Ethnic Celebrations": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Chinese New Year",
+          "value": "Chinese New Year"
+        },
+        {
+          "label": "Diwali",
+          "value": "Diwali"
+        },
+        {
+          "label": "Hanukkah",
+          "value": "Hanukkah"
+        },
+        {
+          "label": "Kwanzaa",
+          "value": "Kwanzaa"
+        },
+        {
+          "label": "Cinco de Mayo",
+          "value": "Cinco de Mayo"
+        },
+        {
+          "label": "Oktoberfest",
+          "value": "Oktoberfest"
+        },
+        {
+          "label": "Hispanic Heritage Month",
+          "value": "Hispanic Heritage Month"
+        },
+        {
+          "label": "Black History Month",
+          "value": "Black History Month"
+        },
+        {
+          "label": "Pride Month",
+          "value": "Pride Month"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Customer Email": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Customer Main Point of Contact": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Customer Phone #": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Date Created": {
+      "type": "date",
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Expected Order Value": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Expiration Date": {
+      "type": "date",
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "File Format": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "jpg",
+          "value": "jpg"
+        },
+        {
+          "label": "tif",
+          "value": "tif"
+        },
+        {
+          "label": "png",
+          "value": "png"
+        },
+        {
+          "label": "eps",
+          "value": "eps"
+        },
+        {
+          "label": "gif",
+          "value": "gif"
+        },
+        {
+          "label": "ai",
+          "value": "ai"
+        },
+        {
+          "label": "psd",
+          "value": "psd"
+        },
+        {
+          "label": "pdf",
+          "value": "pdf"
+        },
+        {
+          "label": "word (copy only)",
+          "value": "word (copy only)"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Format": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "JPEG",
+          "value": "JPEG"
+        },
+        {
+          "label": "PNG",
+          "value": "PNG"
+        },
+        {
+          "label": "MP4",
+          "value": "MP4"
+        },
+        {
+          "label": "PDF",
+          "value": "PDF"
+        },
+        {
+          "label": "SVG",
+          "value": "SVG"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Fusion Execution ID": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Holiday - Seasonal and General": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "New Year's Day",
+          "value": "New Year's Day"
+        },
+        {
+          "label": "Easter",
+          "value": "Easter"
+        },
+        {
+          "label": "Valentine's Day",
+          "value": "Valentine's Day"
+        },
+        {
+          "label": "St. Patrick's Day",
+          "value": "St. Patrick's Day"
+        },
+        {
+          "label": "Earth Day",
+          "value": "Earth Day"
+        },
+        {
+          "label": "Mother's Day",
+          "value": "Mother's Day"
+        },
+        {
+          "label": "Father's Day",
+          "value": "Father's Day"
+        },
+        {
+          "label": "Back to School",
+          "value": "Back to School"
+        },
+        {
+          "label": "Halloween",
+          "value": "Halloween"
+        },
+        {
+          "label": "Thanksgiving",
+          "value": "Thanksgiving"
+        },
+        {
+          "label": "Black Friday",
+          "value": "Black Friday"
+        },
+        {
+          "label": "Small Business Saturday",
+          "value": "Small Business Saturday"
+        },
+        {
+          "label": "Cyber Monday",
+          "value": "Cyber Monday"
+        },
+        {
+          "label": "Christmas",
+          "value": "Christmas"
+        },
+        {
+          "label": "New Year's Eve",
+          "value": "New Year's Eve"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Internal Campaign": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Is this order a change to an existing?": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Key Words": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Marketing",
+          "value": "Marketing"
+        },
+        {
+          "label": "Product",
+          "value": "Product"
+        },
+        {
+          "label": "Season",
+          "value": "Season"
+        },
+        {
+          "label": "Holiday",
+          "value": "Holiday"
+        },
+        {
+          "label": "Social Media",
+          "value": "Social Media"
+        },
+        {
+          "label": "Print",
+          "value": "Print"
+        },
+        {
+          "label": "DIgital",
+          "value": "DIgital"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Keywords": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Number of Deliverables/Tasks": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        },
+        {
+          "label": "5",
+          "value": "5"
+        },
+        {
+          "label": "6",
+          "value": "6"
+        },
+        {
+          "label": "7",
+          "value": "7"
+        },
+        {
+          "label": "8",
+          "value": "8"
+        },
+        {
+          "label": "9",
+          "value": "9"
+        },
+        {
+          "label": "10",
+          "value": "10"
+        },
+        {
+          "label": "11",
+          "value": "11"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Opportunity ID": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "28f11b2ee58d21132639bd7aa4f41d57",
+          "name": "Initech Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Opportunity Owner": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Other Audience": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Other CTA": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "PO #": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "PS - Link Test": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "080241ae7c9792343ae571917dc72ff2",
+          "name": "Proof Link Testing - Documents",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "PS - Proof Link": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "080241ae7c9792343ae571917dc72ff2",
+          "name": "Proof Link Testing - Documents",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Permissioned User Teams": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Permitted Uses": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Phase": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Commercial",
+          "value": "Commercial"
+        },
+        {
+          "label": "N/A",
+          "value": "N/A"
+        },
+        {
+          "label": "Phase I",
+          "value": "Phase I"
+        },
+        {
+          "label": "Phase II",
+          "value": "Phase II"
+        },
+        {
+          "label": "Phase III",
+          "value": "Phase III"
+        },
+        {
+          "label": "Pre-Clinical Feasibility",
+          "value": "Pre-Clinical Feasibility"
+        },
+        {
+          "label": "Pre-Commercial",
+          "value": "Pre-Commercial"
+        },
+        {
+          "label": "Research",
+          "value": "Research"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Product Name": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Products": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Project Manager - SFDC Sync": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Quote #": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Region": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "EMEA",
+          "value": "EMEA"
+        },
+        {
+          "label": "Americas",
+          "value": "Americas"
+        },
+        {
+          "label": "Global",
+          "value": "Global"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Regulatory Type": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "SEO Keyword": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Buy Online",
+          "value": "Buy Online"
+        },
+        {
+          "label": "Best Deal",
+          "value": "Best Deal"
+        },
+        {
+          "label": "Free Shipping",
+          "value": "Free Shipping"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Salesforce Document ID": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "28f11b2ee58d21132639bd7aa4f41d57",
+          "name": "Initech Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Special Instructions/Additional Notes": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Submit Forecast to Workfront": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "True",
+          "value": "True"
+        },
+        {
+          "label": "False",
+          "value": "False"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "ae4e0570f882ddb0e68d8294e1d19df9",
+          "name": "Initech SFDC to WF Test Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Target Audience": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Existing Customers",
+          "value": "Existing Customers"
+        },
+        {
+          "label": "Partners",
+          "value": "Partners"
+        },
+        {
+          "label": "Prospects",
+          "value": "Prospects"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "76262c8898378c3d0754f499ba09223f",
+          "name": "Example Document Form",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Allocation": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Allocation1": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Allocation": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Allocation1": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Usage Rights": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Web Only",
+          "value": "Web Only"
+        },
+        {
+          "label": "Print Only",
+          "value": "Print Only"
+        },
+        {
+          "label": "Broadcast",
+          "value": "Broadcast"
+        },
+        {
+          "label": "Web and Print",
+          "value": "Web and Print"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "64ec01e7e2d379a53600edf220aee6a7",
+          "name": "AEM Library Tagging",
+          "objCode": "CTGY"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "calculateDataExtension": {
+      "flags": [],
+      "label": "calculateDataExtension"
+    },
+    "checkIn": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentIDs",
+          "type": "string[]"
+        }
+      ],
+      "label": "checkIn"
+    },
+    "checkOut": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentIDs",
+          "type": "string[]"
+        }
+      ],
+      "label": "checkOut"
+    },
+    "completeLargeDocument": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "uploadID",
+          "type": "string"
+        },
+        {
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "name": "eTagMap",
+          "type": "map"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "docObjCode",
+          "type": "string"
+        },
+        {
+          "name": "docObjID",
+          "type": "string"
+        },
+        {
+          "name": "documentID",
+          "type": "string"
+        },
+        {
+          "name": "fileType",
+          "type": "string"
+        },
+        {
+          "name": "folderID",
+          "type": "string"
+        },
+        {
+          "name": "createProof",
+          "type": "java.lang.Boolean"
+        },
+        {
+          "name": "interactive",
+          "type": "java.lang.Boolean"
+        },
+        {
+          "name": "advancedProofingOptions",
+          "type": "string"
+        },
+        {
+          "name": "proofID",
+          "type": "string"
+        },
+        {
+          "name": "proofToken",
+          "type": "string"
+        }
+      ],
+      "label": "completeLargeDocument",
+      "resultType": "map"
+    },
+    "createLargeDocument": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "fileSize",
+          "type": "string"
+        }
+      ],
+      "label": "createLargeDocument",
+      "resultType": "map"
+    },
+    "createLinkedProofVersion": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentID",
+          "type": "string"
+        },
+        {
+          "name": "fileHandle",
+          "type": "string"
+        },
+        {
+          "name": "fileName",
+          "type": "string"
+        },
+        {
+          "name": "creatorName",
+          "type": "string"
+        }
+      ],
+      "label": "createLinkedProofVersion",
+      "resultType": "map"
+    },
+    "createProof": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentVersionID",
+          "type": "string"
+        },
+        {
+          "name": "advancedProofingOptions",
+          "type": "string"
+        }
+      ],
+      "label": "createProof"
+    },
+    "createProofRest": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentVersionID",
+          "type": "string"
+        },
+        {
+          "name": "advancedProofingOptions",
+          "type": "string"
+        }
+      ],
+      "label": "createProofRest"
+    },
+    "getDocumentProofTemplate": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "proofToken",
+          "type": "string"
+        }
+      ],
+      "label": "getDocumentProofTemplate",
+      "resultType": "map"
+    },
+    "getProofRecipients": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "templateId",
+          "type": "string"
+        },
+        {
+          "name": "stageId",
+          "type": "string"
+        }
+      ],
+      "label": "getProofRecipients",
+      "resultType": "string[]"
+    },
+    "getProofStages": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "templateId",
+          "type": "string"
+        }
+      ],
+      "label": "getProofStages",
+      "resultType": "string[]"
+    },
+    "getProofTemplate": {
+      "flags": [],
+      "label": "getProofTemplate",
+      "resultType": "string[]"
+    },
+    "getTotalSizeForDocuments": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "includeLinked",
+          "type": "boolean"
+        }
+      ],
+      "label": "getTotalSizeForDocuments",
+      "resultType": "java.lang.Long"
+    },
+    "isLinkedDocument": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "documentID",
+          "type": "string"
+        }
+      ],
+      "label": "isLinkedDocument",
+      "resultType": "java.lang.Boolean"
+    },
+    "isProofAutoGenrationEnabled": {
+      "flags": [],
+      "label": "isProofAutoGenrationEnabled",
+      "resultType": "java.lang.Boolean"
+    },
+    "move": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objID",
+          "type": "string"
+        },
+        {
+          "name": "docObjCode",
+          "type": "string"
+        }
+      ],
+      "label": "Move"
+    },
+    "unlinkDocuments": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "ids",
+          "type": "string[]"
+        }
+      ],
+      "label": "unlinkDocuments",
+      "resultType": "java.lang.Boolean"
+    }
+  },
+  "queries": {},
+  "operations": [
+    "add",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "report",
+    "search"
+  ]
+}

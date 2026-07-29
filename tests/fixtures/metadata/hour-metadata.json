@@ -1,0 +1,657 @@
+{
+  "name": "Hour",
+  "label": "Hour",
+  "objCode": "HOUR",
+  "flags": [
+    "REPORTABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/hour/metadata",
+  "fields": {
+    "ID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessorIDs": {
+      "flags": [
+        "DYNAMIC",
+        "LAZY_READ",
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Accessor IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualCost": {
+      "flags": [
+        "CURRENCY"
+      ],
+      "label": "Actual Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Approved By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvedOnDate": {
+      "label": "Approved on Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "billingRecordID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Billing Record ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "days": {
+      "label": "Days",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "description": {
+      "label": "Description",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "dupID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Duplicate ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "entryDate": {
+      "label": "Entry Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "date",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "extRefID": {
+      "label": "External Reference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasRateOverride": {
+      "label": "Has Billing Rate Override",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hourTypeID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Hour Type ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hours": {
+      "label": "Hours",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "opTaskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Request ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ownerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Owner ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Project ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectOverheadID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Project Overhead ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjCode": {
+      "flags": [
+        "DYNAMIC",
+        "LAZY_READ",
+        "NOT_GROUPABLE"
+      ],
+      "label": "referenceObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceObjID": {
+      "flags": [
+        "DYNAMIC",
+        "LAZY_READ",
+        "NOT_GROUPABLE"
+      ],
+      "label": "referenceObjID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "resourceRevenue": {
+      "flags": [
+        "CURRENCY"
+      ],
+      "label": "Resource Revenue",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "roleID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Role ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootID": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootObjCode": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "status": {
+      "label": "Status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.HourStatusEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Submitted",
+          "value": "SUB"
+        },
+        {
+          "label": "Approved",
+          "value": "APP"
+        },
+        {
+          "label": "Not Approved",
+          "value": "NAP"
+        },
+        {
+          "label": "Billed",
+          "value": "BLD"
+        },
+        {
+          "label": "Billed And Approved",
+          "value": "BA"
+        }
+      ]
+    },
+    "taskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Task ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "timesheetHourIdentifier": {
+      "flags": [
+        "DYNAMIC",
+        "AUTO_LOAD",
+        "NOT_GROUPABLE"
+      ],
+      "label": "timesheetHourIdentifier",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "timesheetID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Timesheet ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workHoursPerDay": {
+      "label": "workHoursPerDay",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "references": {
+    "approvedBy": {
+      "label": "Approved By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "billingRecord": {
+      "label": "Billing Record",
+      "typeObjCode": "BILL",
+      "targetTypeObjCode": null,
+      "fieldType": "BillingRecord",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/bill/metadata"
+    },
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "hourType": {
+      "label": "Hour Type",
+      "typeObjCode": "HOURT",
+      "targetTypeObjCode": null,
+      "fieldType": "HourType",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/hourt/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "opTask": {
+      "label": "Request",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "owner": {
+      "label": "Owner",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "project": {
+      "label": "Project",
+      "typeObjCode": "PROJ",
+      "targetTypeObjCode": null,
+      "fieldType": "Project",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/proj/metadata"
+    },
+    "projectOverhead": {
+      "label": "Project Overhead",
+      "typeObjCode": "PROJ",
+      "targetTypeObjCode": null,
+      "fieldType": "Project",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/proj/metadata"
+    },
+    "role": {
+      "label": "Job Role",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "task": {
+      "label": "Task",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata"
+    },
+    "timesheet": {
+      "label": "Timesheet",
+      "typeObjCode": "TSHET",
+      "targetTypeObjCode": null,
+      "fieldType": "Timesheet",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/tshet/metadata"
+    }
+  },
+  "collections": {},
+  "search": {
+    "ownerCompanyMM": {
+      "label": "Owner Company",
+      "typeObjCode": "CMPY",
+      "targetTypeObjCode": null,
+      "fieldType": "Company",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cmpy/metadata"
+    },
+    "ownerHomeGroupMM": {
+      "label": "Owner Home Group",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "ownerHomeTeamMM": {
+      "label": "Home Team",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "ownerManagerMM": {
+      "label": "Owner Manager",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "ownerOtherGroupIDs": {
+      "label": "Owner Other Group IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "ownerOtherGroupsMM": {
+      "label": "Owner Other Groups",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "portfolioMM": {
+      "label": "Portfolio",
+      "typeObjCode": "PORT",
+      "targetTypeObjCode": null,
+      "fieldType": "Portfolio",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/port/metadata"
+    },
+    "programMM": {
+      "label": "Program",
+      "typeObjCode": "PRGM",
+      "targetTypeObjCode": null,
+      "fieldType": "Program",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prgm/metadata"
+    },
+    "projectCompanyMM": {
+      "label": "Project Company",
+      "typeObjCode": "CMPY",
+      "targetTypeObjCode": null,
+      "fieldType": "Company",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cmpy/metadata"
+    },
+    "projectGroupMM": {
+      "label": "Project Group",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "projectOwnerMM": {
+      "label": "Project Owner",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "projectPortfolioID": {
+      "label": "Project Portfolio ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectProgramID": {
+      "label": "Project Program ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectUserIDs": {
+      "label": "Project User IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectUsersOM": {
+      "label": "Project Users",
+      "typeObjCode": "PRTU",
+      "targetTypeObjCode": null,
+      "fieldType": "ProjectUser",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prtu/metadata"
+    }
+  },
+  "actions": {},
+  "queries": {},
+  "operations": [
+    "add",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "report",
+    "search"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "name": "wf-toolkit",
+  "description": "Workfront skills for Claude: text mode, REST API, calculated custom fields, custom forms, permissions diagnostics, business rules, reports.",
+  "owner": {
+    "name": "Thousand Cuts"
+  },
+  "plugins": [
+    {
+      "name": "wf-toolkit",
+      "source": "./",
+      "description": "Workfront skills for Claude Code: text mode, REST API, calculated custom fields, custom forms, permissions diagnostics (read-only), business rules, reports."
+    }
+  ]
+}

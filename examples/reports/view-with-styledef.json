@@ -1,0 +1,54 @@
+{
+  "description": "UIVW column with styledef.case[].comparison — paint the row red if overdue, amber if due within 2 days. Empirically verified against a surveyed TASK view's plannedCompletionDate column.",
+  "uivw_definition_column_entry": {
+    "descriptionkey": "plannedcompletiondate",
+    "namekey": "plannedcompletiondate.abbr",
+    "linkedname": "direct",
+    "valuefield": "plannedCompletionDate",
+    "valueformat": "atDate",
+    "width": "120",
+    "styledef": {
+      "case": [
+        {
+          "comparison": {
+            "icon": "false",
+            "isrowcase": "true",
+            "leftmethod": "plannedCompletionDate",
+            "lefttext": "plannedCompletionDate",
+            "operator": "lt",
+            "operatortype": "date",
+            "righttext": "$$TODAY",
+            "trueproperty": [
+              {"name": "bgcolor", "value": "FFE0E0"},
+              {"name": "fontstyle", "value": "bold"}
+            ]
+          }
+        },
+        {
+          "comparison": {
+            "icon": "false",
+            "isrowcase": "true",
+            "leftmethod": "plannedCompletionDate",
+            "lefttext": "plannedCompletionDate",
+            "operator": "between",
+            "operatortype": "date",
+            "righttext": "$$TODAY",
+            "righttextrange": "$$TODAY+2d",
+            "trueproperty": [
+              {"name": "bgcolor", "value": "FEECC8"}
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "notes": [
+    "styledef.case[] evaluates in order; first match wins (unless applyallcases:'true' is set)",
+    "isrowcase:'true' paints the whole row; 'false' paints just the cell",
+    "operator values: lt / gt / lte / gte / eq / ne / in / notin / isblank / notblank / between / cicontains",
+    "operatortype: date / string / int / boolean",
+    "between requires righttext (low) AND righttextrange (high); both support $$TODAY±Nd",
+    "trueproperty names confirmed: bgcolor (6-char hex no #), fontstyle (bold/italic), textcolor (6-char hex)",
+    "On DE: field comparisons, leftmethod and lefttext BOTH carry the DE: prefix"
+  ]
+}

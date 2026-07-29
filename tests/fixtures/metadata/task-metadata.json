@@ -1,0 +1,5184 @@
+{
+  "name": "Task",
+  "label": "Task",
+  "objCode": "TASK",
+  "flags": [
+    "DATA_EXTENDIBLE",
+    "REPORTABLE",
+    "RESTORABLE",
+    "SHARABLE"
+  ],
+  "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata",
+  "fields": {
+    "ID": {
+      "label": "ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "URL": {
+      "label": "URL",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "accessorIDs": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Accessor IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualCompletionDate": {
+      "label": "Actual Completion Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualDuration": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Duration",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualDurationMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Duration Minutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualExpenseCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Expense Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualLaborCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Labor Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualRevenue": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Actual Revenue",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualStartDate": {
+      "label": "Actual Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualWork": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Legacy Actual Hours",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "actualWorkRequired": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Legacy Actual Hours",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalCompletionDate": {
+      "label": "Approval Path Completion Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalEstStartDate": {
+      "label": "Approval Estimated Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalPlannedStartDate": {
+      "label": "Approval Planned Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalPlannedStartDay": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "approvalPlannedStartDay",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalProcessID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Approval Processes ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalProjectedStartDate": {
+      "label": "Approval Projected Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approvalStartDate": {
+      "label": "Approval Path Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "approversString": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "approversString",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "assignedToID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Assigned To ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "assignmentsListString": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "assignmentsListString",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "auditNote": {
+      "flags": [
+        "LAZY_READ",
+        "WRITE_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "auditNote",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "auditTypes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Audit Types",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.AuditTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Status Change",
+          "value": "ST"
+        },
+        {
+          "label": "Attachment Action",
+          "value": "AA"
+        },
+        {
+          "label": "Scope Change",
+          "value": "SC"
+        },
+        {
+          "label": "Note",
+          "value": "NO"
+        },
+        {
+          "label": "General Edit",
+          "value": "GE"
+        },
+        {
+          "label": "Combined Entry",
+          "value": "CM"
+        },
+        {
+          "label": "Error Entry",
+          "value": "ER"
+        },
+        {
+          "label": "Subscription Change",
+          "value": "SB"
+        }
+      ]
+    },
+    "auditUserIDs": {
+      "flags": [
+        "LAZY_READ",
+        "WRITE_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "auditUserIDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "backlogOrder": {
+      "label": "Order",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "backlogParent": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Parent",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "bcwp": {
+      "flags": [
+        "READ_ONLY"
+      ],
+      "label": "BCWP",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "bcws": {
+      "flags": [
+        "READ_ONLY"
+      ],
+      "label": "BCWS",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "billingAmount": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Cap or Fixed Amount",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "billingRecordID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Billing Record ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "canStart": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Can Start",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "categoryID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Category ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "color": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Color",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "commitDate": {
+      "label": "Commit Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "commitDateRange": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "commitDateRange",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "completionPendingDate": {
+      "label": "Completion Pending Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "condition": {
+      "label": "Condition",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.ConditionEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Going Smoothly",
+          "value": 0
+        },
+        {
+          "label": "Some Concerns",
+          "value": 1
+        },
+        {
+          "label": "Major Roadblocks",
+          "value": 2
+        }
+      ]
+    },
+    "constraintDate": {
+      "label": "Constraint Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "convertedOpTaskEntryDate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Converted Request Entry Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "convertedOpTaskName": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Converted Request Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "convertedOpTaskOriginatorID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "convertedOpTaskOriginatorID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "costAmount": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Cost Amount",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "costType": {
+      "label": "Cost Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.CostTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "No Cost",
+          "value": "NOC"
+        },
+        {
+          "label": "Fixed Hourly",
+          "value": "FHR"
+        },
+        {
+          "label": "User Hourly",
+          "value": "UHR"
+        },
+        {
+          "label": "Role Hourly",
+          "value": "RHC"
+        }
+      ]
+    },
+    "cpi": {
+      "label": "Cost Performance Index",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "csi": {
+      "label": "Cost Schedule Performance Index",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "currentApprovalStepID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Current Approval Stage ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "customerID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Customer ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "daysLate": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Days Late",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "description": {
+      "label": "Description",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "dueDate": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Due Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "duration": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Duration",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "durationExpression": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "durationExpression",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "durationMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Duration in Minutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "durationType": {
+      "label": "Duration Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.DurationTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Calculated Work",
+          "value": "W"
+        },
+        {
+          "label": "Effort Driven",
+          "value": "D"
+        },
+        {
+          "label": "Calculated Assignment",
+          "value": "A"
+        },
+        {
+          "label": "Simple",
+          "value": "S"
+        }
+      ]
+    },
+    "durationUnit": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Duration Unit",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.DurationUnitEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Minutes",
+          "value": "M"
+        },
+        {
+          "label": "Hours",
+          "value": "H"
+        },
+        {
+          "label": "Days",
+          "value": "D"
+        },
+        {
+          "label": "Weeks",
+          "value": "W"
+        },
+        {
+          "label": "Months",
+          "value": "T"
+        },
+        {
+          "label": "Elapsed Minutes",
+          "value": "EM"
+        },
+        {
+          "label": "Elapsed Hours",
+          "value": "EH"
+        },
+        {
+          "label": "Elapsed Days",
+          "value": "ED"
+        },
+        {
+          "label": "Elapsed Weeks",
+          "value": "EW"
+        },
+        {
+          "label": "Elapsed Months",
+          "value": "ET"
+        }
+      ]
+    },
+    "eac": {
+      "label": "EAC",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "enteredByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Entered By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "entryDate": {
+      "label": "Entry Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "estCompletionDate": {
+      "label": "Estimated Due Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "estStartDate": {
+      "label": "Estimated Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "estimate": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Estimate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "extRefID": {
+      "label": "External Reference ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "groupID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Group ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "handoffDate": {
+      "label": "Handoff Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasCompletionConstraint": {
+      "flags": [
+        "AUTO_LOAD",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "hasCompletionConstraint",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasDocuments": {
+      "label": "Has Documents",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasExpenses": {
+      "label": "Has Expenses",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasMessages": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Messages",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasNotes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Notes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasResolvables": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Has Resolvables",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasStartConstraint": {
+      "flags": [
+        "AUTO_LOAD",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "hasStartConstraint",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hasTimedNotifications": {
+      "label": "Has Reminder Notifications",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "hoursPerPoint": {
+      "label": "Hours Per Point",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "indent": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Indent",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isAgile": {
+      "label": "Agile",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isCritical": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Is Critical",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isDurationLocked": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Duration Locked",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isLevelingExcluded": {
+      "label": "Exclude from Leveling",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isReady": {
+      "label": "Ready",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isStatusComplete": {
+      "flags": [
+        "AUTO_LOAD",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "isStatusComplete",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isWorkRequiredLocked": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Worked Locked",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "iterationID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Iteration ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "kanbanBoardID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Kanban Board ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "kanbanFlag": {
+      "label": "Kanban Flag",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.KanbanFlagEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "On Track",
+          "value": "ONTRACK"
+        },
+        {
+          "label": "Is Blocked",
+          "value": "ISBLOCKED"
+        },
+        {
+          "label": "Ready to Pull",
+          "value": "READYTOPULL"
+        }
+      ]
+    },
+    "lastConditionNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Condition Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastNoteID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Note ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdateDate": {
+      "label": "Last Update Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "lastUpdatedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Last Updated By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "levelingStartDelay": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Leveling Delay",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "levelingStartDelayExpression": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "levelingStartDelayExpression",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "levelingStartDelayMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "levelingStartDelayMinutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "milestoneID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Milestone ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "name": {
+      "label": "Name",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "numberOfChildren": {
+      "label": "Number of Children",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "numberOpenOpTasks": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Number of Open Requests",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "originalDuration": {
+      "label": "Original Duration",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "originalWorkRequired": {
+      "label": "Original Planned Hours",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "parentID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Parent ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "parentLag": {
+      "label": "Parent Lag",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "parentLagType": {
+      "label": "Parent Lag Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.LagTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Days",
+          "value": "d"
+        },
+        {
+          "label": "Calendar Days",
+          "value": "c"
+        },
+        {
+          "label": "Percent",
+          "value": "p"
+        },
+        {
+          "label": "Day of Week",
+          "value": "w"
+        },
+        {
+          "label": "Day of Week (Non-Zero)",
+          "value": "k"
+        }
+      ]
+    },
+    "pendingCalculation": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "pendingCalculation",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "pendingPredecessors": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC"
+      ],
+      "label": "Pending Predecessors",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "pendingUpdateMethods": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "pendingUpdateMethods",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "percentComplete": {
+      "flags": [
+        "PERCENT"
+      ],
+      "label": "Percent Complete",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "personal": {
+      "label": "Personal",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedCompletionDate": {
+      "label": "Planned Completion Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedDateAlignment": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Date Alignment",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PlannedDatesAlignmentEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Will be done after the planned completion date",
+          "value": 0
+        },
+        {
+          "label": "Will be done on the planned completion date",
+          "value": 1
+        },
+        {
+          "label": "Will be done before the planned completion date",
+          "value": 2
+        },
+        {
+          "label": "No set planned date",
+          "value": 3
+        }
+      ]
+    },
+    "plannedDuration": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Duration",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedDurationMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Duration Minutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedExpenseCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Expense Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedHoursAlignment": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Hours Alignment",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.PlannedHoursAlignmentEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "More hours than planned",
+          "value": 0
+        },
+        {
+          "label": "Same hours as planned",
+          "value": 1
+        },
+        {
+          "label": "Less hours than planned",
+          "value": 2
+        },
+        {
+          "label": "No planned hours set",
+          "value": 3
+        }
+      ]
+    },
+    "plannedLaborCost": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Labor Cost",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedRevenue": {
+      "flags": [
+        "CURRENCY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Revenue",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "plannedStartDate": {
+      "label": "Planned Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "predecessorExpression": {
+      "flags": [
+        "LAZY_READ",
+        "WRITE_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "predecessorExpression",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "previousStatus": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Previous status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TaskStatusEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "New",
+          "value": "NEW"
+        },
+        {
+          "label": "In Progress",
+          "value": "INP"
+        },
+        {
+          "label": "Complete",
+          "value": "CPL"
+        },
+        {
+          "label": "Complete - Pending Approval",
+          "value": "CPA"
+        },
+        {
+          "label": "Complete - Pending Requests",
+          "value": "CPI"
+        }
+      ]
+    },
+    "priority": {
+      "label": "Priority",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TimelinePriorityEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "None",
+          "value": 0
+        },
+        {
+          "label": "Low",
+          "value": 1
+        },
+        {
+          "label": "Normal",
+          "value": 2
+        },
+        {
+          "label": "High",
+          "value": 3
+        },
+        {
+          "label": "Urgent",
+          "value": 4
+        }
+      ]
+    },
+    "priorityColor": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "priorityColor",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "progressStatus": {
+      "label": "Progress Status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.ProgressStatusEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Late",
+          "value": "LT"
+        },
+        {
+          "label": "On Time",
+          "value": "ON"
+        },
+        {
+          "label": "Behind",
+          "value": "BH"
+        },
+        {
+          "label": "At Risk",
+          "value": "RK"
+        }
+      ]
+    },
+    "projectID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Project ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectedCompletionDate": {
+      "label": "Projected Completion Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectedDurationMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Projected Duration Minutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectedStartDate": {
+      "label": "Projected Start Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "dateTime",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "recurrenceNumber": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Recurrence Number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "recurrenceRuleID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Recurrence Rule ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "referenceNumber": {
+      "label": "Reference Number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "rejectionIssueID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Rejection Request ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "remainingDurationMinutes": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Remaining Duration Minutes",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "resourceScope": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Resource Scope",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TaskResourceScopeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "None",
+          "value": "NONE"
+        },
+        {
+          "label": "Global",
+          "value": "GLOB"
+        }
+      ]
+    },
+    "revenueType": {
+      "label": "Revenue Type",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.RevenueTypeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Not Billable",
+          "value": "NOB"
+        },
+        {
+          "label": "User Hourly",
+          "value": "UHR"
+        },
+        {
+          "label": "Role Hourly",
+          "value": "RHR"
+        },
+        {
+          "label": "Fixed Hourly",
+          "value": "FHR"
+        },
+        {
+          "label": "User Hourly w/Cap",
+          "value": "Globex"
+        },
+        {
+          "label": "Role Hourly w/Cap",
+          "value": "RHC"
+        },
+        {
+          "label": "User Hourly Plus Fixed",
+          "value": "UHF"
+        },
+        {
+          "label": "Role Hourly Plus Fixed",
+          "value": "RHF"
+        },
+        {
+          "label": "Fixed Revenue",
+          "value": "FRV"
+        }
+      ]
+    },
+    "roleID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Role ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootID": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "securityRootObjCode": {
+      "flags": [
+        "READ_ONLY",
+        "NOT_GROUPABLE"
+      ],
+      "label": "securityRootObjCode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "showCommitDate": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "showCommitDate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "showCondition": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "showCondition",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "showStatus": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "showStatus",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "slackDate": {
+      "label": "Slack Date",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "date",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "spi": {
+      "label": "Schedule Performance Index",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "status": {
+      "label": "Status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TaskStatusEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "New",
+          "value": "NEW"
+        },
+        {
+          "label": "In Progress",
+          "value": "INP"
+        },
+        {
+          "label": "Complete",
+          "value": "CPL"
+        },
+        {
+          "label": "Complete - Pending Approval",
+          "value": "CPA"
+        },
+        {
+          "label": "Complete - Pending Requests",
+          "value": "CPI"
+        }
+      ]
+    },
+    "statusEquatesWith": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Status Equates With",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "statusUpdate": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Status Update",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "storyPoints": {
+      "label": "Story Points",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "submittedByID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Submitted By ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "taskConstraint": {
+      "label": "Task Constraint",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TaskConstraintEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Fixed Dates",
+          "value": "FIXT"
+        },
+        {
+          "label": "Must Start On",
+          "value": "MSO"
+        },
+        {
+          "label": "Must Finish On",
+          "value": "MFO"
+        },
+        {
+          "label": "As Soon As Possible",
+          "value": "ASAP"
+        },
+        {
+          "label": "As Late As Possible",
+          "value": "ALAP"
+        },
+        {
+          "label": "Earliest Available Time",
+          "value": "EAT"
+        },
+        {
+          "label": "Latest Available Time",
+          "value": "LAT"
+        },
+        {
+          "label": "Start No Later Than",
+          "value": "SNLT"
+        },
+        {
+          "label": "Start No Earlier Than",
+          "value": "SNET"
+        },
+        {
+          "label": "Finish No Later Than",
+          "value": "FNLT"
+        },
+        {
+          "label": "Finish No Earlier Than",
+          "value": "FNET"
+        }
+      ]
+    },
+    "taskNumber": {
+      "label": "Task Number",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "taskNumberPredecessorString": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "taskNumberPredecessorString",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "teamID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Team ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "templateTaskID": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Template Task ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "trackingMode": {
+      "label": "Tracking Mode",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.TaskTrackingModeEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "User Must Update",
+          "value": "USER"
+        },
+        {
+          "label": "Assume On Time",
+          "value": "ONTM"
+        },
+        {
+          "label": "Ignore Late Warnings",
+          "value": "IGNR"
+        },
+        {
+          "label": "Auto Complete",
+          "value": "AUTO"
+        },
+        {
+          "label": "Predecessor",
+          "value": "PRED"
+        }
+      ]
+    },
+    "version": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Version",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "wbs": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Work Breakdown Structure",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "work": {
+      "flags": [
+        "NOT_GROUPABLE"
+      ],
+      "label": "Work",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "double",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workEffort": {
+      "label": "Work Effort",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.WorkEffortEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Small",
+          "value": 1
+        },
+        {
+          "label": "Medium",
+          "value": 2
+        },
+        {
+          "label": "Large",
+          "value": 3
+        }
+      ]
+    },
+    "workPerDate": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "workPerDate",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "map",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workPerDayList": {
+      "flags": [
+        "LAZY_READ",
+        "READ_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "workPerDayList",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string[]",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workRequired": {
+      "flags": [
+        "NOT_FILTERABLE",
+        "NOT_GROUPABLE"
+      ],
+      "label": "Planned Hours",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "int",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workRequiredExpression": {
+      "flags": [
+        "LAZY_READ",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "workRequiredExpression",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "workUnit": {
+      "flags": [
+        "LAZY_READ",
+        "WRITE_ONLY",
+        "DYNAMIC",
+        "NOT_GROUPABLE"
+      ],
+      "label": "workUnit",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "string",
+      "enumTargetObjCode": null,
+      "enumType": "com.attask.common.constants.DurationUnitEnum",
+      "url": null,
+      "possibleValues": [
+        {
+          "label": "Minutes",
+          "value": "M"
+        },
+        {
+          "label": "Hours",
+          "value": "H"
+        },
+        {
+          "label": "Days",
+          "value": "D"
+        },
+        {
+          "label": "Weeks",
+          "value": "W"
+        },
+        {
+          "label": "Months",
+          "value": "T"
+        },
+        {
+          "label": "Elapsed Minutes",
+          "value": "EM"
+        },
+        {
+          "label": "Elapsed Hours",
+          "value": "EH"
+        },
+        {
+          "label": "Elapsed Days",
+          "value": "ED"
+        },
+        {
+          "label": "Elapsed Weeks",
+          "value": "EW"
+        },
+        {
+          "label": "Elapsed Months",
+          "value": "ET"
+        }
+      ]
+    }
+  },
+  "references": {
+    "approvalProcess": {
+      "label": "Approval Process",
+      "typeObjCode": "ARVPRC",
+      "targetTypeObjCode": null,
+      "fieldType": "ApprovalProcess",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/arvprc/metadata"
+    },
+    "assignedTo": {
+      "label": "Assigned To",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "billingRecord": {
+      "label": "Billing Record",
+      "typeObjCode": "BILL",
+      "targetTypeObjCode": null,
+      "fieldType": "BillingRecord",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/bill/metadata"
+    },
+    "category": {
+      "label": "Category",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata"
+    },
+    "convertedOpTaskOriginator": {
+      "label": "Converted Request Originator",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "currentApprovalStep": {
+      "label": "Current Approval Stage",
+      "typeObjCode": "ARVSTP",
+      "targetTypeObjCode": null,
+      "fieldType": "ApprovalStep",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/arvstp/metadata"
+    },
+    "customer": {
+      "label": "Customer",
+      "typeObjCode": "CUST",
+      "targetTypeObjCode": null,
+      "fieldType": "Customer",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cust/metadata"
+    },
+    "defaultBaselineTask": {
+      "label": "Default Baseline Task",
+      "typeObjCode": "BSTSK",
+      "targetTypeObjCode": null,
+      "fieldType": "BaselineTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/bstsk/metadata"
+    },
+    "enteredBy": {
+      "label": "Entered By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "group": {
+      "label": "Group",
+      "typeObjCode": "GROUP",
+      "targetTypeObjCode": null,
+      "fieldType": "Group",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/group/metadata"
+    },
+    "iteration": {
+      "label": "Iteration",
+      "typeObjCode": "ITRN",
+      "targetTypeObjCode": null,
+      "fieldType": "Iteration",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/itrn/metadata"
+    },
+    "kanbanBoard": {
+      "label": "Kanban Board",
+      "typeObjCode": "KNBNBD",
+      "targetTypeObjCode": null,
+      "fieldType": "KanbanBoard",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/knbnbd/metadata"
+    },
+    "lastConditionNote": {
+      "label": "Last Condition Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastNote": {
+      "label": "Last Note",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "lastUpdatedBy": {
+      "label": "Last Updated By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "milestone": {
+      "label": "Milestone",
+      "typeObjCode": "MILE",
+      "targetTypeObjCode": null,
+      "fieldType": "Milestone",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/mile/metadata"
+    },
+    "parent": {
+      "label": "Parent",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata"
+    },
+    "primaryAssignment": {
+      "label": "Primary Assignment",
+      "typeObjCode": "ASSGN",
+      "targetTypeObjCode": null,
+      "fieldType": "Assignment",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/assgn/metadata"
+    },
+    "project": {
+      "label": "Project",
+      "typeObjCode": "PROJ",
+      "targetTypeObjCode": null,
+      "fieldType": "Project",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/proj/metadata"
+    },
+    "rejectionIssue": {
+      "label": "Rejection Request",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "role": {
+      "label": "Job Role",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "submittedBy": {
+      "label": "Submitted By",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "team": {
+      "label": "Team",
+      "typeObjCode": "TEAMOB",
+      "targetTypeObjCode": null,
+      "fieldType": "Team",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/teamob/metadata"
+    },
+    "teamAssignment": {
+      "label": "Team Assignment",
+      "typeObjCode": "ASSGN",
+      "targetTypeObjCode": null,
+      "fieldType": "Assignment",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/assgn/metadata"
+    },
+    "templateTask": {
+      "label": "Template Task",
+      "typeObjCode": "TTSK",
+      "targetTypeObjCode": null,
+      "fieldType": "TemplateTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ttsk/metadata"
+    },
+    "workItem": {
+      "label": "Work Item",
+      "typeObjCode": "WRKITM",
+      "targetTypeObjCode": null,
+      "fieldType": "WorkItem",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/wrkitm/metadata"
+    }
+  },
+  "collections": {
+    "accessRules": {
+      "label": "accessRules",
+      "typeObjCode": "ACSRUL",
+      "targetTypeObjCode": null,
+      "fieldType": "AccessRule",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/acsrul/metadata"
+    },
+    "allConditions": {
+      "label": "allConditions",
+      "typeObjCode": "CSTEM",
+      "targetTypeObjCode": null,
+      "fieldType": "CustomEnum",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cstem/metadata"
+    },
+    "allPriorities": {
+      "label": "allPriorities",
+      "typeObjCode": "CSTEM",
+      "targetTypeObjCode": null,
+      "fieldType": "CustomEnum",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cstem/metadata"
+    },
+    "allStatuses": {
+      "label": "allStatuses",
+      "typeObjCode": "CSTEM",
+      "targetTypeObjCode": null,
+      "fieldType": "CustomEnum",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cstem/metadata"
+    },
+    "approverStatuses": {
+      "label": "approverStatuses",
+      "typeObjCode": "ARVSTS",
+      "targetTypeObjCode": null,
+      "fieldType": "ApproverStatus",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/arvsts/metadata"
+    },
+    "assignments": {
+      "label": "Assignments",
+      "typeObjCode": "ASSGN",
+      "targetTypeObjCode": null,
+      "fieldType": "Assignment",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/assgn/metadata"
+    },
+    "awaitingApprovals": {
+      "label": "awaitingApprovals",
+      "typeObjCode": "AWAPVL",
+      "targetTypeObjCode": null,
+      "fieldType": "AwaitingApproval",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/awapvl/metadata"
+    },
+    "children": {
+      "label": "children",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata"
+    },
+    "documentRequests": {
+      "label": "Document Requests",
+      "typeObjCode": "DOCREQ",
+      "targetTypeObjCode": null,
+      "fieldType": "DocumentRequest",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docreq/metadata"
+    },
+    "documents": {
+      "label": "Documents",
+      "typeObjCode": "DOCU",
+      "targetTypeObjCode": null,
+      "fieldType": "Document",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/docu/metadata"
+    },
+    "doneStatuses": {
+      "label": "doneStatuses",
+      "typeObjCode": "CSTEM",
+      "targetTypeObjCode": null,
+      "fieldType": "CustomEnum",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cstem/metadata"
+    },
+    "expenses": {
+      "label": "Expenses",
+      "typeObjCode": "EXPNS",
+      "targetTypeObjCode": null,
+      "fieldType": "Expense",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/expns/metadata"
+    },
+    "hours": {
+      "label": "Hours",
+      "typeObjCode": "HOUR",
+      "targetTypeObjCode": null,
+      "fieldType": "Hour",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/hour/metadata"
+    },
+    "objectCategories": {
+      "label": "objectCategories",
+      "typeObjCode": "OBJCAT",
+      "targetTypeObjCode": null,
+      "fieldType": "ObjectCategory",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/objcat/metadata"
+    },
+    "objectIntegrations": {
+      "label": "objectIntegrations",
+      "typeObjCode": "OBJINT",
+      "targetTypeObjCode": null,
+      "fieldType": "ObjectIntegration",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/objint/metadata"
+    },
+    "opTasks": {
+      "label": "Requests",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "openOpTasks": {
+      "label": "openOpTasks",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "predecessors": {
+      "label": "Predecessors",
+      "typeObjCode": "PRED",
+      "targetTypeObjCode": null,
+      "fieldType": "Predecessor",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/pred/metadata"
+    },
+    "resolvables": {
+      "label": "Requests",
+      "typeObjCode": "OPTASK",
+      "targetTypeObjCode": null,
+      "fieldType": "OpTask",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/optask/metadata"
+    },
+    "successors": {
+      "label": "Successors",
+      "typeObjCode": "PRED",
+      "targetTypeObjCode": null,
+      "fieldType": "Predecessor",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/pred/metadata"
+    },
+    "updates": {
+      "label": "Updates",
+      "typeObjCode": "UPDATE",
+      "targetTypeObjCode": null,
+      "fieldType": "Update",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/update/metadata"
+    }
+  },
+  "search": {
+    "allNotesOM": {
+      "label": "All Notes",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "approvalRequired": {
+      "label": "Approval Required",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "assignmentsRolesMM": {
+      "label": "Assignment Roles",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata",
+      "collectionSelector": "assignments:role"
+    },
+    "assignmentsUsersMM": {
+      "label": "Assignment Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata",
+      "collectionSelector": "assignments:assignedTo"
+    },
+    "awaitingApprovalStepApproversMM": {
+      "label": "Stage Approvers",
+      "typeObjCode": "SPAPVR",
+      "targetTypeObjCode": null,
+      "fieldType": "StepApprover",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/spapvr/metadata"
+    },
+    "currentRoleApproversMM": {
+      "label": "Current Role Approvers",
+      "typeObjCode": "ROLE",
+      "targetTypeObjCode": null,
+      "fieldType": "Role",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/role/metadata"
+    },
+    "currentUserApproversMM": {
+      "label": "Current User Approvers",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "favoritedByUsersMM": {
+      "label": "Favorited by Users",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "isApproval": {
+      "label": "Is Approval",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "isComplete": {
+      "label": "Is Complete",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "journalEntries": {
+      "label": "Journal Entries",
+      "typeObjCode": "JRNLE",
+      "targetTypeObjCode": null,
+      "fieldType": "JournalEntry",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/jrnle/metadata"
+    },
+    "notes": {
+      "label": "Notes",
+      "typeObjCode": "NOTE",
+      "targetTypeObjCode": null,
+      "fieldType": "Note",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/note/metadata"
+    },
+    "objectCategoriesMM": {
+      "label": "Categories",
+      "typeObjCode": "CTGY",
+      "targetTypeObjCode": null,
+      "fieldType": "Category",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/ctgy/metadata",
+      "collectionSelector": "objectCategories:category"
+    },
+    "pendingApproval": {
+      "label": "Pending Approval",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": "boolean",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "pendingIssues": {
+      "label": "Pending Requests",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "predecessorsMM": {
+      "label": "Predecessors",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata",
+      "collectionSelector": "predecessors:predecessor"
+    },
+    "projectCompanyMM": {
+      "label": "Project Company",
+      "typeObjCode": "CMPY",
+      "targetTypeObjCode": null,
+      "fieldType": "Company",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/cmpy/metadata"
+    },
+    "projectMilestonePathMM": {
+      "label": "Project Milestone Path",
+      "typeObjCode": "MPATH",
+      "targetTypeObjCode": null,
+      "fieldType": "MilestonePath",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/mpath/metadata"
+    },
+    "projectOwnerID": {
+      "label": "Project Owner ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectOwnerMM": {
+      "label": "Project Owner",
+      "typeObjCode": "USER",
+      "targetTypeObjCode": null,
+      "fieldType": "User",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/user/metadata"
+    },
+    "projectPortfolioID": {
+      "label": "Project Portfolio ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectProgramID": {
+      "label": "Project Program ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectSponsorID": {
+      "label": "Project Sponsor ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectUserIDs": {
+      "label": "Project User IDs",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "projectUserRolesOM": {
+      "label": "Project User Roles",
+      "typeObjCode": "PTEAM",
+      "targetTypeObjCode": null,
+      "fieldType": "ProjectUserRole",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/pteam/metadata"
+    },
+    "projectUsersOM": {
+      "label": "Project Users",
+      "typeObjCode": "PRTU",
+      "targetTypeObjCode": null,
+      "fieldType": "ProjectUser",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/prtu/metadata"
+    },
+    "requeststatus": {
+      "label": "Request Status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "statusModifier": {
+      "label": "Pending Status",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    },
+    "successorsMM": {
+      "label": "Successors",
+      "typeObjCode": "TASK",
+      "targetTypeObjCode": null,
+      "fieldType": "Task",
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": "https://example.my.workfront.com/attask/api/v17.0/task/metadata",
+      "collectionSelector": "successors:successor"
+    },
+    "teamTimelineableID": {
+      "label": "Team Timelineable ID",
+      "typeObjCode": null,
+      "targetTypeObjCode": null,
+      "fieldType": null,
+      "enumTargetObjCode": null,
+      "enumType": null,
+      "url": null
+    }
+  },
+  "custom": {
+    "Actual Duration": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Actual Duration Variance": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Adobe Contact": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Alex Ashford, SAM",
+          "value": "Alex Ashford, SAM"
+        },
+        {
+          "label": "Casey Colby, SAM",
+          "value": "Casey Colby, SAM"
+        },
+        {
+          "label": "Devon Dalton",
+          "value": "Devon Dalton"
+        },
+        {
+          "label": "Emery Everly",
+          "value": "Emery Everly"
+        },
+        {
+          "label": "Frankie Fenwick",
+          "value": "Frankie Fenwick"
+        },
+        {
+          "label": "Harper Garland, SAM",
+          "value": "Harper Garland, SAM"
+        },
+        {
+          "label": "Indigo Hollis, NAM",
+          "value": "Indigo Hollis, NAM"
+        },
+        {
+          "label": "Jordan Ivers, AM",
+          "value": "Jordan Ivers, AM"
+        },
+        {
+          "label": "Kendall Jennings, Leadership",
+          "value": "Kendall Jennings, Leadership"
+        },
+        {
+          "label": "Logan Keaton, Leadership",
+          "value": "Logan Keaton, Leadership"
+        },
+        {
+          "label": "Morgan Lambert",
+          "value": "Morgan Lambert"
+        },
+        {
+          "label": "Noel Merritt, NAM",
+          "value": "Noel Merritt, NAM"
+        },
+        {
+          "label": "Oakley Norwood, Leadership",
+          "value": "Oakley Norwood, Leadership"
+        },
+        {
+          "label": "Quinn Prescott, AE",
+          "value": "Quinn Prescott, AE"
+        },
+        {
+          "label": "Tatum Sterling, AE",
+          "value": "Tatum Sterling, AE"
+        },
+        {
+          "label": "Umber Thorne, AM",
+          "value": "Umber Thorne, AM"
+        },
+        {
+          "label": "Vesper Underhill",
+          "value": "Vesper Underhill"
+        },
+        {
+          "label": "Winter Vance, NAM",
+          "value": "Winter Vance, NAM"
+        },
+        {
+          "label": "Yael Xavier,",
+          "value": "Yael Xavier,"
+        },
+        {
+          "label": "Zion York",
+          "value": "Zion York"
+        },
+        {
+          "label": "Alex Barlow  > user1@example.com",
+          "value": "Alex Barlow  > user1@example.com"
+        },
+        {
+          "label": "Xen Whitaker, Leadership",
+          "value": "Xen Whitaker, Leadership"
+        },
+        {
+          "label": "Blair Colby, SAM",
+          "value": "Blair Colby, SAM"
+        },
+        {
+          "label": "Casey Dalton",
+          "value": "Casey Dalton"
+        },
+        {
+          "label": "Devon Everly",
+          "value": "Devon Everly"
+        },
+        {
+          "label": "Harper Hollis, NAM",
+          "value": "Harper Hollis, NAM"
+        },
+        {
+          "label": "Kendall Keaton, NAM",
+          "value": "Kendall Keaton, NAM"
+        },
+        {
+          "label": "Logan Lambert",
+          "value": "Logan Lambert"
+        },
+        {
+          "label": "Morgan Merritt, Sales",
+          "value": "Morgan Merritt, Sales"
+        },
+        {
+          "label": "Noel Norwood, SAM",
+          "value": "Noel Norwood, SAM"
+        },
+        {
+          "label": "Oakley Oakes, SAM",
+          "value": "Oakley Oakes, SAM"
+        },
+        {
+          "label": "Parker Prescott, AE",
+          "value": "Parker Prescott, AE"
+        },
+        {
+          "label": "Quinn Quimby, Leadership",
+          "value": "Quinn Quimby, Leadership"
+        },
+        {
+          "label": "Reese Rowan, SAM",
+          "value": "Reese Rowan, SAM"
+        },
+        {
+          "label": "Sage Sterling, AE",
+          "value": "Sage Sterling, AE"
+        },
+        {
+          "label": "Tatum Thorne",
+          "value": "Tatum Thorne"
+        },
+        {
+          "label": "Vesper Vance",
+          "value": "Vesper Vance"
+        },
+        {
+          "label": "Xen Xavier, NAM",
+          "value": "Xen Xavier, NAM"
+        },
+        {
+          "label": "Yael York  NAM",
+          "value": "Yael York  NAM"
+        },
+        {
+          "label": "Winter Whitaker <user2@example.com>",
+          "value": "Winter Whitaker <user2@example.com>"
+        },
+        {
+          "label": "Zion Ashford, NAM",
+          "value": "Zion Ashford, NAM"
+        },
+        {
+          "label": "Blair Dalton, SAM",
+          "value": "Blair Dalton, SAM"
+        },
+        {
+          "label": "Devon Fenwick, SAM",
+          "value": "Devon Fenwick, SAM"
+        },
+        {
+          "label": "Emery Garland, SAM",
+          "value": "Emery Garland, SAM"
+        },
+        {
+          "label": "Harper Ivers, SAM",
+          "value": "Harper Ivers, SAM"
+        },
+        {
+          "label": "Logan Merritt, AE",
+          "value": "Logan Merritt, AE"
+        },
+        {
+          "label": "Morgan Norwood, AE",
+          "value": "Morgan Norwood, AE"
+        },
+        {
+          "label": "Noel Oakes, SAM",
+          "value": "Noel Oakes, SAM"
+        },
+        {
+          "label": "Unknown",
+          "value": "Unknown"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Applicable FINRA Regulation": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "FINRA Rule 4370",
+          "value": "FINRA Rule 4370"
+        },
+        {
+          "label": "FINRA Rule 5310",
+          "value": "FINRA Rule 5310"
+        },
+        {
+          "label": "FINRA Rule 2270",
+          "value": "FINRA Rule 2270"
+        },
+        {
+          "label": "FINRA Rule 2264",
+          "value": "FINRA Rule 2264"
+        },
+        {
+          "label": "FINRA Rule 2266",
+          "value": "FINRA Rule 2266"
+        },
+        {
+          "label": "FINRA Rule 2210",
+          "value": "FINRA Rule 2210"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Area": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a6c5109eae549ea5084ea0e1f917f916",
+          "name": "Initech Equipment",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - A&S FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - BTM FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - Europe FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - Expat & Travel FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - IPMI FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - MS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - NAM FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Assigned Allocation - USNAS FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Adobe Contact": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Client Contact": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Client Invoicing Email": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Client Miro": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Client OneNote": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Client Sharepoint": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Calc - Acme Important Client Notes": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Capacity": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a6c5109eae549ea5084ea0e1f917f916",
+          "name": "Initech Equipment",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Client Miro": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Client OneNote": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Contact": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "DELETE": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Acme Priority": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "1 - High",
+          "value": "1 - High"
+        },
+        {
+          "label": "2 - Medium",
+          "value": "2 - Medium"
+        },
+        {
+          "label": "3 - Low",
+          "value": "3 - Low"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "2b25dc9ed9059937199bfdefc790f30f",
+          "name": "*Acme - Task To Dos",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Description/To Do": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "2b25dc9ed9059937199bfdefc790f30f",
+          "name": "*Acme - Task To Dos",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Disclosure": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Disclosure Use Cases": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Investment Risk",
+          "value": "Investment Risk"
+        },
+        {
+          "label": "SIPC Membership",
+          "value": "SIPC Membership"
+        },
+        {
+          "label": "Margin Risk",
+          "value": "Margin Risk"
+        },
+        {
+          "label": "Day Trading Risk",
+          "value": "Day Trading Risk"
+        },
+        {
+          "label": "Best Execution",
+          "value": "Best Execution"
+        },
+        {
+          "label": "Business Continuity",
+          "value": "Business Continuity"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Duration - Handoff to Actual Completion": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Duration Slippage": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "b4488e61437acf0fedd248d9f4aa3d9a",
+          "name": "Additional Task Details",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Duration in Days": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "E Number": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a6c5109eae549ea5084ea0e1f917f916",
+          "name": "Initech Equipment",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Effective Date": {
+      "type": "date",
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Executive Interest": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "b4488e61437acf0fedd248d9f4aa3d9a",
+          "name": "Additional Task Details",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Expiration Date": {
+      "type": "date",
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Europe Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Europe FTE Value v2": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - NAM Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - NAM FTE Value": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Planned Task FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Planned Task Level FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - Total Allocated Markets Percentage": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - USNAS Allocation FTE": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "FTE - USNAS FTE Value": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Functionality": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Custom Forms",
+          "value": "Custom Forms"
+        },
+        {
+          "label": "Hierarchy",
+          "value": "Hierarchy"
+        },
+        {
+          "label": "Project Templates",
+          "value": "Project Templates"
+        },
+        {
+          "label": "Reporting",
+          "value": "Reporting"
+        },
+        {
+          "label": "Request Intake",
+          "value": "Request Intake"
+        },
+        {
+          "label": "System Settings/Configuration",
+          "value": "System Settings/Configuration"
+        },
+        {
+          "label": "Training",
+          "value": "Training"
+        },
+        {
+          "label": "UX",
+          "value": "UX"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Hours Slippage": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "b022e4a2326765fa1fde76cf77822de7",
+          "name": "Task Calculated Fields",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "b4488e61437acf0fedd248d9f4aa3d9a",
+          "name": "Additional Task Details",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Implementation To Dos": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Custom Forms",
+          "value": "Custom Forms"
+        },
+        {
+          "label": "Hierarchy",
+          "value": "Hierarchy"
+        },
+        {
+          "label": "> Portfolio",
+          "value": "> Portfolio"
+        },
+        {
+          "label": "> Program",
+          "value": "> Program"
+        },
+        {
+          "label": "Project Templates",
+          "value": "Project Templates"
+        },
+        {
+          "label": "Reporting",
+          "value": "Reporting"
+        },
+        {
+          "label": "Request Intake",
+          "value": "Request Intake"
+        },
+        {
+          "label": "System Settings/Configuration",
+          "value": "System Settings/Configuration"
+        },
+        {
+          "label": "Training",
+          "value": "Training"
+        },
+        {
+          "label": "UX",
+          "value": "UX"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "2b25dc9ed9059937199bfdefc790f30f",
+          "name": "*Acme - Task To Dos",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Invoicing Email": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Is SOW Requirements Parent Task": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "21fed2bc8951e46364d5561c62cc9d60",
+          "name": "Reporting Tags",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Burn Rate Assessment": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Days Ratio": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Duration Convert": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Elapsed Days": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Final Burn Rate": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Hours Ratio": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - No Hours Check": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Draft - Time RYG": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "09d7498772b8d0359ae4f8635dd0fabb",
+          "name": "Package - Hours Tracking - Burn Rate and RYG",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Migration Long Text Field": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ff2f2aba855ca745b0dc7d88284d9826",
+          "name": "Migration Text Migration Tester",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Migration Rich Text Field": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ff2f2aba855ca745b0dc7d88284d9826",
+          "name": "Migration Text Migration Tester",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Migration Short Text Field": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "ff2f2aba855ca745b0dc7d88284d9826",
+          "name": "Migration Text Migration Tester",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Lead Generation": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Internal - Previous Project  with Us",
+          "value": "Internal - Previous Project  with Us"
+        },
+        {
+          "label": "Internal - Previous Client prior to Acme",
+          "value": "Internal - Previous Client prior to Acme"
+        },
+        {
+          "label": "Adobe Lead",
+          "value": "Adobe Lead"
+        },
+        {
+          "label": "Partner Portal",
+          "value": "Partner Portal"
+        },
+        {
+          "label": "LinkedIn",
+          "value": "LinkedIn"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Level of Effort": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Low",
+          "value": "Low"
+        },
+        {
+          "label": "Medium",
+          "value": "Medium"
+        },
+        {
+          "label": "High",
+          "value": "High"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Loss Reason 2": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Abandoned Adobe",
+          "value": "Abandoned Adobe"
+        },
+        {
+          "label": "Product Pricing",
+          "value": "Product Pricing"
+        },
+        {
+          "label": "Services Pricing",
+          "value": "Services Pricing"
+        },
+        {
+          "label": "Service Experience /Skills",
+          "value": "Service Experience /Skills"
+        },
+        {
+          "label": "Approach",
+          "value": "Approach"
+        },
+        {
+          "label": "Unknown",
+          "value": "Unknown"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "MOC": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a6c5109eae549ea5084ea0e1f917f916",
+          "name": "Initech Equipment",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Notes and Other Key Contacts": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Ownership": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Acme",
+          "value": "Acme"
+        },
+        {
+          "label": "Client",
+          "value": "Client"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Parent Task is SOW Requirements": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "21fed2bc8951e46364d5561c62cc9d60",
+          "name": "Reporting Tags",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Persona": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Requester/Stakeholder",
+          "value": "Requester/Stakeholder"
+        },
+        {
+          "label": "Requester",
+          "value": "Requester"
+        },
+        {
+          "label": "Worker",
+          "value": "Worker"
+        },
+        {
+          "label": "Campaign Manager",
+          "value": "Campaign Manager"
+        },
+        {
+          "label": "Promo PM",
+          "value": "Promo PM"
+        },
+        {
+          "label": "Traffic Mgr",
+          "value": "Traffic Mgr"
+        },
+        {
+          "label": "Project Manager",
+          "value": "Project Manager"
+        },
+        {
+          "label": "Approver",
+          "value": "Approver"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Print | Mail Entry Date": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "c53a8c4c4b8cfa4222e44302dc68a649",
+          "name": "Test Form for Custom Fields",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Project Phase": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Sales",
+          "value": "Sales"
+        },
+        {
+          "label": "Discovery",
+          "value": "Discovery"
+        },
+        {
+          "label": "Platform Setup",
+          "value": "Platform Setup"
+        },
+        {
+          "label": "Architectural Design and Build",
+          "value": "Architectural Design and Build"
+        },
+        {
+          "label": "Data and Reporting",
+          "value": "Data and Reporting"
+        },
+        {
+          "label": "UX and Layout Templates",
+          "value": "UX and Layout Templates"
+        },
+        {
+          "label": "UAT",
+          "value": "UAT"
+        },
+        {
+          "label": "Training",
+          "value": "Training"
+        },
+        {
+          "label": "Post Launch Support",
+          "value": "Post Launch Support"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "7822f89a64cae48251bb57d63b6f0953",
+          "name": "*Acme - Client To Do's",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "2b25dc9ed9059937199bfdefc790f30f",
+          "name": "*Acme - Task To Dos",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Project Type": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "AEM Assets - Hourly",
+          "value": "AEM Assets - Hourly"
+        },
+        {
+          "label": "AEM Assets - Client Success",
+          "value": "AEM Assets - Client Success"
+        },
+        {
+          "label": "AEM Assets - Optimization",
+          "value": "AEM Assets - Optimization"
+        },
+        {
+          "label": "AEM Net New Implemenation",
+          "value": "AEM Net New Implemenation"
+        },
+        {
+          "label": "AEM - Assets",
+          "value": "AEM - Assets"
+        },
+        {
+          "label": "AEM Guides",
+          "value": "AEM Guides"
+        },
+        {
+          "label": "AEM Sites",
+          "value": "AEM Sites"
+        },
+        {
+          "label": "AA > CJA",
+          "value": "AA > CJA"
+        },
+        {
+          "label": "CJA Net New Implemtation",
+          "value": "CJA Net New Implemtation"
+        },
+        {
+          "label": "Fusion - Hourly",
+          "value": "Fusion - Hourly"
+        },
+        {
+          "label": "Fusion Platform Optimization",
+          "value": "Fusion Platform Optimization"
+        },
+        {
+          "label": "Fusion - Client Success Package",
+          "value": "Fusion - Client Success Package"
+        },
+        {
+          "label": "Fusion - Net New Integration",
+          "value": "Fusion - Net New Integration"
+        },
+        {
+          "label": "WF - Hourly",
+          "value": "WF - Hourly"
+        },
+        {
+          "label": "WF Optimization",
+          "value": "WF Optimization"
+        },
+        {
+          "label": "WF - Client Success Package",
+          "value": "WF - Client Success Package"
+        },
+        {
+          "label": "WF - Net New Implementation",
+          "value": "WF - Net New Implementation"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Required Disclosure Placements": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Account Opening Documents",
+          "value": "Account Opening Documents"
+        },
+        {
+          "label": "Client Commuications",
+          "value": "Client Commuications"
+        },
+        {
+          "label": "Client Statements",
+          "value": "Client Statements"
+        },
+        {
+          "label": "Confirmations",
+          "value": "Confirmations"
+        },
+        {
+          "label": "Margin Agreements",
+          "value": "Margin Agreements"
+        },
+        {
+          "label": "Marketing Materials",
+          "value": "Marketing Materials"
+        },
+        {
+          "label": "Online Account Opening",
+          "value": "Online Account Opening"
+        },
+        {
+          "label": "Trade Confirms",
+          "value": "Trade Confirms"
+        },
+        {
+          "label": "Website",
+          "value": "Website"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e6c1ad15d5d594e26ecc6303cc02b09b",
+          "name": "Demo for Legal - Disclosure Statement Tracking",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Roadmap items": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Room": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Choice 1",
+          "value": "Choice 1"
+        },
+        {
+          "label": "Choice 2",
+          "value": "Choice 2"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a6c5109eae549ea5084ea0e1f917f916",
+          "name": "Initech Equipment",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "SOURCE Task Planned Completion Date calc": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "2f8edfcc5c6b4c6d99db1818e8135c3f",
+          "name": "^^Issue form for Assignment report showing resolving task info",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Skill Set": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Video",
+          "value": "Video"
+        },
+        {
+          "label": "HTML",
+          "value": "HTML"
+        },
+        {
+          "label": "Web Development",
+          "value": "Web Development"
+        },
+        {
+          "label": "Social Media",
+          "value": "Social Media"
+        },
+        {
+          "label": "Digital Graphics",
+          "value": "Digital Graphics"
+        },
+        {
+          "label": "Powerpoint",
+          "value": "Powerpoint"
+        },
+        {
+          "label": "Print Production",
+          "value": "Print Production"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "46c225979fe9338e0cfe3c8734005976",
+          "name": "Events - Skill Set",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Choices": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "One Choice",
+          "value": "One Choice"
+        },
+        {
+          "label": "Two Choices",
+          "value": "Two Choices"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Contains Both Options Match": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Both Options!",
+          "value": "Both Options!"
+        },
+        {
+          "label": "Nope.",
+          "value": "Nope."
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Contains One Choice": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "One Choice",
+          "value": "One Choice"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Contains Two Choices": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Two Choices",
+          "value": "Two Choices"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Double Multi Select": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "It Works!",
+          "value": "It Works!"
+        },
+        {
+          "label": ":(",
+          "value": ":("
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TEST Multi-Select Final Selection": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "1",
+          "value": "1"
+        },
+        {
+          "label": "2",
+          "value": "2"
+        },
+        {
+          "label": "3",
+          "value": "3"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "a1419e1783b5ce7b73a8b0f1f7b62cd8",
+          "name": "Package - Multi Select External Lookup Test Values",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "TESTER - Date Calc Field": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Total Allocated Hours FY24": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        },
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Allocation": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Allocation1": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Europe Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Hour Type Charting": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Hours Type Test": {
+      "type": "string",
+      "possibleValues": [
+        {
+          "label": "Europe",
+          "value": "Europe"
+        },
+        {
+          "label": "NAM",
+          "value": "NAM"
+        },
+        {
+          "label": "USNAS",
+          "value": "USNAS"
+        }
+      ],
+      "categories": [
+        {
+          "ID": "e1bc995fe2a521787b2edd4e62bd737b",
+          "name": "Globex - TEST Task Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Allocation": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Allocation1": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "7099683397a359ccf46b36e711747bc2",
+          "name": "Bulk Editing Check - Scaled Assets",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - NAM Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - Sum Allocation - All Regions": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "Globex - USNAS Project Allocation": {
+      "type": "double",
+      "categories": [
+        {
+          "ID": "723bb51d6dc06371c3a166a42314c9bf",
+          "name": "Globex - Allocation Custom Data",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "acme_sharepoint_folder": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    },
+    "acme_sharepoint_folder_ID": {
+      "type": "string",
+      "categories": [
+        {
+          "ID": "e183567fddcc30de44635cdf4adaf197",
+          "name": "Deprecated - Acme - Client Projects",
+          "objCode": "CTGY"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "acceptWork": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "status",
+          "type": "string"
+        }
+      ],
+      "label": "acceptWork"
+    },
+    "approveApproval": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        },
+        {
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "auditNote",
+          "type": "string"
+        },
+        {
+          "name": "auditUserIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "sendNoteAsEmail",
+          "type": "boolean"
+        }
+      ],
+      "label": "approveApproval"
+    },
+    "assign": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objID",
+          "type": "string"
+        },
+        {
+          "name": "objCode",
+          "type": "string"
+        }
+      ],
+      "label": "assign"
+    },
+    "assignMultiple": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "roleIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "teamIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "teamID",
+          "type": "string"
+        }
+      ],
+      "label": "assignMultiple"
+    },
+    "bulkCopy": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "taskIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "projectID",
+          "type": "string"
+        },
+        {
+          "name": "parentID",
+          "type": "string"
+        },
+        {
+          "name": "options",
+          "type": "string[]"
+        }
+      ],
+      "label": "bulkCopy",
+      "resultType": "string[]"
+    },
+    "bulkMove": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "taskIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "projectID",
+          "type": "string"
+        },
+        {
+          "name": "parentID",
+          "type": "string"
+        },
+        {
+          "name": "options",
+          "type": "string[]"
+        }
+      ],
+      "label": "bulkMove"
+    },
+    "calculateDataExtension": {
+      "flags": [],
+      "label": "calculateDataExtension"
+    },
+    "calculateDataExtensions": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "ids",
+          "type": "string[]"
+        }
+      ],
+      "label": "calculateDataExtensions"
+    },
+    "convertToProject": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "project",
+          "type": "Project"
+        },
+        {
+          "name": "exchangeRate",
+          "type": "ExchangeRate"
+        }
+      ],
+      "label": "convertToProject",
+      "resultType": "string"
+    },
+    "linkExternalObject": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objID",
+          "type": "string"
+        },
+        {
+          "name": "linkedObjectID",
+          "type": "string"
+        },
+        {
+          "name": "integrationType",
+          "type": "string"
+        },
+        {
+          "name": "URL",
+          "type": "string"
+        },
+        {
+          "name": "params",
+          "type": "string[]"
+        }
+      ],
+      "label": "linkExternalObject"
+    },
+    "markDone": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "status",
+          "type": "string"
+        }
+      ],
+      "label": "markDone"
+    },
+    "markNotDone": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "assignmentID",
+          "type": "string"
+        }
+      ],
+      "label": "markNotDone"
+    },
+    "move": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "projectID",
+          "type": "string"
+        },
+        {
+          "name": "parentID",
+          "type": "string"
+        },
+        {
+          "name": "options",
+          "type": "string[]"
+        }
+      ],
+      "label": "Move"
+    },
+    "recallApproval": {
+      "flags": [],
+      "label": "recallApproval"
+    },
+    "rejectApproval": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        },
+        {
+          "name": "username",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "type": "string"
+        },
+        {
+          "name": "auditNote",
+          "type": "string"
+        },
+        {
+          "name": "auditUserIDs",
+          "type": "string[]"
+        },
+        {
+          "name": "sendNoteAsEmail",
+          "type": "boolean"
+        }
+      ],
+      "label": "rejectApproval"
+    },
+    "replyToAssignment": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "noteText",
+          "type": "string"
+        },
+        {
+          "name": "commitDate",
+          "type": "dateTime"
+        }
+      ],
+      "label": "replyToAssignment"
+    },
+    "unacceptWork": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "status",
+          "type": "string"
+        }
+      ],
+      "label": "unacceptWork"
+    },
+    "unassign": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        }
+      ],
+      "label": "unassign"
+    },
+    "unassignOccurrences": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "userID",
+          "type": "string"
+        }
+      ],
+      "label": "unassignOccurrences",
+      "resultType": "string[]"
+    },
+    "unlinkExternalObject": {
+      "flags": [],
+      "arguments": [
+        {
+          "name": "objID",
+          "type": "string"
+        },
+        {
+          "name": "linkedObjectID",
+          "type": "string"
+        },
+        {
+          "name": "integrationType",
+          "type": "string"
+        }
+      ],
+      "label": "unlinkExternalObject"
+    }
+  },
+  "queries": {
+    "allTasksOnIterations": {
+      "arguments": [
+        {
+          "name": "iterationIDs",
+          "type": "string[]"
+        }
+      ],
+      "label": "allTasksOnIterations"
+    },
+    "defaultShownTimesheetTasks": {
+      "arguments": [
+        {
+          "name": "timesheetID",
+          "type": "string"
+        }
+      ],
+      "label": "defaultShownTimesheetTasks"
+    }
+  },
+  "operations": [
+    "add",
+    "copy",
+    "count",
+    "delete",
+    "edit",
+    "get",
+    "report",
+    "search"
+  ]
+}

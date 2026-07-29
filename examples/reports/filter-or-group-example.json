@@ -1,0 +1,24 @@
+{
+  "description": "OR-group filter demonstrating OR:<n>: prefix syntax. Reads as: (rush_request=Rush AND status=NEW AND team in my_teams) OR (rush_request=Rush AND assignee=me AND status=NEW). Empirically verified against a surveyed OPTASK rush-queue report.",
+  "uift_definition": {
+    "DE:Is this a rush request?": "🔥 Rush",
+    "DE:Is this a rush request?_Mod": "in",
+    "OR:1:DE:Is this a rush request?": "🔥 Rush",
+    "OR:1:DE:Is this a rush request?_Mod": "in",
+    "OR:1:assignedToID": "$$USER.ID",
+    "OR:1:assignedToID_Mod": "in",
+    "OR:1:statusEquatesWith": "NEW",
+    "OR:1:statusEquatesWith_Mod": "in",
+    "statusEquatesWith": "NEW",
+    "statusEquatesWith_Mod": "in",
+    "teamID": "$$USER.teamIDs",
+    "teamID_Mod": "in"
+  },
+  "notes": [
+    "OR:<n>: prefix attaches BEFORE everything, including DE: and _Mod",
+    "Group ID is numeric (1) — distinct from EXISTS which uses letters (a/b/c)",
+    "All OR:1:* keys are AND-joined internally; the whole group is OR'd with the bare keys",
+    "Multi-value via TAB-separator: $$USER.teamIDs is a session token that resolves to a tab-separated list at runtime",
+    "DE: prefix is KEPT on filter keys (asymmetric — see 05-gotchas.md #10)"
+  ]
+}

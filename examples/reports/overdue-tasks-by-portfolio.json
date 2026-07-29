@@ -1,0 +1,117 @@
+{
+  "description": "Analytical TASK report grouped by parent project's portfolio, with a SUM aggregator on workRequired. reportType=A (UIGB required).",
+  "calls": [
+    {
+      "step": 1,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uift",
+      "body": {
+        "name": "Overdue Tasks by Portfolio — filter",
+        "uiObjCode": "TASK",
+        "filterType": "REPORT",
+        "isReport": true,
+        "isText": false,
+        "isSavedSearch": false,
+        "definition": {
+          "plannedCompletionDate": "$$TODAY",
+          "plannedCompletionDate_Mod": "lt",
+          "status": "CPL\tDED",
+          "status_Mod": "notin"
+        }
+      },
+      "note": "Multi-value status filter via TAB separator: 'CPL\\tDED' = exclude both COMPLETE and DEAD."
+    },
+    {
+      "step": 2,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uigb",
+      "body": {
+        "name": "Overdue Tasks by Portfolio — groupBy",
+        "uiObjCode": "TASK",
+        "isReport": true,
+        "isText": false,
+        "definition": {
+          "group": [
+            {
+              "linkedname": "portfolio",
+              "namekey": "view.relatedcolumn",
+              "namekeyargkey": ["project:portfolio", "name"],
+              "valuefield": "project:portfolio:name",
+              "valueformat": "string"
+            }
+          ],
+          "textmode": "false"
+        }
+      }
+    },
+    {
+      "step": 3,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uivw",
+      "body": {
+        "name": "Overdue Tasks by Portfolio — view",
+        "uiObjCode": "TASK",
+        "layoutType": "LIST",
+        "uiviewType": "LIST",
+        "isReport": true,
+        "isText": false,
+        "isNewFormat": true,
+        "definition": {
+          "column": [
+            {
+              "namekey": "name.abbr",
+              "linkedname": "direct",
+              "valuefield": "name",
+              "valueformat": "HTML",
+              "width": "300"
+            },
+            {
+              "namekey": "view.relatedcolumn",
+              "namekeyargkey": ["project", "name"],
+              "linkedname": "project",
+              "valuefield": "project:name",
+              "valueformat": "string",
+              "width": "200"
+            },
+            {
+              "namekey": "plannedcompletiondate.abbr",
+              "valuefield": "plannedCompletionDate",
+              "valueformat": "atDate",
+              "width": "120"
+            },
+            {
+              "namekey": "workrequired",
+              "valuefield": "workRequired",
+              "valueformat": "compound",
+              "width": "100",
+              "aggregator": {
+                "function": "SUM",
+                "valuefield": "workRequired",
+                "valueformat": "compound",
+                "displayformat": "doubleAsString"
+              }
+            }
+          ]
+        }
+      },
+      "note": "Aggregator block SUMs workRequired per portfolio group; rendered at the group boundary."
+    },
+    {
+      "step": 4,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/report",
+      "body": {
+        "name": "Overdue Tasks by Portfolio",
+        "uiObjCode": "TASK",
+        "reportType": "A",
+        "isReport": true,
+        "description": "Tasks past planned completion, excluding completed and dead.",
+        "filterID": "<UIFT ID>",
+        "groupByID": "<UIGB ID>",
+        "viewID": "<UIVW ID>",
+        "maxResults": 200,
+        "isStandalone": false
+      }
+    }
+  ]
+}

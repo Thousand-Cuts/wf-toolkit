@@ -1,0 +1,40 @@
+{
+  "_notes": "200-option dropdown demonstrating the bulk-POST tunneling path. Phase A confirmed (2026-05-18) the bulk-POST cap is exactly 100 per call (atomic — 101+ rejects all). For ~250 ISO country options, this chunks into 3 calls of 100/100/50. Total wall-clock: under 5 seconds for the full sequence.",
+  "category": {
+    "name": "[wf-api-verify] Project Country",
+    "objTypes": ["PROJ"],
+    "description": "Single-field form: project country, 200+ ISO 3166 options."
+  },
+  "parameters": [
+    {
+      "name": "wf_verify_project_country",
+      "label": "Country",
+      "dataType": "TEXT",
+      "displayType": "SLCT",
+      "isRequired": true
+    }
+  ],
+  "options_input_mode": "csv",
+  "options_csv_excerpt": "label,value\nAfghanistan,AF\nAlbania,AL\nAlgeria,DZ\nAndorra,AD\nAngola,AO\nArgentina,AR\nArmenia,AM\nAustralia,AU\nAustria,AT\nAzerbaijan,AZ\n... (truncated; expand to full ISO 3166-1 alpha-2 list, ~250 rows)",
+  "_bulk_strategy": {
+    "max_per_call": 100,
+    "chunks_needed_for_250": 3,
+    "atomic_within_chunk": true,
+    "endpoint": "PUT /attask/api/v17.0/parameterOption?method=POST",
+    "body_per_chunk": "updates=[{parameterID, label, value, displayOrder}, ...]"
+  },
+  "categoryParameters_link_step": {
+    "updates": {
+      "categoryParameters": [
+        {"parameterName": "wf_verify_project_country", "displayOrder": 1, "isRequired": true}
+      ]
+    }
+  },
+  "_test_assertions": [
+    "Total options created equals input count (e.g. ~250 for full ISO list)",
+    "displayOrder preserved as input order",
+    "Bulk-POST chunks succeed atomically; chunk-of-101 would fail entirely",
+    "Final SLCT parameter renders as a single-select dropdown in the Workfront UI",
+    "Wall-clock time: under 5 seconds for full sequence"
+  ]
+}

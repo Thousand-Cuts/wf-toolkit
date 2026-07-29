@@ -1,0 +1,19 @@
+{
+  "description": "EXISTS block filter — 'documents where there EXISTS a related TASK assigned to me'. Demonstrates the 3 required control keys ($$EXISTSMOD, $$OBJCODE, $$ID with FIELD: prefix). Empirically verified against a surveyed DOCU approval report.",
+  "uift_definition": {
+    "EXISTS:a:$$EXISTSMOD": "EXISTS",
+    "EXISTS:a:$$OBJCODE": "TASK",
+    "EXISTS:a:ID": "FIELD:taskID",
+    "EXISTS:a:assignedToID": "$$USER.ID",
+    "EXISTS:a:assignedToID_Mod": "eq"
+  },
+  "notes": [
+    "EXISTS:<letter>: prefix — letters identify the block (a/b/c for multiple EXISTS blocks)",
+    "$$EXISTSMOD: 'EXISTS' (or 'NOTEXISTS' for negation)",
+    "$$OBJCODE: the related-object type — TASK here means 'I have a related task ID via taskID'",
+    "$$ID: 'FIELD:taskID' joins the EXISTS block's ID to the outer record's taskID field. FIELD: prefix is literal.",
+    "EXISTS:a:assignedToID & _Mod: the actual constraint on the related TASK",
+    "Combine with bare keys to AND-join: '... AND task assigned to me'",
+    "Multiple EXISTS blocks use a/b/c/... — they AND-combine"
+  ]
+}

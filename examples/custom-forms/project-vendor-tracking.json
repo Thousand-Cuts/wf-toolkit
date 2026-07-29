@@ -1,0 +1,73 @@
+{
+  "_notes": "Project-level custom form demonstrating mixed parameter types (text, currency, date, dropdown). The canonical 'happy path' example for Flow 1. Verified against Phase A empirical findings (2026-05-18): all field names, dataType values, and displayType values are the real Workfront enums.",
+  "category": {
+    "name": "[wf-api-verify] Project Vendor Tracking",
+    "objTypes": ["PROJ"],
+    "description": "Captures vendor-related details on engagements that have an external vendor component."
+  },
+  "parameterGroups": [
+    {"name": "Vendor Details", "displayOrder": 1}
+  ],
+  "parameters": [
+    {
+      "_phaseA_naming": "Parameter.name rejects '[' — use snake_case ASCII. Parameter.label also rejects '['.",
+      "name": "wf_verify_vendor_name",
+      "label": "Vendor Name",
+      "dataType": "TEXT",
+      "displayType": "TEXT",
+      "isRequired": true,
+      "description": "Legal company name on the contract."
+    },
+    {
+      "name": "wf_verify_vendor_contact_email",
+      "label": "Vendor Contact Email",
+      "dataType": "TEXT",
+      "displayType": "TEXT"
+    },
+    {
+      "name": "wf_verify_po_number",
+      "label": "PO Number",
+      "dataType": "TEXT",
+      "displayType": "TEXT"
+    },
+    {
+      "name": "wf_verify_spend_approved",
+      "label": "Spend Approved",
+      "dataType": "CURC",
+      "displayType": "TEXT"
+    },
+    {
+      "name": "wf_verify_contract_start",
+      "label": "Contract Start",
+      "dataType": "DATE",
+      "displayType": "TEXT"
+    },
+    {
+      "name": "wf_verify_department",
+      "label": "Department",
+      "dataType": "TEXT",
+      "displayType": "SLCT",
+      "isRequired": true,
+      "options": [
+        {"label": "Marketing", "value": "marketing", "displayOrder": 1},
+        {"label": "Sales", "value": "sales", "displayOrder": 2},
+        {"label": "Operations", "value": "operations", "displayOrder": 3},
+        {"label": "Engineering", "value": "engineering", "displayOrder": 4}
+      ]
+    }
+  ],
+  "categoryParameters_link_step": {
+    "_phaseA_note": "CategoryParameter is NOT a top-level object — created via PUT on parent Category with this nested categoryParameters collection.",
+    "_pseudo_call": "PUT /attask/api/v17.0/category/<categoryID>",
+    "updates": {
+      "categoryParameters": [
+        {"parameterName": "wf_verify_vendor_name", "parameterGroupName": "Vendor Details", "displayOrder": 1, "isRequired": true},
+        {"parameterName": "wf_verify_vendor_contact_email", "parameterGroupName": "Vendor Details", "displayOrder": 2},
+        {"parameterName": "wf_verify_po_number", "parameterGroupName": "Vendor Details", "displayOrder": 3},
+        {"parameterName": "wf_verify_spend_approved", "parameterGroupName": "Vendor Details", "displayOrder": 4},
+        {"parameterName": "wf_verify_contract_start", "parameterGroupName": "Vendor Details", "displayOrder": 5},
+        {"parameterName": "wf_verify_department", "parameterGroupName": "Vendor Details", "displayOrder": 6, "isRequired": true}
+      ]
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "description": "UIVW column with valueexpression (CONCAT for inline HTML link). Demonstrates textmode:'true' + no valuefield + displayname for header. Empirically verified against surveyed TASK view patterns.",
+  "uivw_definition_column_entry": {
+    "displayname": "Task Link",
+    "textmode": "true",
+    "valueexpression": "CONCAT(\"<a href='/task/view?ID=\",{ID},\"'>\",{name},\"</a>\")",
+    "valueformat": "HTML",
+    "width": "200"
+  },
+  "notes": [
+    "textmode: 'true' is MANDATORY when valueexpression is set — Workfront uses this to know the column is calc-driven",
+    "displayname REPLACES namekey (i18n bypassed)",
+    "valuefield is OMITTED entirely",
+    "Embed HTML directly via valueformat:'HTML'",
+    "Field references inside the expression use {fieldname} syntax — defer the calc-language syntax to workfront-textmode",
+    "For iterate-mode (one-row-per-child-record) add: type:'iterate', listmethod:'nested(<rel>).lists', listdelimiter:'<br>'",
+    "Cross-tenant clone: if the valueexpression contains a hardcoded https://<host>... URL, the sanitizer flags it for host_rewrite (see 05-gotchas.md #11)"
+  ]
+}

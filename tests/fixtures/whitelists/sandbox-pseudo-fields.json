@@ -1,0 +1,13 @@
+{
+  "host": "example.my.workfront.com",
+  "fields": [
+    {
+      "uiObjCode": "OPTASK",
+      "fieldname": "customStateEquatesWith",
+      "slots": ["uift.definition"],
+      "learned_at": "2026-05-14T15:42:00Z",
+      "learned_via": "auto-force",
+      "blocked_in_session": "20260514-1540"
+    }
+  ]
+}

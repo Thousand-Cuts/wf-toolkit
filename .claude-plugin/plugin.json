@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "wf-toolkit",
+  "version": "0.1.0",
+  "description": "Workfront skills for Claude Code: text mode, REST API, calculated custom fields, custom forms, permissions diagnostics, business rules, reports.",
+  "author": {
+    "name": "Thousand Cuts"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/Thousand-Cuts/wf-toolkit",
+  "repository": "https://github.com/Thousand-Cuts/wf-toolkit",
+  "keywords": [
+    "workfront",
+    "text-mode",
+    "api",
+    "calculated-fields",
+    "custom-forms",
+    "permissions",
+    "business-rules",
+    "reporting"
+  ]
+}

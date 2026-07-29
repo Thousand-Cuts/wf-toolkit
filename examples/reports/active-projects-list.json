@@ -1,0 +1,115 @@
+{
+  "description": "Canonical minimal-viable list report — Active Projects with name / owner / portfolio / planned completion / % complete. reportType=L (no UIGB), filterID populated, viewID populated. Mirrors an empirically surveyed PROJ list-report shape, simplified to no-grouping.",
+  "wire_format_note": "Each body is sent via --data-urlencode 'updates=<this object as JSON>'. NOT raw JSON body.",
+  "calls": [
+    {
+      "step": 1,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uift",
+      "body": {
+        "name": "Active Projects — filter",
+        "uiObjCode": "PROJ",
+        "filterType": "REPORT",
+        "isReport": true,
+        "isText": false,
+        "isSavedSearch": false,
+        "definition": {
+          "status": "CUR",
+          "status_Mod": "in"
+        }
+      },
+      "note": "PROJ has NO isTemplate field — templates are objCode TMPL. Do not add isTemplate here. The pre-flight validator blocks this class of error."
+    },
+    {
+      "step": 2,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/uivw",
+      "body": {
+        "name": "Active Projects — view",
+        "uiObjCode": "PROJ",
+        "layoutType": "LIST",
+        "uiviewType": "LIST",
+        "isReport": true,
+        "isText": false,
+        "isNewFormat": true,
+        "definition": {
+          "column": [
+            {
+              "descriptionkey": "name",
+              "namekey": "name.abbr",
+              "linkedname": "direct",
+              "valuefield": "name",
+              "valueformat": "HTML",
+              "listsort": "string(name)",
+              "querysort": "name",
+              "shortview": "false",
+              "stretch": "100",
+              "width": "200",
+              "link": {
+                "lookup": "link.view",
+                "valuefield": "objCode",
+                "valueformat": "val",
+                "linkproperty": [
+                  {"name": "ID", "valuefield": "ID", "valueformat": "int"}
+                ]
+              }
+            },
+            {
+              "descriptionkey": "owner",
+              "namekey": "owner.abbr",
+              "linkedname": "owner",
+              "valuefield": "owner:name",
+              "valueformat": "string",
+              "width": "150"
+            },
+            {
+              "descriptionkey": "portfolio",
+              "namekey": "view.relatedcolumn",
+              "namekeyargkey": ["portfolio", "name"],
+              "linkedname": "portfolio",
+              "valuefield": "portfolio:name",
+              "valueformat": "string",
+              "width": "150"
+            },
+            {
+              "descriptionkey": "plannedcompletiondate",
+              "namekey": "plannedcompletiondate.abbr",
+              "linkedname": "direct",
+              "valuefield": "plannedCompletionDate",
+              "valueformat": "atDate",
+              "width": "120"
+            },
+            {
+              "descriptionkey": "percentcomplete",
+              "namekey": "percentcomplete.abbr",
+              "linkedname": "direct",
+              "valuefield": "percentComplete",
+              "valueformat": "asPercent",
+              "width": "100"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "step": 3,
+      "method": "POST",
+      "url": "$$HOST/attask/api/v17.0/report",
+      "body": {
+        "name": "Active Projects",
+        "uiObjCode": "PROJ",
+        "reportType": "L",
+        "isReport": true,
+        "description": "All projects in Current status.",
+        "filterID": "<UIFT ID from step 1>",
+        "groupByID": null,
+        "viewID": "<UIVW ID from step 2>",
+        "maxResults": 15,
+        "sortBy": null,
+        "sortType": null,
+        "isStandalone": false
+      },
+      "note": "3-call sequence (no UIGB) — groupByID is literal null on the REPORT row."
+    }
+  ]
+}

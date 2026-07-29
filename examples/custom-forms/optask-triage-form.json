@@ -1,0 +1,62 @@
+{
+  "_notes": "OPTASK (issue) form with multiple dropdowns and a calculated field. Phase A finding (2026-05-18): display-logic show/hide rules are NOT REST-accessible in v17.0 — this example shows the structure that the SKILL can author, with a note that any show/hide rules between fields need to be configured in the Workfront UI after this form is created.",
+  "category": {
+    "name": "[wf-api-verify] Issue Triage",
+    "objTypes": ["OPTASK"],
+    "description": "Lightweight triage form for incoming issues."
+  },
+  "parameters": [
+    {
+      "name": "wf_verify_severity",
+      "label": "Severity",
+      "dataType": "TEXT",
+      "displayType": "SLCT",
+      "isRequired": true,
+      "options": [
+        {"label": "Low", "value": "low", "displayOrder": 1},
+        {"label": "Medium", "value": "medium", "displayOrder": 2},
+        {"label": "High", "value": "high", "displayOrder": 3},
+        {"label": "Critical", "value": "critical", "displayOrder": 4}
+      ]
+    },
+    {
+      "name": "wf_verify_reproduction_steps",
+      "label": "Reproduction Steps",
+      "dataType": "TEXT",
+      "displayType": "TXTA",
+      "isRequired": true
+    },
+    {
+      "name": "wf_verify_escalation_required",
+      "label": "Escalation Required?",
+      "dataType": "TEXT",
+      "displayType": "SLCT",
+      "options": [
+        {"label": "Yes — page on-call", "value": "yes", "displayOrder": 1},
+        {"label": "No — async triage", "value": "no", "displayOrder": 2}
+      ],
+      "_phaseA_note_display_logic": "Phase A confirmed displayLogic is NOT REST-accessible in v17.0. The intended UI behaviour (show this field only when severity = high OR critical) must be configured in Workfront's Custom Form Editor UI after this form is created. See knowledge/custom-forms/07-display-logic.md."
+    },
+    {
+      "name": "wf_verify_priority_score",
+      "label": "Priority Score (computed)",
+      "dataType": "NMBR",
+      "displayType": "CALC",
+      "_phaseA_note_calc": "The calculation formula does NOT live on this Parameter. It lives on the CategoryParameter join row's `customExpression` field — set in the link step below."
+    }
+  ],
+  "categoryParameters_link_step": {
+    "updates": {
+      "categoryParameters": [
+        {"parameterName": "wf_verify_severity", "displayOrder": 1, "isRequired": true},
+        {"parameterName": "wf_verify_reproduction_steps", "displayOrder": 2, "isRequired": true},
+        {"parameterName": "wf_verify_escalation_required", "displayOrder": 3},
+        {
+          "parameterName": "wf_verify_priority_score",
+          "displayOrder": 4,
+          "customExpression": "IF({DE:Severity}='critical', 100, IF({DE:Severity}='high', 75, IF({DE:Severity}='medium', 50, 25)))"
+        }
+      ]
+    }
+  }
+}

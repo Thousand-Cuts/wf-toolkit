@@ -1,0 +1,13 @@
+.DS_Store
+**/.DS_Store
+
+# Defense in depth — credentials should live in ~/wf-envs/<slug>/.env,
+# not in this repo. These rules catch accidents.
+*.env
+**/secrets/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
