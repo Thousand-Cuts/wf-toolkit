@@ -1,5 +1,8 @@
 # wf-toolkit
 
+![wf-toolkit demo: asking for a color-coded status column and receiving verified text mode](.github/demo.gif)
+
+
 Workfront skills for Claude — reference knowledge and working recipes for Adobe Workfront admins, developers, and consultants. Two ways to use any skill:
 
 - **Route A — Claude Code plugin** (Desktop app, terminal CLI, or IDE extension). Recommended: skills auto-trigger, scripts run locally, and API keys never enter chat.
