@@ -141,6 +141,6 @@ described in [the field report that introduced it](https://thousandcuts.ai/guide
 
 ## Maintained by
 
-[Thousand Cuts](https://thousandcuts.ai) — AI automation for creative and
+[Thousand Cuts](https://thousandcuts.ai/toolkit) — AI automation for creative and
 marketing operations. The toolkit's private tier (platform assessment, bulk-write
 safety harness, Fusion audit rules) is part of our delivery practice.
