@@ -1,6 +1,6 @@
 # 09 — Gotchas
 
-The most common ways admins get tripped up by Workfront custom forms. Updated 2026-05-18 with Phase A empirical findings. Renumbered 2026-07-07 to remove duplicate headings (the file had accumulated two `## 15`s and a scrambled 11-16 block from separate edit passes); gotcha #15 also corrected — see below.
+The most common ways consultants get tripped up by Workfront custom forms. Updated 2026-05-18 with Phase A empirical findings. Renumbered 2026-07-07 to remove duplicate headings (the file had accumulated two `## 15`s and a scrambled 11-16 block from separate edit passes); gotcha #15 also corrected — see below.
 
 ## 1. Parameter renames don't update `DE:` references
 
@@ -12,13 +12,13 @@ The most common ways admins get tripped up by Workfront custom forms. Updated 20
 
 **Surprise:** "I switched this field from `(TEXT, TEXT)` to `(TEXT, SLCT)`. The previous values are gone."
 **Mechanic:** Changing either of the two type fields deletes existing values across every record. Workfront does not migrate values automatically.
-**Mitigation:** Wrapper hard-block. Skill refuses the modify. Recommendation: create a new field with the new types, migrate values via a scripted bulk update, then delete the old field.
+**Mitigation:** Wrapper hard-block. Skill refuses the modify. Recommendation: create a new field with the new types, migrate values via dedicated bulk-update tooling, then delete the old field.
 
 ## 3. Form attachment is per-record, not per-form-definition
 
 **Surprise:** "I added a field to the form. The 200 existing projects show the new field, but it's empty everywhere."
 **Mechanic:** Adding a field propagates the structure instantly; values are not back-filled. Each existing record has the new field at null until set.
-**Mitigation:** Flow 2 (add field) prints attachment count and recommends a scripted backfill of existing records.
+**Mitigation:** Flow 2 (add field) prints attachment count and routes to dedicated bulk-update tooling for backfill.
 
 ## 4. Per-tenant uniqueness of `Parameter.name`
 
@@ -35,7 +35,7 @@ The most common ways admins get tripped up by Workfront custom forms. Updated 20
 - `Parameter.label`: hyphenated like `wf-verify Vendor Name`
 - Category is fine — `[wf-api-verify]` works on `Category.name`.
 
-This means the toolkit-wide prefix convention is partially incompatible with custom forms. The `wf-curl.sh` wrapper (verification-side, for the `[wf-api-verify]` flow) enforces a Phase A-aware prefix policy that maps `Parameter` to the `wf_verify_` snake_case variant. For environment writes through `wf-env-curl.sh`, there is no prefix enforcement at all — the wrapper has no prefix guard, since real forms in your instance shouldn't carry a verify-prefix in the first place.
+This means the toolkit-wide prefix convention is partially incompatible with custom forms. The `wf-curl.sh` wrapper (maintainer-side, for the `[wf-api-verify]` flow) enforces a Phase A-aware prefix policy that maps `Parameter` to the `wf_verify_` snake_case variant. For client-engagement writes through `wf-client-curl.sh`, there is no prefix enforcement at all — the wrapper has no prefix guard, since real client forms shouldn't carry a verify-prefix in the first place.
 
 ## 6. `objTypes` is immutable
 
@@ -45,8 +45,8 @@ This means the toolkit-wide prefix convention is partially incompatible with cus
 
 ## 7. Calc fields with hard-coded tenant identifiers don't clone cleanly
 
-**Surprise:** "The cloned form's `Over Budget` calc returns nothing on the destination environment."
-**Mechanic:** A `customExpression` that references `$$USER.ID = 'guid'` (environment-specific) or hard-coded portfolio/group GUIDs breaks on destination.
+**Surprise:** "The cloned form's `Over Budget` calc returns nothing on the client's tenant."
+**Mechanic:** A `customExpression` that references `$$USER.ID = 'guid'` (tenant-specific) or hard-coded portfolio/group GUIDs breaks on destination.
 **Diagnostic:** Form_sanitizer flags these during Flow 5 (clone) as `manual_review`.
 
 ## 8. Sharing isn't auto-cloned
@@ -59,7 +59,7 @@ This means the toolkit-wide prefix convention is partially incompatible with cus
 
 **Surprise:** "I updated this dropdown option from `high` to `high_priority`. All the records that had `high` selected now show as empty."
 **Mechanic:** `ParameterOption.value` is what's stored on every record. Changing it orphans every stored value (records display the *label* until reload, but the stored value no longer matches any option). `ParameterOption.label` is the UI display only and is safe to rename.
-**Mitigation:** Skill hard-blocks any modify-flow that changes a `value`. Recommends: create a new option, migrate stored values via a scripted bulk update, then hide or delete the old option.
+**Mitigation:** Skill hard-blocks any modify-flow that changes a `value`. Recommends: create a new option, migrate stored values via dedicated bulk-update tooling, then hide or delete the old option.
 
 ## 10. Bulk options need bulk POST — cap is exactly 100
 
@@ -133,7 +133,7 @@ updates={"name":"...","objTypes":["PROJ","TASK","OPTASK"]}
 
 **Mechanic:** The `copy` token in `operations` is a UI-side hook (likely consumed by the in-product "Duplicate" action via `/internal/*`), not a REST verb. The metadata audit (2026-05-22 cross-skill audit) flagged `copy` as a same-tenant-clone fast-path — that assumption was wrong.
 
-**Mitigation:** For same-environment duplicates, run the full Flow 5 cross-environment sequence with identity-remap simplifications. See `06-clone-and-adapt-recipe` § "Same-environment duplicate".
+**Mitigation:** For same-tenant duplicates, run the full Flow 5 cross-tenant sequence with identity-remap simplifications. See `06-clone-and-adapt-recipe` § "Same-tenant duplicate".
 
 **Lesson:** Before basing a Flow design on a `operations` / `actions` token in metadata, verify the URL is actually reachable with at least one minimum-payload probe. Phase B-style empirical verification beats metadata enumeration when the two disagree.
 
@@ -167,11 +167,11 @@ GET /<objcode>/metadata  # data.custom maps Parameter.name → categories[]
 
 ## 21. `Parameter.description` is end-user-facing — do NOT write skill metadata into it
 
-**Surprise:** "I created a parameter with `description='added 2026-05-26 per action item #1787'`. Anyone filling out the form now sees that string as 'Instructions' under the field label."
+**Surprise:** "I created a parameter with `description='added 2026-05-26 per action item #1787'`. The consultant filling out the form now sees that string as 'Instructions' under the field label."
 
-**Mechanic:** `Parameter.description` is rendered to every user filling out the form as the field's **Instructions** helper text in the Workfront UI. It is NOT a backstage / audit / changelog field. Notes for the admin should go in commit messages, action-item notes, or the toolkit's own logs — never on the Parameter object.
+**Mechanic:** `Parameter.description` is rendered to every user filling out the form as the field's **Instructions** helper text in the Workfront UI. It is NOT a backstage / audit / changelog field. Notes for the consultant should go in commit messages, action-item notes, or the toolkit's own logs — never on the Parameter object.
 
-**Mitigation:** Leave `description` empty by default. Only populate it when the admin explicitly asks for user-facing helper text (e.g., "add the instructions 'Use ISO format' under this date field"). Hard rule: agent-generated audit markers, action-item IDs, dates, and skill-internal metadata are forbidden in this field. Same applies to `Category.description` (form-level instructions shown to filers) and `ParameterGroup.description`.
+**Mitigation:** Leave `description` empty by default. Only populate it when the consultant explicitly asks for user-facing helper text (e.g., "add the instructions 'Use ISO format' under this date field"). Hard rule: agent-generated audit markers, action-item IDs, dates, and skill-internal metadata are forbidden in this field. Same applies to `Category.description` (form-level instructions shown to filers) and `ParameterGroup.description`.
 
 ## 22. `CategoryParameter.securityLevel` is an enum string, not an integer
 
@@ -201,7 +201,7 @@ GET /parameterGroup?ID=<csv>&fields=ID,name,description
 
 **Mechanic:** Empirically (client-d sandbox, 354-CP Marketing Request form, 2026-05-26): every `parameterGroup.displayOrder` was `0` while the form rendered sections in a clearly meaningful order. Workfront orders sections by the **minimum `displayOrder` of the categoryParameters belonging to that group** within the Category — the parameterGroup's own `displayOrder` is unused in v17.0 render.
 
-**Mitigation:** To reorder sections, renumber the constituent CPs' `displayOrder` so the new section's first field comes before the next section's first field. This is a category-wide CP renumber, not a parameterGroup tweak. Flow 2 (modify display logic / add field) handles this when the admin says "move section X up".
+**Mitigation:** To reorder sections, renumber the constituent CPs' `displayOrder` so the new section's first field comes before the next section's first field. This is a category-wide CP renumber, not a parameterGroup tweak. Flow 2 (modify display logic / add field) handles this when the consultant says "move section X up".
 
 ## 25. `CategoryCascadeRule` (CTCSRL) metadata reports `operations: []` but PUT-replace via Category works fine
 
@@ -265,14 +265,14 @@ Skill v0.26.x's External Lookup AUTHORING is out of scope — but reading + mini
 
 **Surprise:** "I created a `(TEXT, TYAH)` parameter for a user picker. POST succeeded. Tried to `PUT /parameter/<id> refObjCode=USER` to add the reference type after the fact — Workfront returns *'You cannot change the referenced object value for an existing Typeahead field.'* Tried to write a value via `PUT /optask/<id> updates={DE:fieldName: <userID>}` — *'Cannot invoke Object.hashCode() because pk is null.'* Tried `fields=DE:fieldName:ID` to read just the user ID back — Workfront silently returns nothing (no error, no field)."
 
-**Mechanic:** TYAH typeahead parameters that should resolve to a typed Workfront object (User, Project, Task, etc.) take the same top-level `refObjCode` field documented for INTRNL/MULTINTRNL in `02-parameter-types` § Internal Lookup authoring. Empirically verified 2026-06-09 against a live Workfront preview sandbox, v17.0, on a `(TEXT, TYAH)` user picker:
+**Mechanic:** TYAH typeahead parameters that should resolve to a typed Workfront object (User, Project, Task, etc.) take the same top-level `refObjCode` field documented for INTRNL/MULTINTRNL in `02-parameter-types` § Internal Lookup authoring. Empirically verified 2026-06-09 against a preview sandbox tenant v17.0 on a `(TEXT, TYAH)` user picker:
 
 1. **`refObjCode` must be set at POST** — Workfront rejects all PUT attempts to add or change `refObjCode` on an existing TYAH parameter. POST body:
    ```json
    {"name": "...", "label": "...", "dataType": "TEXT", "displayType": "TYAH", "refObjCode": "USER"}
    ```
 2. **DE: write accepts the bare ID as a string** — `updates={"DE:fieldName": "<32-char-user-id>"}` succeeds. Workfront wraps and stores the canonical envelope.
-3. **DE: read returns a JSON-string envelope** — `GET ...?fields=DE:fieldName` returns the literal string `'{"objCode":"USER","name":"Jane Doe","ID":"0a1b2c3d..."}'` (the inner quotes are escaped). NOT the bare ID.
+3. **DE: read returns a JSON-string envelope** — `GET ...?fields=DE:fieldName` returns the literal string `'{"objCode":"USER","name":"Jenny Dawkins","ID":"5bc636d2..."}'` (the inner quotes are escaped). NOT the bare ID.
 4. **Sub-key field selectors don't work on DE: TYAH** — `fields=DE:fieldName:ID` and `:name` are parsed as part of the field name; Workfront returns the row with the DE: column omitted (or, on rare paths, `"Parameter with primary key value(s) '<field>:ID' not found"`).
 5. **POSTing a JSON object instead of a string** — `updates={"DE:fieldName": {"ID": "...", "objCode": "USER"}}` fails with *"class java.util.LinkedHashMap cannot be cast to class java.lang.String."* Always send a string; let Workfront wrap.
 
@@ -283,7 +283,7 @@ Skill v0.26.x's External Lookup AUTHORING is out of scope — but reading + mini
 - **At read-time:** ask for the full DE: field (`fields=DE:fieldName`), then parse the JSON envelope client-side to extract `.ID` / `.name` / `.objCode`. In Fusion `searchv3` / `custom` output, use `parseJSON(<step>.data[1].\`DE:fieldName\`).ID`.
 - **For downstream consumers** that expect a bare ID (e.g. a Workfront update setting `assignedToID` from the envelope) — never wire the envelope directly. Pipe through `parseJSON(...).ID` first.
 
-The asymmetry (write-as-ID vs read-as-envelope) is the surprise. The skill's NL-create flow should propose `refObjCode` whenever the admin describes the field as "a user picker" / "a project picker" / "a task picker"; absent that, the typeahead stores raw strings and the UI offers a free-text autocomplete instead.
+The asymmetry (write-as-ID vs read-as-envelope) is the surprise. The skill's NL-create flow should propose `refObjCode` whenever the consultant describes the field as "a user picker" / "a project picker" / "a task picker"; absent that, the typeahead stores raw strings and the UI offers a free-text autocomplete instead.
 
 ## 31. Writing custom-field VALUES: top-level `DE:<parameter name>`, not label, not a `parameterValues{}` wrapper
 
@@ -300,7 +300,7 @@ Setting a custom-form field value on a record (PROJ / TASK / OPTASK / …) via R
 - The form must be attached to the record first (`updates={"objectCategories":[{"categoryID":<cid>}]}`) or the DE: write is rejected — see gotcha #3.
 - SLCT / RDIO fields must receive a value that exactly matches a `ParameterOption.value`; number/currency accept a bare numeric.
 
-Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds for every parameter type; only the read-side envelope shape differs by type. Verified on a live Workfront sandbox, v15.0, 2026-07-02.
+Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds for every parameter type; only the read-side envelope shape differs by type. Verified on a sandbox tenant v15.0, 2026-07-02.
 
 ## 32. Category `categoryParameters` PUT: include the composite `ID` and Workfront re-validates every External Lookup field → 400
 
@@ -312,7 +312,7 @@ Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds f
 
 Corollary (still a true collection-replace — gotcha #13 unchanged): you must still send **all** rows. A subset PUT tries to drop the omitted rows and 403s with `"<field>" Parameter doesn't exists in currernt Category` [sic] the moment a dropped row is an external-lookup field.
 
-Verified 2026-07-08 on a live production tenant + its preview sandbox, v17.0: flipping 21 "Additional Info" fields to not-required on a 346-row PROJ form ("Project Details [new]") with 4 MULTEXTRNL + 1 TYAH field. With `ID` → 400 (schema); without `ID` → 200, all 346 rows and 5 external-lookup fields preserved.
+Verified 2026-07-08 on a live production tenant + a preview sandbox tenant, v17.0: flipping 21 "Additional Info" fields to not-required on a 346-row PROJ form ("Project Details [new]") with 4 MULTEXTRNL + 1 TYAH field. With `ID` → 400 (schema); without `ID` → 200, all 346 rows and 5 external-lookup fields preserved.
 
 ## Cross-references
 
@@ -321,3 +321,4 @@ Verified 2026-07-08 on a live production tenant + its preview sandbox, v17.0: fl
 - `03-create-form-recipe` — corrected POST sequence
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)
 - `calculated-fields/05-cross-object-references` — `{program}.{DE:NAME}` dotted syntax for cross-object refs; DE: lookups use parameter **name**, not label
+- dedicated bulk-update tooling — backfill / migration patterns

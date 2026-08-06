@@ -57,7 +57,7 @@ PUT /attask/api/v17.0/ttsk?action=bulkCopy
 
 The copy inherits the donor's `workRequired`, `work`, `roleID`, `categoryID`, and one TASSGN row. A subsequent PUT can change `name`, `parentID`, `duration` (yes — duration is editable post-copy), and clear/override role/category. `workRequired` itself stays locked at the donor's value, so the donor must be picked to match the target hours. Cannot mix `updates=` JSON with plain form fields in one call — split into two PUTs (`Cannot mix 'updates' JSON parameter with non-JSON update parameter '<field>'`). The donor's predecessors and assignments also carry over; clear with `updates={"assignments":[],"predecessors":[]}` unless you mean to keep them.
 
-`bulkCopy` is same-environment only. For a cross-environment template-task migration (e.g. sandbox → prod), find donors **on the target environment** with matching `workRequired` + `duration`, not the source environment. (Empirically verified on v17.0, 2026-06.)
+`bulkCopy` is same-tenant only. For a cross-tenant template-task migration, find donors **on the destination tenant** with matching `workRequired` + `duration`, not the source tenant. (Empirically verified on v17.0, 2026-06.)
 
 ## Collection updates replace, not merge
 
@@ -81,9 +81,9 @@ Practical effects:
 - A subsequent collection replace that only specifies `assignedToID` produces a new row with a fresh auto-role, **discarding whatever role was previously bound to that assignment.** If you want to preserve a specific `roleID` across a replace, include it explicitly: `updates={"assignments":[{"assignedToID":"<user>","roleID":"<role>"}]}`.
 - Team-only assignment rows (no user, no role) are not durable on issues — see the `assignMultiple` OPTASK collapse note below. The assignments collection effectively requires each row to bind a user or role.
 
-Verified v17.0 against a live Workfront sandbox, 2026-05-13: created an OPTASK with `assignedToID=<user>`; the audit-captured assignment row showed both `assignedToID` and a `roleID` we never sent.
+Verified v17.0 on a live production tenant, 2026-05-13: created an OPTASK with `assignedToID=<user>`; the audit-captured assignment row showed both `assignedToID` and a `roleID` we never sent.
 
-**Corollary — an explicit `roleID` must be a role the user actually holds.** If you send `assignedToID=<user>` + `roleID=<role>` where `<user>` doesn't have `<role>` on their profile, the whole POST/PUT is rejected: `<User Name> cannot be assigned to Role: <Role Name>`. When you don't care about the role, **omit `roleID`** and let Workfront pick the user's default (per the auto-attach above). Only pin `roleID` when you've confirmed the user carries it. Verified on a live Workfront sandbox, v15.0, 2026-07-02.
+**Corollary — an explicit `roleID` must be a role the user actually holds.** If you send `assignedToID=<user>` + `roleID=<role>` where `<user>` doesn't have `<role>` on their profile, the whole POST/PUT is rejected: `<User Name> cannot be assigned to Role: <Role Name>`. When you don't care about the role, **omit `roleID`** and let Workfront pick the user's default (per the auto-attach above). Only pin `roleID` when you've confirmed the user carries it. Verified on a sandbox tenant v15.0, 2026-07-02.
 
 ### Fully unassigning an issue: clear the role too
 
@@ -99,7 +99,7 @@ curl -X PUT "$$HOST/attask/api/v17.0/optask/<id>/assignMultiple?apiKey=<key>" \
 
 That single call nulls `assignedToID`, nulls `roleID`, and empties the `assignments` collection. The response is `{"data":{"result":null}}` on success.
 
-Verified v17.0 against a live Workfront sandbox, 2026-05-21: PUT `updates={"assignedToID":null,"assignments":[]}` left `roleID="<consultant role>"` and a ghost ASSGN row. Re-running with PUT `/optask/<id>/assignMultiple {"userIDs":[],"roleIDs":[],"teamIDs":[]}` cleared all three fields cleanly.
+Verified v17.0 on a live production tenant, 2026-05-21: PUT `updates={"assignedToID":null,"assignments":[]}` left `roleID="<consultant role>"` and a ghost ASSGN row. Re-running with PUT `/optask/<id>/assignMultiple {"userIDs":[],"roleIDs":[],"teamIDs":[]}` cleared all three fields cleanly.
 
 ## Some child objects can't be POSTed directly — write through the parent
 
@@ -121,7 +121,7 @@ The same collection-replace semantics apply (see "Collection updates replace, no
 
 **How to spot one ahead of time:** the child `objCode` doesn't appear in `03-object-codes.md`, and a direct `GET /<objcode>/search` returns the "not a top level object" error. `NONWKD` (non-working day on a schedule) is one verified example.
 
-Verified on a preview sandbox, v17.0, 2026-05-21: `POST /nonwkd` returned the 422 above; `PUT /sched/<id>` with `updates={"nonWorkDays":[...]}` succeeded and the collection reflected the new rows on a follow-up `GET /sched/<id>?fields=nonWorkDays:nonWorkDate`.
+Verified on `client-d.preview.workfront.com`, v17.0, 2026-05-21: `POST /nonwkd` returned the 422 above; `PUT /sched/<id>` with `updates={"nonWorkDays":[...]}` succeeded and the collection reflected the new rows on a follow-up `GET /sched/<id>?fields=nonWorkDays:nonWorkDate`.
 
 ## Collection filtering requires a separate query
 
@@ -162,7 +162,7 @@ curl -sS "https://<host>/attask/api/v17.0/optask/search?status=LAP&apiKey=<KEY>"
 - Empty `data: []` is NOT proof a custom-field value is invalid either — same silent-accept behavior.
 - Smoke-testing a filter with a known-good value first lets you distinguish "filter syntactically correct" from "filter unrecognized."
 
-Verified on a preview sandbox, v17.0, 2026-06-02.
+Verified on a preview sandbox tenant, v17.0, 2026-06-02.
 
 ## API versioning gotchas
 
@@ -206,7 +206,7 @@ POST /attask/api/v17.0/note
 
 The `tags` collection notifies the tagged user but does NOT auto-insert a clickable `@First Last` link into the rendered body — to get the inline mention chip, include the literal `@First Last` text in `noteText` alongside the `tags` entry.
 
-Verified on a production tenant, 2026-05-21: identical payload returned `200 OK` on both `/attask/api/v17.0/note` and `/attask/api/v19.0/note`; sending the old shape (`refObjID`, `topNoteObjID`) returned `APIModel V<n>_0 does not support field refObjID (Note)` on v15.0, v17.0, v18.0, and v19.0.
+Verified on a live production tenant, 2026-05-21: identical payload returned `200 OK` on both `/attask/api/v17.0/note` and `/attask/api/v19.0/note`; sending the old shape (`refObjID`, `topNoteObjID`) returned `APIModel V<n>_0 does not support field refObjID (Note)` on v15.0, v17.0, v18.0, and v19.0.
 
 ## Authentication failure modes
 
@@ -324,7 +324,7 @@ curl --compressed -G "https://<host>/attask/api/v17.0/project/search" ...
 
 ## Parameter + Category (Custom Form) gotchas
 
-These surfaced during a pilot rollout (2026-06-18) and are not obvious from the API metadata alone.
+These bit us during a pilot 2026-06-18 and are not obvious from the API metadata alone.
 
 ### `POST /parameter` — required fields differ from older docs
 
@@ -421,7 +421,7 @@ POST /attask/api/v17.0/task
 - Do **not** set `durationType:"S"` here — it zeroes the duration (see `10-status-and-enum-codes` § Duration Type). Omit `durationType` (defaults to `A`) or use `D`.
 - Parent (phase) tasks roll their dates up from children automatically — leave them unconstrained.
 
-Verified on a live Workfront sandbox, v15.0, 2026-07-02 (building a 59-task project WBS with pinned per-task dates).
+Verified on a sandbox tenant v15.0, 2026-07-02 (building a 59-task project WBS with pinned per-task dates).
 
 ## Creating a request queue over REST (QueueDef + QueueTopic)
 
@@ -443,7 +443,7 @@ Turning a project into a request queue touches three objects — Project, `QUED`
    ```
    A topic's `defaultCategoryID` request form must be an **OPTASK/ISSUE** category (requests land as issues), not a PROJ category.
 
-Verified on a live Workfront sandbox, v15.0, 2026-07-02.
+Verified on a sandbox tenant v15.0, 2026-07-02.
 
 ## Sources
 

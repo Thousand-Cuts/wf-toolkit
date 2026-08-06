@@ -1,10 +1,8 @@
 # 06 — Filter Patterns
 
-*Citations of the form client-X-sample/... refer to a private empirical survey corpus used to derive these patterns; the corpus is not included in this repo.*
+This file documents the JSON-object shape of `UIFT.definition` — the filter half of a Workfront report. The recipe in `02-create-from-scratch-recipe.md` calls into this file whenever a consultant's NL describes filter logic beyond the simplest field=value case. All examples and operator vocabulary come from an empirical survey of real reports across five client tenants — anonymized throughout as `client-a-sample/…` through `client-e-sample/…` (the raw JSON was removed from the repo for client-data hygiene; the findings below are the distilled, verified result). Every URL in this file uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
 
-This file documents the JSON-object shape of `UIFT.definition` — the filter half of a Workfront report. The recipe in `02-create-from-scratch-recipe.md` calls into this file whenever the user's natural-language request describes filter logic beyond the simplest field=value case. All examples and operator vocabulary come from an empirical survey of real reports across five real-world production tenants — anonymized throughout as `client-a-sample/…` through `client-e-sample/…` (the raw JSON was removed from the repo for client-data hygiene; the findings below are the distilled, verified result). Every URL in this file uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
-
-A note on what's in scope here: this file is about the **JSON shape** the API stores and returns. It is NOT about the text-mode authoring surface the user pastes into the in-product Text Mode tab (that's `workfront-textmode`). The two are duals — the API JSON shape documented here is what Workfront's UI converts text-mode into on save — but the skill writes the JSON directly and never round-trips through the text-mode parser. When this file says "the value is a TAB-separated string," it means the literal bytes the skill puts in the JSON payload.
+A note on what's in scope here: this file is about the **JSON shape** the API stores and returns. It is NOT about the text-mode authoring surface a consultant pastes into the in-product Text Mode tab (that's `workfront-textmode`). The two are duals — the API JSON shape documented here is what Workfront's UI converts text-mode into on save — but the skill writes the JSON directly and never round-trips through the text-mode parser. When this file says "the value is a TAB-separated string," it means the literal bytes the skill puts in the JSON payload.
 
 ## § 1. The basic shape
 
@@ -40,7 +38,7 @@ The bare AND case — multiple field-value pairs at the top level — is the mos
 
 ```json
 {
-  "portfolioID": "1111aaaa2222bbbb3333cccc4444dddd",
+  "portfolioID": "68b39b4900004ee82b8550ca09877e05",
   "portfolioID_Mod": "notin",
   "statusEquatesWith": "CUR",
   "statusEquatesWith_Mod": "in"
@@ -116,12 +114,12 @@ Reads as: "status is neither CPL (Complete) nor QUE (Queued)." From `client-b-sa
 
 ```json
 {
-  "project:portfolioID": "abcdef0123456789abcdef0123456701\tabcdef0123456789abcdef0123456702\tabcdef0123456789abcdef0123456703\tabcdef0123456789abcdef0123456704\tabcdef0123456789abcdef0123456705\tabcdef0123456789abcdef0123456706\tabcdef0123456789abcdef0123456707\tabcdef0123456789abcdef0123456708",
+  "project:portfolioID": "6989fca100017e3f752d212662c02b2a\t6989fca100017e1347fee6d3fb7d3a70\t6989fca100017e35607fd2aab301d2b3\t6989fca100017e0911114eab94397dfe\t6989fca100017e414e781e46b8bd34b5\t6989fca100017df57015d63706850de0\t6989fca100017e15d536a1fe2bda2a5e\t6989fca100017e17b088e7e0f328ae63",
   "project:portfolioID_Mod": "in"
 }
 ```
 
-From `client-d-sample/DOCU-proofs-retail-uift.json` — eight portfolio UUIDs joined by `\t`. The skill never writes UUIDs from memory; it discovers them via `/portfolio/search` (or accepts them from the user) and joins with `"\t".join(ids)` before stringifying into `definition`.
+From `client-d-sample/DOCU-proofs-retail-uift.json` — eight portfolio UUIDs joined by `\t`. The skill never writes UUIDs from memory; it discovers them via `/portfolio/search` (or accepts them from the consultant) and joins with `"\t".join(ids)` before stringifying into `definition`.
 
 **Mixed session tokens and IDs.** Session tokens (see § 4) can combine with each other or with literal IDs inside one TAB-separated value:
 
@@ -162,9 +160,9 @@ A scalar `$$USER.ID` used with `_Mod=in` is legal — Workfront just resolves th
 
 `$$USER.ID` paired with `_Mod=eq` is also legal (`client-b-sample/DOCU-pending-approval-uift.json` inside an EXISTS block uses `eq`). The choice is stylistic — the skill matches whatever the source UIFT uses on a clone, and on a create chooses `eq` for scalar tokens and `in` for multi-value tokens like `$$USER.teamIDs`.
 
-**Sanitizer behaviour.** These tokens are tenant-neutral by construction — they resolve at render time, and any user in any tenant will get a sensible answer (or fall through to "no rows" if the session has no home team). The clone-flow sanitizer in `sanitize_clone.py` passes them through unchanged. The skill does NOT prompt the user about them.
+**Sanitizer behaviour.** These tokens are tenant-neutral by construction — they resolve at render time, and any user in any tenant will get a sensible answer (or fall through to "no rows" if the session has no home team). The clone-flow sanitizer in `sanitize_clone.py` passes them through unchanged. The skill does NOT prompt the consultant about them.
 
-**Date format note.** The bare `$$TODAY` token is timezone-aware (it resolves to midnight in the tenant's configured timezone). A literal date string in the same filter slot, like `client-c-sample/PROJ-revenue-prog-CHART-uift.json`'s `"entryDate": "2025-01-01T00:00:00:000-0500"`, IS tenant-specific — the offset (`-0500`) is the tenant's server offset at the moment the report was authored. On a cross-environment clone, the sanitizer flags literal date strings for the user to confirm or replace with `$$TODAY±Nd` arithmetic.
+**Date format note.** The bare `$$TODAY` token is timezone-aware (it resolves to midnight in the tenant's configured timezone). A literal date string in the same filter slot, like `client-c-sample/PROJ-revenue-prog-CHART-uift.json`'s `"entryDate": "2025-01-01T00:00:00:000-0500"`, IS tenant-specific — the offset (`-0500`) is the tenant's server offset at the moment the report was authored. On a cross-tenant clone, the sanitizer flags literal date strings for the consultant to confirm or replace with `$$TODAY±Nd` arithmetic.
 
 ## § 5. Cross-object join paths
 
@@ -176,13 +174,13 @@ Examples from the survey:
 - **One hop, status field.** `"project:status": "ONH", "project:status_Mod": "notin"` — TASK report filtering the parent project's status. From `client-b-sample/TASK-ready-to-work-uift.json`.
 - **One hop, status equivalence.** `"project:statusEquatesWith": "CUR", "project:statusEquatesWith_Mod": "in"` — same pattern with the equivalence-state field. From `client-d-sample/TASK-pm-audit-late-uift.json`.
 - **One hop, custom field on a join target.** `"DE:project:Approved Hours_Mod": "notnull"` — HOUR report filtering on a custom field defined on the parent project's custom form. From `client-c-sample/HOUR-support-hours-uift.json`. See § 6 for the `DE:` prefix semantics.
-- **Two hops, with a custom field at the end.** `"DE:program:Acme - Program Revenue Reporting  Type": "Variable Revenue"` — PROJ report filtering on its parent program's custom-form field. From `client-c-sample/PROJ-var-rev-PROMPTS-uift.json`. Note the two-space spelling inside `"Reporting  Type"` — preserved verbatim from the originating tenant's custom-form field name (users get the spelling wrong half the time; the skill never normalizes whitespace inside `DE:` field names).
+- **Two hops, with a custom field at the end.** `"DE:program:Acme - Program Revenue Reporting  Type": "Variable Revenue"` — PROJ report filtering on its parent program's custom-form field. From `client-c-sample/PROJ-var-rev-PROMPTS-uift.json`. Note the two-space spelling inside `"Reporting  Type"` — preserved verbatim from the source tenant's custom-form field name (consultants get the spelling wrong half the time; the skill never normalizes whitespace inside `DE:` field names).
 - **Single-hop with a long relation name.** `"convertedOpTaskOriginator:homeTeamID": "$$USER.teamIDs\t$$USER.homeTeamID"` — the relation `convertedOpTaskOriginator` is one token referring to the origin OPTASK (the request that converted to this project); `homeTeamID` is a field on that joined OPTASK. One syntactic hop (one colon). From `client-d-sample/PROJ-my-teams-active-uift.json`.
 - **Two hops, simple object property.** `"currentVersion:proofDecision": "pending", "currentVersion:proofDecision_Mod": "cicontains"` — DOCU report filtering on the current version's proof-decision string. From `client-d-sample/DOCU-proofs-retail-uift.json`.
 
 **Join hop depth.** Workfront's published filter-hop limit is 2 hops. The survey contains single-hop and two-hop join examples; trust the pre-flight validator (`08-pre-flight-validation.md`) to assert each hop resolves against cached `/<objCode>/metadata` rather than enforcing a static depth limit in this file. The validator reports either "all hops resolve" or "hop N is unreachable from object X."
 
-**Filter-on-joined-ID is fine; filter-on-joined-name is also fine.** Both `project:portfolioID` (UUID) and `project:portfolio:name` (string) are legal filter keys. UUIDs are more efficient and avoid case-sensitivity bugs; names are more readable. The skill prefers UUIDs when the user gives an ID-shaped value, and falls back to names when the user pastes the human-readable label.
+**Filter-on-joined-ID is fine; filter-on-joined-name is also fine.** Both `project:portfolioID` (UUID) and `project:portfolio:name` (string) are legal filter keys. UUIDs are more efficient and avoid case-sensitivity bugs; names are more readable. The skill prefers UUIDs when the consultant gives an ID-shaped value, and falls back to names when the consultant pastes the human-readable label.
 
 ## § 6. Custom-field (`DE:`) references in UIFT keys
 
@@ -214,7 +212,7 @@ The `DE:` prefix is DROPPED in two places:
 
 See `07-view-patterns.md` § custom-fields for the view-side detail. The `sanitize_clone.py` module handles the asymmetry automatically on a clone; the skill just composes whichever form matches the location.
 
-**Parity check on clone.** When the clone flow lifts a UIFT containing a `DE:<name>` reference, it flags the field for the user: "this filter references `DE:<name>`, which exists at the source environment. The destination environment must have a custom form on `<uiObjCode>` (and on any joined parent objects) defining the same parameter name. Confirm parity before proceeding." See `03-clone-and-adapt-recipe.md` Phase 5.
+**Parity check on clone.** When the clone flow lifts a UIFT containing a `DE:<name>` reference, it flags the field for the consultant: "this filter references `DE:<name>`, which exists at the source tenant. The destination tenant must have a custom form on `<uiObjCode>` (and on any joined parent objects) defining the same parameter name. Confirm parity before proceeding." See `03-clone-and-adapt-recipe.md` Phase 5.
 
 **See also:** `08-pre-flight-validation.md` § 4d for the hard-coded PSEUDO_FIELDS allowlist (`statusEquatesWith`, `assignmentsListString`) and `09-verification-flow.md` § 6 for the per-tenant whitelist that overlays it. Both are how the pre-flight validator accepts runtime-real fields missing from `/<obj>/metadata`.
 
@@ -261,15 +259,15 @@ OR:1 group: `DE:Is this a rush request?=🔥 Rush`, `assignedToID=$$USER.ID`, `s
 
 Reads as: `(rush_request="🔥 Rush" AND status=NEW AND team∈my_teams) AND (rush_request="🔥 Rush" AND assignee=me AND status=NEW)` — which by intersection collapses to `(rush_request="🔥 Rush" AND status=NEW AND assignee=me AND team∈my_teams)`. The duplication of bare-keys inside `OR:1:` is the in-product builder's way of keeping the filter renderable in both AND-view and OR-view; the logical effect with one OR-group is equivalent to a pure AND.
 
-The duplication between bare and `OR:1:` is intentional — the in-product Filter builder writes both halves to preserve the user's intent on round-trip edit. Workfront treats the JSON as-is, and removing the duplicate keys on round-trip would change the in-product builder's ability to display the filter back to the user. The skill preserves the duplication on clone and emits it on create when the user requests an OR-group.
+The duplication between bare and `OR:1:` is intentional — the in-product Filter builder writes both halves to preserve the user's intent on round-trip edit. Workfront treats the JSON as-is, and removing the duplicate keys on round-trip would change the in-product builder's ability to display the filter back to the consultant. The skill preserves the duplication on clone and emits it on create when the consultant requests an OR-group.
 
-**Authoring rule.** When the user asks for "rows where (A AND B) OR (A AND C)," express it as:
+**Authoring rule.** When a consultant asks for "rows where (A AND B) OR (A AND C)," express it as:
 
 - bare: A
 - OR:1: A, B
 - OR:1: A, C
 
-The bare `A` becomes the always-true conjunct that ties the OR-group to the rest of the filter. If the user means "rows where B OR C" (no shared conjunct), express it as:
+The bare `A` becomes the always-true conjunct that ties the OR-group to the rest of the filter. If the consultant means "rows where B OR C" (no shared conjunct), express it as:
 
 - OR:1: B
 - OR:1: C
@@ -328,7 +326,7 @@ Across the empirical survey, tenants prefer different equivalent forms:
 - **Client D** leans on OR-groups — their queue-style OPTASK reports (`OPTASK-rush-L-uift.json`, `OPTASK-mktg-retail-uift.json`) all use the bare+OR:1 duplication pattern.
 - **Client C** uses mostly flat AND filters with deep `DE:` join paths (`PROJ-var-rev-PROMPTS-uift.json`).
 - **Client A** uses mostly flat AND filters with no `DE:` or join chains at all (`TASK-major-roadblocks-uift.json`, `TASK-late-by-individual-uift.json` — both identical in structure: five field-pairs all on the TASK object's own fields).
-- **Client E** (a partner sandbox tenant) is sparse — single-condition filters dominate.
+- **The partner sandbox** is sparse — single-condition filters dominate.
 
 None of these is "right." OR-groups and EXISTS blocks express equivalent set logic in different syntactic surfaces, and a tenant's history (who built the first reports, which docs they read, which Adobe consultant trained them) explains most of the variance.
 
@@ -336,8 +334,8 @@ None of these is "right." OR-groups and EXISTS blocks express equivalent set log
 
 1. Flat AND (bare field-pairs) if every condition is on the `uiObjCode` object or one hop away.
 2. Add a join-path prefix (`project:`, `program:`, etc.) for cross-object conditions that don't need sub-query semantics.
-3. Reach for an OR-group only when the user explicitly says "or" or "either."
-4. Reach for an EXISTS block only when the user asks about a child/related record's properties (e.g., "documents where any related task is assigned to me" — that's an EXISTS on TASK).
+3. Reach for an OR-group only when the consultant explicitly says "or" or "either."
+4. Reach for an EXISTS block only when the consultant asks about a child/related record's properties (e.g., "documents where any related task is assigned to me" — that's an EXISTS on TASK).
 
 On clone, preserve whatever shape the source UIFT uses; don't normalize.
 
@@ -345,21 +343,21 @@ On clone, preserve whatever shape the source UIFT uses; don't normalize.
 
 **The empty-string key `"": ""`.** Some round-tripped filters include a `"": ""` pair (citation: `client-b-sample/DOCU-pending-approval-uift.json`). This is an in-product Filter builder artifact — a placeholder row the user clicked but didn't fill in. Safe to omit on create. The sanitizer drops it. If left in place on a clone, it's harmless — Workfront's parser ignores keys with empty values that have no `_Mod` sibling.
 
-**`progressStatus` is a built-in TASK enum.** The field accepts values like `LT` (Late), `BH` (Behind), `OT` (On Time), `LR` (Late Risk), `RS` (At Risk). Citation: `client-a-sample/TASK-major-roadblocks-uift.json` uses `"progressStatus": "LT"`. The companion UIVW column declares `"enumclass": "...ProgressStatusEnum"` to render the label. NOT a `DE:` custom field — easy to confuse on first read. If the user says "progress status," check the metadata: if the field is on TASK natively, no `DE:` prefix.
+**`progressStatus` is a built-in TASK enum.** The field accepts values like `LT` (Late), `BH` (Behind), `OT` (On Time), `LR` (Late Risk), `RS` (At Risk). Citation: `client-a-sample/TASK-major-roadblocks-uift.json` uses `"progressStatus": "LT"`. The companion UIVW column declares `"enumclass": "...ProgressStatusEnum"` to render the label. NOT a `DE:` custom field — easy to confuse on first read. If a consultant says "progress status," check the metadata: if the field is on TASK natively, no `DE:` prefix.
 
 **Boolean filters are stringified.** `"canStart": "true", "canStart_Mod": "eq"` — string `"true"`, not JSON `true`. Citations: `client-a-sample/TASK-late-by-individual-uift.json`, `client-b-sample/TASK-ready-to-work-uift.json`, `client-a-sample/TASK-major-roadblocks-uift.json`. The same stringification applies to `"false"`. See § 2 wire-encoding note.
 
-**`statusEquatesWith` vs `status`.** Workfront's OPTASK and TASK objects have BOTH a literal `status` field (holding the tenant-specific status code, like `NEW`, `IPR`, `CPL`, or any custom code the tenant added) AND a `statusEquatesWith` field (holding an equivalence-state code that maps tenant-custom statuses to a canonical set: `NEW`, `CUR`, `CPL`, etc.). Citations: `client-d-sample/OPTASK-rush-L-uift.json` filters on `statusEquatesWith=NEW`; `client-a-sample/TASK-major-roadblocks-uift.json` filters on `status notin CPL` (literal status code). The choice matters: a clone of a Client D-authored OPTASK report into an environment that uses different custom OPTASK statuses will keep working if it filters on `statusEquatesWith`, but break silently if it filters on literal `status` codes that don't exist in the destination. The skill's clone flow surfaces this as a parity-check warning when it sees `status_Mod` (not `statusEquatesWith_Mod`) in a cloned UIFT.
+**`statusEquatesWith` vs `status`.** Workfront's OPTASK and TASK objects have BOTH a literal `status` field (holding the tenant-specific status code, like `NEW`, `IPR`, `CPL`, or any custom code the tenant added) AND a `statusEquatesWith` field (holding an equivalence-state code that maps tenant-custom statuses to a canonical set: `NEW`, `CUR`, `CPL`, etc.). Citations: `client-d-sample/OPTASK-rush-L-uift.json` filters on `statusEquatesWith=NEW`; `client-a-sample/TASK-major-roadblocks-uift.json` filters on `status notin CPL` (literal status code). The choice matters: a clone of a Client D-authored OPTASK report into a tenant that uses different custom OPTASK statuses will keep working if it filters on `statusEquatesWith`, but break silently if it filters on literal `status` codes that don't exist in the destination. The skill's clone flow surfaces this as a parity-check warning when it sees `status_Mod` (not `statusEquatesWith_Mod`) in a cloned UIFT.
 
 **Hex emojis from JSON.dumps.** When pasting JSON from a Python skill into a curl payload, `json.dumps(..., ensure_ascii=True)` (the default) escapes emojis to `🔥` form. Workfront accepts both — the parser normalizes — but the round-tripped read may come back in either form depending on the tenant's locale. Don't be alarmed when the source UIFT shows `"🔥 Rush"` and a clone shows `"🔥 Rush"`. Same bytes, different rendering.
 
-**Whitespace in `DE:` field names.** Custom-form field names preserve all internal whitespace including double spaces. The Client C example `DE:program:Acme - Program Revenue Reporting  Type` has two spaces between "Reporting" and "Type" — whoever created the custom form typed it that way, and every reference must match exactly. The sanitizer does NOT collapse whitespace; the skill does NOT correct spelling. Round-trip from the source verbatim.
+**Whitespace in `DE:` field names.** Custom-form field names preserve all internal whitespace including double spaces. The Client C example `DE:program:Acme - Program Revenue Reporting  Type` has two spaces between "Reporting" and "Type" — the consultant who created the custom form typed it that way, and every reference must match exactly. The sanitizer does NOT collapse whitespace; the skill does NOT correct spelling. Round-trip from the source verbatim.
 
 **TAB-separator escaping.** The TAB must be a literal `\t` byte in the on-wire JSON string, not the two-character escape `\\t`. Python `"\t"` works; literal backslash-t does not. Easy to get wrong in a templated payload.
 
 **`isnull` / `notnull` / `notblank` value requirement.** All three operators require the paired value to be the empty string `""`. Setting the value to anything else (including `null` or omitting the key) causes Workfront to silently switch interpretation modes on some tenants — most often by treating the operator as `eq ""`, which is a substring match against literal empty rather than a NULL check. The skill always emits the empty string as the paired value.
 
-**Date strings in tenant-local offset.** Hard-coded date strings like `"2025-12-31T19:00:00:000-0500"` (Client C's `entryDate`) carry the source environment's timezone offset. On a cross-environment clone where the destination environment runs on a different offset (e.g., `-0800`), the absolute moment shifts. The sanitizer flags literal datetimes for replacement; the skill prefers `$$TODAY±Nd` arithmetic when authoring fresh.
+**Date strings in tenant-local offset.** Hard-coded date strings like `"2025-12-31T19:00:00:000-0500"` (Client C's `entryDate`) carry the source tenant's timezone offset. On a cross-tenant clone where the destination tenant runs on a different offset (e.g., `-0800`), the absolute moment shifts. The sanitizer flags literal datetimes for replacement; the skill prefers `$$TODAY±Nd` arithmetic when authoring fresh.
 
 ## § 11. Cross-references
 
@@ -372,7 +370,7 @@ The pre-flight validator (`08-pre-flight-validation.md`) walks every key in `UIF
 - Operators whose value form mismatches the field's metadata type (e.g., `_Mod=cicontains` against a UUID field).
 - `DE:` references whose field names don't appear on any custom form attached to the target object (the parity-check failure mode).
 - EXISTS blocks whose `$$OBJCODE` value 404s on `/<objCode>/metadata`.
-- `_Mod=in`/`_Mod=notin` values that aren't TAB-separated when they contain a `,` (a common user-input bug).
+- `_Mod=in`/`_Mod=notin` values that aren't TAB-separated when they contain a `,` (a common consultant-input bug).
 
 For text-mode authoring details — the calc-style syntax that lives inside a UIVW column's `valueexpression` (not in the filter half) — see `07-view-patterns.md` § valueexpression. Defer the authoring of that calc syntax itself to `workfront-textmode`; this skill orchestrates the four-call envelope and shapes the JSON, but the text-mode calc language is owned by its peer.
 

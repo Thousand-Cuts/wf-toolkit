@@ -1,5 +1,5 @@
 {
-  "description": "Analytical TASK report grouped by parent project's portfolio, with a SUM aggregator on workRequired. reportType=A (UIGB required).",
+  "description": "Analytical TASK report grouped by parent project's portfolio, with a SUM aggregator on workRequired. reportType=A (UIGB required). Mirrors the empirical shape captured from live production reports.",
   "calls": [
     {
       "step": 1,

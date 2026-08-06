@@ -26,7 +26,7 @@ The skill consumes them to:
 
 Implemented by `skills/workfront-custom-forms/scripts/schema_cache.py`.
 
-Cache file: `~/.cache/wf-toolkit/custom-forms-schema-<sha8(host)>.json`. Mode 600. TTL 24h.
+Cache file: `~/.cache/wf-claude-toolkit/custom-forms-schema-<sha8(host)>.json`. Mode 600. TTL 24h.
 
 Invalidation:
 - Time-based: 24h from `captured_at_epoch`.

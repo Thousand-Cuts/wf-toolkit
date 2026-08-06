@@ -146,13 +146,13 @@ Capability matrix (accessLevelPermissions collection — <N> rows):
   ... (sorted by objObjCode then coreAction)
 ```
 
-## Flow 5 — Cross-environment compare
+## Flow 5 — Cross-tenant compare
 
 Read both, normalise to a (objObjCode, coreAction) tuple set, diff.
 
 ```
-1. Collect SOURCE creds: /wf-env-use sandbox
-2. Collect DEST creds:   confirm WF_ENV_LABEL names a different host
+1. Collect SOURCE creds: ./scripts/wf-use.sh firm-reference
+2. Collect DEST creds:   confirm WF_LABEL names a different host
 
 3. Source pull: GET source/accessLevel/<src-id>?fields=*,accessLevelPermissions:*
 4. Dest pull:   GET dest/accessLevel/<dest-id>?fields=*,accessLevelPermissions:*
@@ -163,7 +163,7 @@ Read both, normalise to a (objObjCode, coreAction) tuple set, diff.
    - Symmetric difference yields what's missing on each side
    - Within matching tuples, sub-diff forbiddenActions and secondaryActions
 
-6. Flag environment-specific feature differences:
+6. Flag tenant-specific feature differences:
    - isAdmin difference
    - licenseType difference
    - fieldAccessPrivileges set difference
@@ -185,7 +185,7 @@ Read both, normalise to a (objObjCode, coreAction) tuple set, diff.
 
 3. List the parent objects with orphan shares + sort by count.
 
-4. Surface the list for manual cleanup (in-product or via your own API scripting).
+4. Surface for cleanup via dedicated bulk-update tooling.
 ```
 
 ### Find every object shared with a group

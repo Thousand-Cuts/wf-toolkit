@@ -1,5 +1,5 @@
 {
-  "description": "UIVW column with valueexpression (CONCAT for inline HTML link). Demonstrates textmode:'true' + no valuefield + displayname for header. Empirically verified against surveyed TASK view patterns.",
+  "description": "UIVW column with valueexpression (CONCAT for inline HTML link). Demonstrates textmode:'true' + no valuefield + displayname for header. Mirrors client-b-sample/TASK-ready-to-work-uivw.json patterns.",
   "uivw_definition_column_entry": {
     "displayname": "Task Link",
     "textmode": "true",

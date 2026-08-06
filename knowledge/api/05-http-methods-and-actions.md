@@ -68,7 +68,7 @@ Content-Type: application/x-www-form-urlencoded
 copySourceID=4c7...&name=Copied+Project
 ```
 
-**Create a project from a template** — include `templateID` in the POST body (empirical, verified against a live Workfront sandbox, v17.0, 2026-07-06):
+**Create a project from a template** — include `templateID` in the POST body (empirical, a live production tenant, v17.0, 2026-07-06):
 ```
 POST /attask/api/v17.0/project
 Content-Type: application/x-www-form-urlencoded
@@ -176,7 +176,7 @@ PUT /attask/api/v17.0/optask/<issueID>/move?apiKey=<key>
 PUT /attask/api/v17.0/optask/<issueID>/move?projectID=<dest-project-id>&apiKey=<key>
 ```
 
-**Silent-no-op trap:** a plain field update — `PUT /attask/api/v17.0/optask/<issueID>` with body `{"projectID":"<dest>"}` — returns **HTTP 200 but does not move the issue** (the `projectID` is unchanged on a follow-up GET). `projectID` is not a writable field on the issue via a direct PUT; only the `move` action relocates it. Verified on a live Workfront preview sandbox, v17.0, 2026-06-17.
+**Silent-no-op trap:** a plain field update — `PUT /attask/api/v17.0/optask/<issueID>` with body `{"projectID":"<dest>"}` — returns **HTTP 200 but does not move the issue** (the `projectID` is unchanged on a follow-up GET). `projectID` is not a writable field on the issue via a direct PUT; only the `move` action relocates it. Verified on a preview sandbox tenant, v17.0, 2026-06-17.
 
 The collection form `PUT /attask/api/v17.0/optask?action=move` with `updates={"IDs":[...],"projectID":...}` returns `422 ... action move does not support argument named IDs` — use the per-id `/optask/<id>/move` path instead.
 
@@ -295,7 +295,7 @@ Available on `optask` (Issue) and `task`. Takes arrays of team / user / role IDs
 PUT /attask/api/v17.0/optask/{issueID}/assignMultiple?apiKey=<key>
 Content-Type: application/x-www-form-urlencoded
 
-updates={"teamIDs":["aabbccdd000000000000000000000001","aabbccdd000000000000000000000002"],"userIDs":[],"roleIDs":[]}
+updates={"teamIDs":["50d0dc4c0010afa2f9fdac7ec52fe7ce","5390effa0098dd5dded9985143c31f0f"],"userIDs":[],"roleIDs":[]}
 ```
 
 **Raw JSON body (Fusion / HTTP module / clients that prefer JSON):**
@@ -305,7 +305,7 @@ Content-Type: application/json
 Authorization: Bearer <token>   (or apiKey= query param)
 
 {
-  "teamIDs": ["aabbccdd000000000000000000000001", "aabbccdd000000000000000000000002"],
+  "teamIDs": ["50d0dc4c0010afa2f9fdac7ec52fe7ce", "5390effa0098dd5dded9985143c31f0f"],
   "userIDs": [],
   "roleIDs": []
 }
@@ -335,7 +335,7 @@ Both verified on v17.0 preview, 2026-05.
 
 ### Assigning custom forms (categories) — `assignCategories` action on CTGY
 
-Custom-form (category) assignment actions are hosted on **`CTGY`** (Category), not on the target object. They take the target via `objCode` + `objID` arguments. Working on v17.0; verified 2026-05-15 against a live Workfront sandbox.
+Custom-form (category) assignment actions are hosted on **`CTGY`** (Category), not on the target object. They take the target via `objCode` + `objID` arguments. Working on v17.0; verified 2026-05-15 on a live production tenant.
 
 ```
 # Attach one or more forms to an issue (additive)
@@ -385,7 +385,7 @@ The primary form (the `categoryID` scalar on the object) is independent of the `
 GET /attask/api/v17.0/project/search?...
 ```
 
-### `convertToTask` — Issue → Task conversion (empirical, client preview sandbox, v18.0, 2026-06-24)
+### `convertToTask` — Issue → Task conversion (empirical, client-c.preview v18.0, 2026-06-24)
 
 Promotes an Issue (OPTASK) into a Task. The new task's fields go in a nested `task` wrapper alongside the conversion flags.
 

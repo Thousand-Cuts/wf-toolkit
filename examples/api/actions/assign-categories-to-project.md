@@ -2,7 +2,7 @@
 
 The custom-form assignment actions are hosted on **`CTGY`** (Category), not on the target object. They take the target via `objCode` + `objID` arguments. The action set covers projects, tasks, issues, portfolios, programs — any object with `catObjCode`.
 
-Verified working v17.0 against a live Workfront sandbox, 2026-05-15.
+Verified working v17.0 on a live production tenant, 2026-05-15.
 
 ## Working pattern
 
@@ -41,7 +41,7 @@ Unlike `assignMultiple` (replace) and unlike a direct PUT on `objectCategories` 
 
 If any ID in your batch is already attached, the **entire** call rejects:
 ```json
-{"error": {"message": "Categories with the following IDs are already attached: aaaa0001...", "code": 0}}
+{"error": {"message": "Categories with the following IDs are already attached: 662c0281...", "code": 0}}
 ```
 
 There's no partial success. Pre-check with:

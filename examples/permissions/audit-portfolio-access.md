@@ -4,25 +4,25 @@ Flow 3 — object audit. Phase A simplified this: a single GET on the target wit
 
 ## Scenario
 
-> Admin: "Who can see the Q4 Marketing Plan portfolio? I need the list before we share next quarter's plans."
+> Consultant: "Who can see the Q4 Marketing Plan portfolio? I need the list before we share next quarter's plans."
 
 ## Calls fired
 
 ```bash
 # 1. Direct + inherited rules in one GET
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/portfolio/<portID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/portfolio/<portID> \
   --data-urlencode "fields=ID,name,ownerID,accessRules:*"
 
 # 2. Accessor expansion: for each rule with accessor=GROUP, expand to user list:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/group/<groupID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/group/<groupID> \
   --data-urlencode "fields=ID,name,users:ID,users:name,users:emailAddr"
 
 # 3. For each rule with accessor=TEAMOB:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/teamMembership/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/teamMembership/search \
   --data-urlencode "teamID=<teamID>" --data-urlencode "fields=userID,user:name,user:emailAddr"
 
 # 4. For each rule with accessor=ROLE:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/search \
   --data-urlencode "roleID=<roleID>" --data-urlencode "fields=ID,name,emailAddr"
 ```
 
@@ -64,4 +64,4 @@ isInherited=true rules with ancestorObjCode=PORT and ancestorID=<this portfolio>
 
 ## What to do next
 
-For the stated intent ("before we share next quarter's plans"), the audit gives you the right user list to replicate.
+For the consultant's stated intent ("before we share next quarter's plans"), the audit gives them the right user list to replicate. Or to use as a starting filter for dedicated bulk-update tooling if they want to bulk-share the new portfolio with the same accessors.

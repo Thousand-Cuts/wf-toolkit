@@ -10,7 +10,7 @@ The capture detail below is preserved because the **internal preference endpoint
 
 ### v17.0 REST is too narrow
 
-Phase A tried 6 endpoint variants against a live tenant; all failed:
+Phase A tried 6 endpoint variants against the surveyed tenant; all failed:
 
 - `/customerInformation/metadata` → empty `{"data":{}}`
 - `/customer/search` → server-side error
@@ -55,7 +55,7 @@ Returns a wrapper object with read-only metadata (`isImsEnabled`, `ssoEnabled`, 
 }
 ```
 
-20 keys in the surveyed tenant's prefMap.
+20 keys in the surveyed tenant's prefMap (full list in the internal verification notes).
 
 **Two additional preference endpoints (also captured):**
 
@@ -68,7 +68,7 @@ Both require an `X-XSRF-TOKEN` header. The task-issue endpoint surfaces `taskAcc
 
 ### Why the layer-4 hypothesis collapsed (capture #6, 2026-05-18)
 
-After Findings 1–5 mapped the internal preference surface (53 keys total, none matching `*SEE_ALL*` / `*PROJECTS*` patterns), capture #6 tested the next hypothesis: maybe the visibility toggles live on AccessLevel definitions. Surveyed all 6 access levels on the tenant:
+After Findings 1–5 mapped the internal preference surface (53 keys total, none matching `*SEE_ALL*` / `*PROJECTS*` patterns), capture #6 tested the next hypothesis: maybe the visibility toggles live on AccessLevel definitions. Surveyed all 6 surveyed access levels:
 
 - **`AccessLevel.accessRestrictions`** has only 2 values across all levels: `AIOFF` (AI opt-out, on 5/6 levels) and `CGT` (custom-group-tier marker, only on "Standard with Limits"). Neither is visibility-related.
 - **`AccessLevel.fieldAccessPrivileges`** has 18 values — all per-field-class grants (financial, custom-data, time-management). Not visibility.
@@ -86,7 +86,7 @@ The resolver was demoted to 6 inputs in v0.15.0 (removed the system-override sho
 
 ## Caveats — what we did NOT prove
 
-- Single-tenant survey. Other tenants on different Workfront editions / license tiers may surface additional `accessRestrictions` enum values that the survey missed.
+- Single-tenant survey (single tenant). Other tenants on different Workfront editions / license tiers may surface additional `accessRestrictions` enum values that the survey missed.
 - Could be hidden in an admin setup section we didn't navigate to.
 - Could exist as group-scoped (`groupId != 'system'`) overrides that the system-tier capture missed.
 - `fieldAccessPrivileges` 3-letter codes (VFN/EFN/VDE/...) decoded by inference, not confirmed against Adobe docs.
@@ -95,7 +95,7 @@ A multi-tenant survey or deeper Adobe documentation review could reopen this. If
 
 ## Auth gap that closed the v2 path
 
-The `/internal/*` endpoints are not part of Workfront's published REST API contract. **The v17.0 API key does NOT authenticate `/internal/*` requests** (confirmed 2026-05-18 via the 5-strategy probe in Finding 6). Probes returned 302 redirects to Adobe IMS login when the API key was passed as query param, `apiKey:` header, `sessionID:` header, or `Authorization: Bearer`. The internal endpoints require a full user-context browser session (`webcache` + `wf-node` + `XSRF-TOKEN` cookies set by interactive login). This applies to both the `wf-curl.sh` and `wf-env-curl.sh` wrappers — both pass the v17 API key, which `/internal/*` rejects. There's no environment-folder convention that fixes this.
+The `/internal/*` endpoints are not part of Workfront's published REST API contract. **The v17.0 API key does NOT authenticate `/internal/*` requests** (confirmed 2026-05-18 via the 5-strategy probe in Finding 6). Probes returned 302 redirects to Adobe IMS login when the API key was passed as query param, `apiKey:` header, `sessionID:` header, or `Authorization: Bearer`. The internal endpoints require a full user-context browser session (`webcache` + `wf-node` + `XSRF-TOKEN` cookies set by interactive login). This applies whether the consultant uses a maintainer-side or client-side credential wrapper — both pass the v17 API key, which `/internal/*` rejects. There's no client-folder convention that fixes this.
 
 Any v2 work calling `/internal/*` would need a full OAuth2 / login flow first to mint a session token — substantial sub-project. Combined with Finding 7's conclusion that the toggles probably don't exist anyway, the cost-benefit pushed both directions of follow-up out of scope.
 

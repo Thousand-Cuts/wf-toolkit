@@ -1,5 +1,5 @@
 {
-  "description": "Canonical minimal-viable list report — Active Projects with name / owner / portfolio / planned completion / % complete. reportType=L (no UIGB), filterID populated, viewID populated. Mirrors an empirically surveyed PROJ list-report shape, simplified to no-grouping.",
+  "description": "Canonical minimal-viable list report — Active Projects with name / owner / portfolio / planned completion / % complete. reportType=L (no UIGB), filterID populated, viewID populated. Mirrors empirical shape from client-d-sample/PROJ-by-condition-* but simplified to no-grouping.",
   "wire_format_note": "Each body is sent via --data-urlencode 'updates=<this object as JSON>'. NOT raw JSON body.",
   "calls": [
     {

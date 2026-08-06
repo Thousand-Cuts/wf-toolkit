@@ -11,14 +11,14 @@ Updated 2026-05-18 with Phase A empirical findings.
 AccessRules are accessed via **the parent object's `accessRules` collection**:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/<objCode>/<objID> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/<objCode>/<objID> \
   --data-urlencode "fields=ID,name,accessRules:*"
 ```
 
 For user-centric audits ("what does Adam have access to?"), use the **inverted query** pattern — query the parent objCode and filter by the accessRules collection's accessor field:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/project/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/project/search \
   --data-urlencode "accessRules:accessorID=<userID>" \
   --data-urlencode "accessRules:accessorID_Mod=eq" \
   --data-urlencode "fields=ID,name,accessRules:accessorID,accessRules:coreAction,accessRules:isInherited"
@@ -103,14 +103,14 @@ The presence of `isInherited=true` + `ancestorID` + `ancestorObjCode` means **no
 ### "Who has access to object X?" (Flow 3)
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/<objCode>/<id> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/<objCode>/<id> \
   --data-urlencode "fields=ID,name,ownerID,accessRules:*"
 ```
 
 ### "Find rules where user X is the accessor across all projects" (Flow 2 fragment)
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/project/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/project/search \
   --data-urlencode "accessRules:accessorID=<userID>" \
   --data-urlencode "accessRules:accessorID_Mod=eq" \
   --data-urlencode "fields=ID,name,accessRules:*" \

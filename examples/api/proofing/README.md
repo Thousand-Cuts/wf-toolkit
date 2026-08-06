@@ -39,4 +39,4 @@ The script uploads the file itself (API), so **no UI upload is needed** — it j
 
 ## Support status
 
-Unsupported, reverse-engineered, and fragile by nature (internal endpoints can change without notice). For production/repeatable proofing automation, **Fusion's Workfront Proof connector** is the sanctioned path. This script is for quick demo-data generation when you can't/won't use Fusion.
+Unsupported, reverse-engineered, and fragile by nature (internal endpoints can change without notice). For production/repeatable proofing automation, **Fusion's Workfront Proof connector** ([`examples/fusion/06-demo-proof-generator.json`](../../fusion/06-demo-proof-generator.json)) is the sanctioned path. This script is for quick demo-data generation when you can't/won't use Fusion.

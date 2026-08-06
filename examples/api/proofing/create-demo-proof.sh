@@ -4,7 +4,7 @@
 #
 # Creates a proof on an already-proofable document version, then posts a comment,
 # a reply, promotes the owner to approver, and stamps an "Approved" decision —
-# ALL WITHOUT FUSION. Verified working 2026-07-04 against a live Workfront sandbox.
+# ALL WITHOUT FUSION. Verified working 2026-07-04 on a live production tenant.
 #
 # ── Why this exists ──────────────────────────────────────────────────────────
 # The public REST `createProof` action/field is a NO-OP (see knowledge/api/15-proofing.md).

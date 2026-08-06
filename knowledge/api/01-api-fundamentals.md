@@ -42,11 +42,11 @@ Each version is supported for 3 years, then enters a 1-year deprecated state (st
 
 **`api-internal`** — An unversioned path that always reflects the latest internal build. Subject to change without notice. Do not use in production. Replace with a versioned URL.
 
-## Choosing a version (v17.0 default)
+## Choosing a version (consulting default)
 
-When you don't know which version your instance supports, default to **v17.0**. It has been stable across virtually every modern Workfront deployment and avoids breaking against older instances. Use a newer version only when the user explicitly confirms — or you can verify — that the instance supports it.
+When you don't know which version a client's instance supports, default to **v17.0**. It has been stable across virtually every modern Workfront deployment and avoids breaking against older instances. Use a newer version only when the user explicitly confirms — or you can verify — that their instance supports it.
 
-Newer API versions introduce new behaviors and fields, but this toolkit targets the lowest common denominator. v17.0 is the safe floor: it predates several breaking changes introduced in v18+ while still supporting all common authentication flows, filter patterns, External Lookup fields, and `parameterValues` access.
+Newer API versions introduce new behaviors and fields, but consulting work usually targets the lowest common denominator. v17.0 is the safe floor: it predates several breaking changes introduced in v18+ while still supporting all common authentication flows, filter patterns, External Lookup fields, and `parameterValues` access.
 
 **In practice:** if a user says "our instance is on 22.3," switch to the version they need. If they don't know or don't say, write all examples with `v17.0` and note the assumption.
 

@@ -1,6 +1,6 @@
 # 09 — Gotchas
 
-The most common ways admins get tripped up by Workfront's permission model. Updated 2026-05-18 with Phase A empirical findings.
+The most common ways consultants get tripped up by Workfront's permission model. Updated 2026-05-18 with Phase A empirical findings.
 
 ## 1. `coreAction` enum is NOT VIEW/CONTRIBUTE/MANAGE/DELETE
 
@@ -67,13 +67,13 @@ Repeat across multiple parent objCodes. See `03-accessrule-shape` and `05-audit-
 
 **Surprise:** "I'm filtering AccessLevel by `isDefault=true` and getting an error."
 **Mechanic:** `isDefault` is not a real field. Spec drafts referenced it; Phase A confirmed it returns "APIModel V17_0 does not support field isDefault (AccessLevel)".
-**Mitigation:** Don't use. To find Adobe's shipped levels vs custom ones, look at the GUID prefix (on the surveyed tenant, system-shipped levels shared a common prefix; customs had a different one) — but this is tenant-specific.
+**Mitigation:** Don't use. To find Adobe's shipped levels vs custom ones, look at the GUID prefix (system-shipped use `64f8d9d1...` on the surveyed tenant; customs have a different prefix) — but this is tenant-specific.
 
 ## 11. The "users see all projects" toggle isn't a thing in v17.0
 
 **Surprise:** "How do I read the 'users see all projects' toggle via REST?"
 **Mechanic:** It doesn't appear to exist as a discoverable setting in modern v17.0 Workfront. Phase A tried 6 endpoint variants (customerInformation, customer, customerPreferences, tenant, preferences, siteSettings) — all failed or required a name. HAR captures of the internal preference endpoints surfaced 53 keys, none visibility-related. Capture #6 surveyed AccessLevel.accessRestrictions (only `AIOFF` and `CGT` values) and probed 13 candidate visibility names against v17.0 `/customerPreferences/search` (0 hits).
-**Mitigation:** Stop looking for it. Visibility is controlled by AccessLevel ALVPER matrix + per-object AccessRules + ownership + group/team/role membership. The resolver had a layer-4 short-circuit for this in v0.14.x; v0.15.0 removed it. See `07-system-wide-overrides` for the full empirical record.
+**Mitigation:** Stop looking for it. Visibility is controlled by AccessLevel ALVPER matrix + per-object AccessRules + ownership + group/team/role membership. The resolver had a layer-4 short-circuit for this in v0.14.x; v0.15.0 removed it. See `07-system-wide-overrides` and the internal verification notes §Finding 7 for the full empirical record.
 
 ## 12. Public-link / share-link bypasses the whole model
 
@@ -93,11 +93,11 @@ Repeat across multiple parent objCodes. See `03-accessrule-shape` and `05-audit-
 **Mechanic:** `target_object.ownerID` grants implicit `DELETE` (Workfront's top action). Cannot be removed without changing ownership.
 **Diagnostic:** Flow 1's owner short-circuit. Or directly: `GET /<obj>/<id>?fields=ownerID,owner:name`.
 
-## 15. Cross-environment access level names are NOT a guarantee
+## 15. Cross-tenant access level names are NOT a guarantee
 
-**Surprise:** "Both environments have a 'Standard' access level — they should grant the same thing, right?"
-**Mechanic:** Access levels are defined independently in each environment. Same display name + completely different ALVPER collections. The Phase A survey showed 6 levels including a custom "Standard with Limits" that shares the same row count as plain "Standard" but with different `forbiddenActions`.
-**Diagnostic:** Flow 5 (cross-environment compare) — diff the ALVPER collections row-by-row.
+**Surprise:** "Both tenants have a 'Standard' access level — they should grant the same thing, right?"
+**Mechanic:** Access levels are tenant-owned. Same display name + completely different ALVPER collections. The tenant survey showed 6 levels including a custom "Standard with Limits" that shares the same row count as plain "Standard" but with different `forbiddenActions`.
+**Diagnostic:** Flow 5 (cross-tenant compare) — diff the ALVPER collections row-by-row.
 
 ## 16. `fieldAccessPrivileges` is a separate per-field grant axis
 
@@ -109,14 +109,14 @@ Repeat across multiple parent objCodes. See `03-accessrule-shape` and `05-audit-
 
 **Surprise:** "I gave the user the Standard access level but they still can't use feature X."
 **Mechanic:** Workfront license tier (encoded in `AccessLevel.licenseType` as a single letter, e.g. `F` for full) caps what the access level can actually grant. A "External User" license can't do things a "Plan" license can, regardless of ALVPER rows.
-**Diagnostic:** v0.17.0 — resolver surfaces `license_tier: {code, label, is_decoded}` on every verdict. Decoded values: `F` = Full license. Phase A only confirmed `F` empirically; Light Worker / External User tier codes weren't in the Phase A survey and will appear as `is_decoded: false`. The resolver does NOT auto-DENY based on tier (empirical surface too thin) — when the admin sees an `is_decoded: false` tier on a confusing verdict, that's the cue to check the in-product license-tier capability matrix manually.
+**Diagnostic:** v0.17.0 — resolver surfaces `license_tier: {code, label, is_decoded}` on every verdict. Decoded values: `F` = Full license. Phase A only confirmed `F` empirically; Light Worker / External User tier codes weren't in the tenant survey and will appear as `is_decoded: false`. The resolver does NOT auto-DENY based on tier (empirical surface too thin) — when the consultant sees an `is_decoded: false` tier on a confusing verdict, that's the cue to check the in-product license-tier capability matrix manually.
 
 ## 18. Layout Template hides UI that the permission model grants
 
 **Surprise:** "The resolver verdict is ALLOW at every layer but the user still says they can't see the Documents tab / can't see the Add button / can't see a whole section."
 **Mechanic:** Layout Templates (Setup → Interface → Layout Templates) are a UI-layer gate assigned per-access-level, per-group, or per-user. They control which object tabs, sections, fields, and buttons render — completely independent of the REST permission model. A user with `coreAction=DELETE` on a project and `DOCU=DELETE` on their access level can still be unable to see the Documents tab on a task if their Layout Template hides it.
 **Why this is invisible to the resolver:** `AccessLevel.layoutTemplateID` is not a v17.0 field — `GET /accessLevel/<id>?fields=layoutTemplateID` returns "APIModel V17_0 does not support field". The model has no read access to this layer at all.
-**Diagnostic:** When Flow 1 produces ALLOW but the user still reports being blocked, Layout Template is the #1 operational cause. Go to Setup → Interface → Layout Templates → find the template bound to the user's access level (or their group, or their user record) and inspect tab/section/button visibility for the relevant objCode. Confirmed 2026-05-22 on a live-tenant ADD-document-on-task issue where the model said ALLOW and the actual blocker was Layout Template hiding the Documents tab on TASK.
+**Diagnostic:** When Flow 1 produces ALLOW but the consultant insists the user is blocked, Layout Template is the #1 operational cause. Direct the consultant to Setup → Interface → Layout Templates → find the template bound to the user's access level (or their group, or their user record) and inspect tab/section/button visibility for the relevant objCode. Confirmed 2026-05-22 on a live-tenant ADD-document-on-task issue where the model said ALLOW and the actual blocker was Layout Template hiding the Documents tab on TASK.
 
 ## Cross-references
 

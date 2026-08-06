@@ -11,7 +11,7 @@
 
 ## What conditional formatting CANNOT do
 
-These are the most common reasons admins get stuck:
+These are the most common reasons consultants get stuck:
 
 1. **It does not work on `valueexpression` columns.** The rules are silently ignored.
 2. **It does not work on collections.** Same — silently ignored.

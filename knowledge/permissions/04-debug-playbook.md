@@ -8,8 +8,8 @@ Updated 2026-05-18 with Phase A empirical findings. The GET sequence is simpler 
 
 ```
 1. Confirm credentials (admin-tier API key recommended)
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh
-   # (sources ~/wf-envs/<active>/.env; refuses if no active environment)
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh
+   # (sources ~/wf-clients/<active>/.env; refuses if no active client)
 
 2. Resolve inputs
    - userID from email/name:
@@ -75,7 +75,7 @@ Suggestions (least blast radius first):
 
 ## Worked example: "Adam can't edit project X"
 
-> TODO: replace with a real captured walkthrough once this has been run against live instances. The structure below uses post-Phase-A field names.
+> TODO: replace with a real captured walkthrough once consultants run this against live tenants. The structure below uses post-Phase-A field names.
 
 ```
 Inputs:
@@ -123,7 +123,7 @@ Suggestions:
 - **Public-link bypass on REPORT/DASHBD.** Out of scope for v1.
 - **Feature-flag denial.** If the caller supplied `attempted_feature=<flag>` and the matched rule has it in `forbiddenActions`, verdict downgrades to DENY with `REASON_FORBIDDEN_FEATURE_FLAG`.
 
-## When the verdict is ALLOW but the user still says they can't
+## When the verdict is ALLOW but the consultant says "user still can't"
 
 The resolver only sees the REST-modelled layers. A handful of operational blockers sit above it and are invisible to the API. Surface these in the printout as "non-model causes" when verdict is ALLOW:
 

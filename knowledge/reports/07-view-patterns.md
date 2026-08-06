@@ -1,10 +1,8 @@
 # 07 — View Patterns
 
-*Citations of the form client-X-sample/... refer to a private empirical survey corpus used to derive these patterns; the corpus is not included in this repo.*
+This file documents the JSON-object shape of `UIVW.definition` (the view half of a Workfront report) AND `UIGB.definition.group[]` (the grouping half). The recipe in `02-create-from-scratch-recipe.md` calls into this file for anything beyond the simplest column-and-grouping case. UIVW top-level required fields (`layoutType`, `uiviewType`, `isReport`, etc.) are documented in `01-report-object-shape.md`; this file covers what goes INSIDE `definition`. All examples and the full vocabulary come from an empirical survey of real reports across five client tenants — anonymized throughout as `client-a-sample/…` through `client-e-sample/…` (the raw JSON was removed from the repo for client-data hygiene; the findings below are the distilled, verified result). Every URL in this file uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
 
-This file documents the JSON-object shape of `UIVW.definition` (the view half of a Workfront report) AND `UIGB.definition.group[]` (the grouping half). The recipe in `02-create-from-scratch-recipe.md` calls into this file for anything beyond the simplest column-and-grouping case. UIVW top-level required fields (`layoutType`, `uiviewType`, `isReport`, etc.) are documented in `01-report-object-shape.md`; this file covers what goes INSIDE `definition`. All examples and the full vocabulary come from an empirical survey of real reports across five real-world production tenants — anonymized throughout as `client-a-sample/…` through `client-e-sample/…` (the raw JSON was removed from the repo for client-data hygiene; the findings below are the distilled, verified result). Every URL in this file uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
-
-A note on what's in scope here: this file is about the **JSON shape** the API stores and returns. It is NOT about the text-mode authoring surface the user pastes into the in-product Text Mode tab (that's `workfront-textmode`). The two are duals — the API JSON shape documented here is what Workfront's UI converts text-mode into on save — but the skill writes the JSON directly and never round-trips through the text-mode parser. When this file refers to a `valueexpression` containing `CONCAT(...)` or `IF(...)`, the calc-language semantics are owned by `workfront-textmode`; this file only documents the JSON column wrapper around it (§ 6).
+A note on what's in scope here: this file is about the **JSON shape** the API stores and returns. It is NOT about the text-mode authoring surface a consultant pastes into the in-product Text Mode tab (that's `workfront-textmode`). The two are duals — the API JSON shape documented here is what Workfront's UI converts text-mode into on save — but the skill writes the JSON directly and never round-trips through the text-mode parser. When this file refers to a `valueexpression` containing `CONCAT(...)` or `IF(...)`, the calc-language semantics are owned by `workfront-textmode`; this file only documents the JSON column wrapper around it (§ 6).
 
 A second note on the companion file: `06-filter-patterns.md` documents the filter half (`UIFT.definition`) and previews the `DE:` prefix asymmetry between UIFT keys, UIVW column fields, and UIGB group fields. This file documents the full asymmetry (§ 14) with empirical citations across all three locations.
 
@@ -24,7 +22,7 @@ A second note on the companion file: `06-filter-patterns.md` documents the filte
 - `column` — array of column objects. REQUIRED; one or more. The render order is the array order. Each entry's shape is documented in § 2.
 - `row` — array of row-styling objects (optional). Used for whole-row conditional formatting; see § 11. Parallel to `column[]`, not nested.
 - `property` — small object of UI hints (optional). The only key seen in the empirical survey is `"anacondaNewFormat": "true"` — set by Workfront's "new layout" rollout on Client A's tenant (`client-a-sample/PROJ-insertion-sched-NOFILTER-uivw.json`, `client-a-sample/PROJ-planning-grid-NOFILTER-uivw.json`). Treated as opaque pass-through by the sanitizer.
-- `textmode: "false"` — string-typed, NOT a boolean. Indicates whether the user opened the in-product Text Mode tab on the view. Seen across most Client B and Client D samples. Sanitizer pass-through.
+- `textmode: "false"` — string-typed, NOT a boolean. Indicates whether the consultant opened the in-product Text Mode tab on the view. Seen across most Client B and Client D samples. Sanitizer pass-through.
 
 `row` and `property` are both optional. The minimal legal `UIVW.definition` is `{"column": [{...one column...}]}`. The maximal observed shape has all four top-level keys plus 10-15 columns.
 
@@ -286,7 +284,7 @@ Column without `valuefield` — value computed by an expression.
 }
 ```
 
-Citation: `client-b-sample/TASK-ready-to-work-uivw.json` first column. The HTML is rendered raw by Workfront's view — no sanitization. Use carefully on cross-environment clones because a hard-coded host in an `<a href>` (e.g. `https://client-e.my.workfront.com/...`) leaks the source environment's name. The `sanitize_clone.py` module's `host_rewrite` bucket detects and prompts on these.
+Citation: `client-b-sample/TASK-ready-to-work-uivw.json` first column. The HTML is rendered raw by Workfront's view — no sanitization. Use carefully on cross-tenant clones because a hard-coded host in an `<a href>` (e.g. `https://client-e.my.workfront.com/...`) leaks the source tenant's name. The `sanitize_clone.py` module's `host_rewrite` bucket detects and prompts on these.
 
 **Iterate columns (one cell, many child rows).** When the column should project one value per matching child record:
 
@@ -316,7 +314,7 @@ This file scopes to the JSON wrapper. The calc-string syntax inside `valueexpres
 
 **Quote characters: straight ASCII only.** Workfront's text-mode parser recognises ONLY straight ASCII quotes — `"` (U+0022) and `'` (U+0027). Unicode curly / smart quotes — `"` (U+201C), `"` (U+201D), `'` (U+2018), `'` (U+2019) — are NOT recognised. A `valueexpression` like `IF({percentComplete}=0,"0% complete","other")` (curly) silently fails: the parser walks past the opening `"`, treats everything until the closing `"` as one token, and the IF chain breaks. The column renders empty or shows the raw expression. Same rule applies inside `valueexpression` strings in UIGB calculated groupings.
 
-This bites HARDEST when users compose long IF chains in Google Docs / Word / Slack DMs (all of which auto-substitute curly quotes) and paste into the in-product Text Mode tab. Standard fix: paste into a plain-text editor (TextEdit on macOS in plain mode, Notepad on Windows, or `pbpaste | sed "s/[“”]/\"/g; s/[‘’]/'/g" | pbcopy`) before pasting into Workfront. Or use the in-product text mode's "find and replace" to swap curly for straight after pasting.
+This bites HARDEST when consultants compose long IF chains in Google Docs / Word / Slack DMs (all of which auto-substitute curly quotes) and paste into the in-product Text Mode tab. Standard fix: paste into a plain-text editor (TextEdit on macOS in plain mode, Notepad on Windows, or `pbpaste | sed "s/[“”]/\"/g; s/[‘’]/'/g" | pbcopy`) before pasting into Workfront. Or use the in-product text mode's "find and replace" to swap curly for straight after pasting.
 
 The pre-flight validator does NOT yet detect curly quotes (v0.11.0 candidate). On a clone, the source bundle's `valueexpression` strings are already straight-quoted (they round-tripped through the API once) — so the curly-quote risk is purely an authoring-from-scratch issue, not a clone issue.
 
@@ -457,7 +455,7 @@ Citation: `client-a-sample/PROJ-planning-grid-NOFILTER-uivw.json` Additional Pri
 - `case[].comparison.icon` — set to `"true"` (vs `"false"` for color rules in `styledef`).
 - `case[].comparison.truetext` — icon URL, not a hex color. Two forms seen:
   - Workfront-internal path: `"/static/img/r15/icons/casebuilder/light_purple.gif"` (Client A). Resolves against the tenant's host; portable across tenants (every WF tenant serves the same `/static/...` tree).
-  - Fully-qualified URL: `"https://<tenant-host>/...icon.png"`. NOT portable; the source environment's host leaks.
+  - Fully-qualified URL: `"https://<tenant-host>/...icon.png"`. NOT portable; the source tenant's host leaks.
 - All other fields (`leftmethod`/`lefttext`/`operator`/`operatortype`/`righttext`) work identically to § 7.
 
 **Sanitizer note.** Fully-qualified icon URLs starting with `https://<host>/...` are tenant-specific and flagged by `sanitize_clone.py`'s `host_rewrite` bucket. The `/static/...` form is safe and passes through unchanged.
@@ -503,7 +501,7 @@ Citation: `client-a-sample/TASK-late-by-individual-uivw.json` Assignments column
 - `type: "tile"` — column-type discriminator. Optional in practice (the presence of `tile.name` is sufficient), but emitted by Workfront's in-product builder for clarity.
 - `valuefield` — the data feeding the component. For `component.assignmentslist` it's `assignmentsListString` (a Workfront-rendered string); for `component.percentcompletelistview` it's `percentComplete`. Each tile expects a specific data shape.
 
-**Authoring rule.** The skill emits tile columns only when the user explicitly asks for "the assignments chip-list" or "the progress bar" etc. — there's no automatic mapping from "assignments" in NL to the tile. A bare `valuefield: "assignmentsList"` is a different (less polished) rendering.
+**Authoring rule.** The skill emits tile columns only when the consultant explicitly asks for "the assignments chip-list" or "the progress bar" etc. — there's no automatic mapping from "assignments" in NL to the tile. A bare `valuefield: "assignmentsList"` is a different (less polished) rendering.
 
 ## § 10. `sharecol` — merge adjacent columns
 
@@ -539,7 +537,7 @@ Citation: `client-b-sample/TASK-ready-to-work-uivw.json` first three columns. Re
 
 - `sharecol: "true"` is a **group marker, not a join indicator.** Every column in the merged-cell run carries `sharecol: "true"` — INCLUDING the first one. A contiguous run of columns with `sharecol: "true"` forms one shared cell; the first non-sharecol column (or the end of the array) closes the run.
 - **The first column in a sharecol group establishes the cell's header, width, and click-through link.** Its `displayname` becomes the column header for the whole merged cell. Its `width` controls the cell width.
-- **A column WITHOUT `sharecol: "true"` cannot be merged into a sharecol cell** — it stands alone. The most common v0.9.x pitfall (live-tested 2026-05-14 on a live Workfront sandbox): omitting `sharecol: "true"` from the primary name column. Result: the name renders as a standalone column with header "Request"/"Task"/etc., AND the breadcrumb columns 1+ render as a SECOND, header-less column to the right. Fix: add `sharecol: "true"` to column 0.
+- **A column WITHOUT `sharecol: "true"` cannot be merged into a sharecol cell** — it stands alone. The most common v0.9.x pitfall (live-tested 2026-05-14 on a live tenant): omitting `sharecol: "true"` from the primary name column. Result: the name renders as a standalone column with header "Request"/"Task"/etc., AND the breadcrumb columns 1+ render as a SECOND, header-less column to the right. Fix: add `sharecol: "true"` to column 0.
 - Each sharecol participant carries its own `valueexpression` / `valuefield` and renders independently within the shared cell.
 
 **Static separator columns.** A sharecol entry with `value` instead of `valuefield`:
@@ -648,7 +646,7 @@ Entered: 1/5/26
 
 - **`displayname` replaces the `namekey` i18n lookup at render time.** The header shows the literal `displayname` string, not the i18n key's value.
 - **Keep `namekey` set** alongside `displayname` — it's still used by the in-product builder's field-picker UI and by some sort/group dropdowns.
-- **Pick a single noun that names the cell's content type**: "Project", "Task", "Request", "Document", "Hour Entry". Avoid composite headers like "Project / Owner / Due" — they wrap awkwardly in narrow viewports and users will edit them anyway.
+- **Pick a single noun that names the cell's content type**: "Project", "Task", "Request", "Document", "Hour Entry". Avoid composite headers like "Project / Owner / Due" — they wrap awkwardly in narrow viewports and consultants will edit them anyway.
 - **The interview MUST also set `sharecol: "true"` on column 0** when composing a merged-cell group. Without it, the breadcrumb columns orphan into a header-less second column (live-test failure mode, 2026-05-14).
 
 The skill's interview MUST auto-set BOTH `sharecol: "true"` AND `displayname` on column 0 whenever it composes a sharecol group with 2+ metadata pairs in the cell.
@@ -665,7 +663,7 @@ Symptoms (live-test 2026-05-14):
 
 **Authoring rule for Detail-mode-target reports.** Every column must be `sharecol:"true"` and every data column must be preceded by a `<br><b>Label:</b>`-bearing static `value` separator. There are NO standalone-column escape hatches in Detail view — enum, date, percent, int, string all render identically (bare value, no header, no whitespace). When in doubt, the skill's interview should default to "everything in the sharecol" — there's no trade-off worth taking in Detail mode.
 
-**Tabular-mode-target reports** can still mix sharecol + standalone columns freely, because Tabular view DOES render the standalone columns with their own headers in their own cells. The skill's interview should ask the user up front which view mode the report targets, and compose accordingly. When unspecified, default to "all-sharecol" — it's correct in BOTH modes (the Tabular rendering just becomes a single wide cell instead of multiple cells, which is acceptable).
+**Tabular-mode-target reports** can still mix sharecol + standalone columns freely, because Tabular view DOES render the standalone columns with their own headers in their own cells. The skill's interview should ask the consultant up front which view mode the report targets, and compose accordingly. When unspecified, default to "all-sharecol" — it's correct in BOTH modes (the Tabular rendering just becomes a single wide cell instead of multiple cells, which is acceptable).
 
 ## § 10c. HTML output inside `valueexpression` — sanitizer rules
 
@@ -708,20 +706,20 @@ Workfront's renderer recognizes `/internal/user/avatar?ID=...` paths in `<img sr
 ```
 Owner:
 [avatar]
-Jane Smith
+Jane Admin
 ```
 
 **Fix:** explicitly set `display:inline-block` on the `<img>` style. Workfront passes the style through and the rendered avatar stays inline:
 
 ```
-Owner: [avatar] Jane Smith
+Owner: [avatar] Jane Admin
 ```
 
 The `<span>` initials chip already has `display:inline-block` for the same reason (its background+border-radius+text-align combination requires explicit block-context). Apply the same to the `<img>` for consistent inline rendering across both branches.
 
 ### Canonical "user avatar with initials fallback" pattern (empirically verified)
 
-Tested 2026-05-14 against a live Workfront sandbox. Renders an actual round photo for users with an uploaded avatar; a 24×24 grey circle with their first+last initials for users without. Both stay inline with the surrounding text.
+Tested 2026-05-14 against a live production tenant. Renders an actual round photo for users with an uploaded avatar; a 24×24 grey circle with their first+last initials for users without. Both stay inline with the surrounding text.
 
 ```json
 {
@@ -945,7 +943,7 @@ IF({percentComplete}<31,"04: 21% to 30%",
 IF({percentComplete}=100,"11: 100%","12: other")))))
 ```
 
-The `01:` / `02:` / ... prefix forces the alphabetical sort to produce the intended order. The prefix is visually mild — users either accept it ("01: 0%") or strip it visually with a post-processing CONCAT that drops the first 4 chars before rendering (but doing so reintroduces the sort bug — leave the prefix in). Adobe's advanced-reporting training day 3 walks through this exact problem; the trainer's workaround is the same. Pre-flight does not lint for this; the symptom is purely visual (the report renders, just with rows in the wrong order).
+The `01:` / `02:` / ... prefix forces the alphabetical sort to produce the intended order. The prefix is visually mild — consultants either accept it ("01: 0%") or strip it visually with a post-processing CONCAT that drops the first 4 chars before rendering (but doing so reintroduces the sort bug — leave the prefix in). Adobe's advanced-reporting training day 3 walks through this exact problem; the trainer's workaround is the same. Pre-flight does not lint for this; the symptom is purely visual (the report renders, just with rows in the wrong order).
 
 ## § 13. UIGB.definition top-level
 
@@ -1028,7 +1026,7 @@ Treat as an edge case the sanitizer accepts both ways — the skill emits with D
 - `aggregator.valuefield` must HAVE `DE:` when aggregating a custom field.
 - Group `valuefield` on a DE: field must NOT have `DE:`.
 
-**Sanitizer implication.** The clone-flow `sanitize_clone.py` does NOT rewrite the DE: prefix per-location — it preserves whatever was at the source. The destination environment must have a custom form with the same field name attached to the same object (see `03-clone-and-adapt-recipe.md` Phase 5 parity check). What the sanitizer DOES flag is the field NAME itself — every distinct DE: field in the bundle becomes a parity-check item for the user to confirm.
+**Sanitizer implication.** The clone-flow `sanitize_clone.py` does NOT rewrite the DE: prefix per-location — it preserves whatever was at the source. The destination tenant must have a custom form with the same field name attached to the same object (see `03-clone-and-adapt-recipe.md` Phase 5 parity check). What the sanitizer DOES flag is the field NAME itself — every distinct DE: field in the bundle becomes a parity-check item for the consultant to confirm.
 
 ## § 15. Per-uiObjCode column variants — PARAM and PGRP
 
@@ -1102,7 +1100,7 @@ Iterate columns on PGRP — for showing the constituent parameters of a custom f
 - If `uiObjCode in {PARAM, PGRP}`: REQUIRED keys are `name`, `valuefield`, and either `descriptiveText` or `namekey`. `linkedname` is OPTIONAL.
 - Otherwise: REQUIRED keys are `valuefield` (unless `valueexpression` is present), `valueformat`, and at least one of `namekey` / `displayname`.
 
-Cloning a PARAM or PGRP report from one environment to another preserves the variant shape on a round-trip; the skill does NOT normalize PARAM columns into the canonical column shape.
+Cloning a PARAM or PGRP report from one tenant to another preserves the variant shape on a round-trip; the skill does NOT normalize PARAM columns into the canonical column shape.
 
 **Other niche objects.** TTSK (template tasks), TPRO (template projects), and CTGY (category / custom form) reports use the canonical column shape with no variant. The PARAM/PGRP variant is the only one observed in the 40-sample survey.
 

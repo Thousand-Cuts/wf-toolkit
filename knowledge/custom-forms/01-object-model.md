@@ -1,6 +1,6 @@
 # 01 — Object Model
 
-Five linked objects make up a Workfront custom form. ObjCodes are empirically confirmed against a live Workfront sandbox, v17.0, 2026-05-18 (`/<object>/metadata` responses).
+Five linked objects make up a Workfront custom form. ObjCodes are empirically confirmed against a live production tenant v17.0, 2026-05-18 (`/<object>/metadata` responses).
 
 ```
               Category (CTGY)
@@ -29,7 +29,7 @@ A "form" in the UI. Confirmed fields:
 | Field | Type | Notes |
 |---|---|---|
 | `ID` | string | Category GUID |
-| `name` | string | Display name (UI-editable). Can contain `[` / `]` for the verification prefix. |
+| `name` | string | Display name (UI-editable). Can contain `[` / `]` for our verification prefix. |
 | `objTypes` | string[] | Target objCodes (PROJ, TASK, OPTASK, USER, ...). **Multi-objCode is supported but only via `updates=` JSON, not repeated form params.** |
 | `catObjCode` | string | Read-only mirror of `objTypes[0]`. |
 | `description` | string | Free text. |
@@ -55,7 +55,7 @@ A field definition. Reusable across forms (linked via CategoryParameter).
 | `displayType` | string | Enum — see `02-parameter-types`. TEXT / SLCT / CHCK / RDIO / TXTA / MULT / TYAH / RICH / CALC / WIDGET / DTXT. |
 | `formatConstraint` | string | Free-form render hint (CURRENCY / PERCENT / INTEGER / DECIMAL / DATE / TEXTAREA). |
 | `displaySize` | int | UI width hint. |
-| `description` | string | **End-user-facing.** Renders under the field label as "Instructions" in the form-fill UI. **Do not write changelogs, action-item IDs, audit notes, or skill-internal metadata here — those leak to every user filling out the form.** Leave blank unless the admin explicitly wants user-facing helper text. |
+| `description` | string | **End-user-facing.** Renders under the field label as "Instructions" in the form-fill UI. **Do not write changelogs, action-item IDs, audit notes, or skill-internal metadata here — those leak to every consultant filling out the form.** Leave blank unless the consultant explicitly wants user-facing helper text. |
 | `isRequired` | boolean | Whether the UI enforces non-empty. |
 | `refObjCode` | string | For USER/GROUP pickers. |
 | `extRefID` | string | External integration reference. |
@@ -133,9 +133,9 @@ One row per option on a `SLCT` / `CHCK` / `RDIO` parameter. Top-level object —
 | `isDefault` | boolean | Pre-selected on new records |
 | `extRefID` | string | External integration reference |
 
-## Why this matters for cross-environment clone
+## Why this matters for cross-tenant clone
 
-Every `*ID` field above is environment-specific. The clone walker (`form_sanitizer.py`) must:
+Every `*ID` field above is tenant-specific. The clone walker (`form_sanitizer.py`) must:
 
 1. **Drop** customerID, ownerID-style identity fields.
 2. **Remap** categoryID / parameterID references — including inside displayLogic if/when v2 reaches it.

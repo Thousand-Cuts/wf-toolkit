@@ -75,7 +75,7 @@ column.0.valueexpression={lastNote}.{noteText}                   # built-in fiel
 
 ### DE: name vs. label
 
-`DE:` lookups inside `{...}` use the source parameter's internal **`name`**, NOT its UI **`label`**. When the two differ (someone relabeled the field via the UI but the underlying `name` is unchanged), only the `name` resolves; the label is silently rejected as "is not a field in your system." Verify by `GET /attask/api/v17.0/parameter/<paramID>?fields=name,label`. See `knowledge/calculated-fields/05-cross-object-references.md` for the empirical examples and the matching rule in calc-fields.
+`DE:` lookups inside `{...}` use the source parameter's internal **`name`**, NOT its UI **`label`**. When the two differ (someone relabeled the field via the UI but the underlying `name` is unchanged), only the `name` resolves; the label is silently rejected as "is not a field in your system." Verify by `GET /attask/api/v17.0/parameter/<paramID>?fields=name,label`. See `calculated-fields/05-cross-object-references.md` for the empirical examples and the matching rule in calc-fields.
 
 Field names must match the parameter's internal `name` exactly, including spaces, capitalization, and any punctuation (hyphens / slashes / etc. are fine in `name`). There is no escaping.
 

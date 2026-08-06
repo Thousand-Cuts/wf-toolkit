@@ -16,7 +16,7 @@ Field-level pattern detail for `definition` lives in:
 
 This file covers **top-level row fields only**. Every definition shape lives in `06`/`07`.
 
-Empirical grounding: every field-map table below is sourced from an anonymized survey of 33 reports across five real-world production tenants (Client A-E; 30 UIFT, ~30 UIGB, 33 UIVW). Counts in the prose ("32/32", "30/30") are survey hit-rates.
+Empirical grounding: every field-map table below is sourced from an anonymized survey of 33 reports across five client tenants (30 UIFT, ~30 UIGB, 33 UIVW). Counts in the prose ("32/32", "30/30") are survey hit-rates.
 
 ---
 
@@ -32,7 +32,7 @@ Total field count from `/report/metadata` and the survey GETs: 58–60 depending
 
 | Field | Type | Required on POST? | Notes |
 |---|---|---|---|
-| `name` | string | YES | Display name shown in the in-product UI. Convention: prefix with the uiObjCode in casual reports (e.g. `"PROJ — Active by portfolio"`) is a matter of taste; not required. |
+| `name` | string | YES | Display name shown in the in-product UI. Convention: prefix with the uiObjCode in casual reports (e.g. `"PROJ — Active by portfolio"`) is consultant taste; not required. |
 | `uiObjCode` | string | YES | The object reported on. Valid values include `PROJ`, `TASK`, `OPTASK`, `USER`, `HOUR`, `ASSGN`, `PARAM`, `PGRP`, `PRFAPL`, `TTSK`, `DOCU`, `PRGM`, plus a long tail of less-common Workfront object codes. The skill's `validate_uiobjcode` pre-flight check resolves this against cached `/<uiObjCode>/metadata`. |
 | `reportType` | enum | YES | `"A"` analytical/grouped, `"L"` list (UIGB optional), `"M"` matrix (unverified in survey). See § 1.1. |
 | `isReport` | bool | YES | Always `true` for a report row. Distinguishes a report from a raw PTLSEC dashboard section (which uses the same objCode but with `isReport=false`). |
@@ -61,7 +61,7 @@ Total field count from `/report/metadata` and the survey GETs: 58–60 depending
 | `"L"` | List (flat rows, no grouping required) | 17 + 18 | `groupByID: null`; pure list output |
 | `"M"` | Matrix (cross-tab) | 0 in survey | Authoring a matrix layout. Unverified; defer in v0.9.0. |
 
-Heuristic for the create flow: if the user declined grouping, write `"L"` and `groupByID: null`. If they specified at least one group dimension, write `"A"` and `groupByID: <UIGB ID>`. Never write `"M"` from the v0.9.0 skill.
+Heuristic for the create flow: if the consultant declined grouping, write `"L"` and `groupByID: null`. If they specified at least one group dimension, write `"A"` and `groupByID: <UIGB ID>`. Never write `"M"` from the v0.9.0 skill.
 
 ### 1.2 Auto-populated REPORT fields (do not set on POST)
 
@@ -69,7 +69,7 @@ These appear on GET but the server rejects or overrides them on POST:
 
 `ID`, `appGlobalID`, `controllerClass`, `currency`, `customerID`, `descriptionKey`, `enteredByID`, `extRefID`, `filterControl`, `globalUIKey`, `groupControl`, `isAppGlobalEditable`, `isNewFormat`, `isPublic`, `lastUpdateDate`, `lastUpdatedByID`, `methodName`, `modDate`, `nameKey`, `objID`, `objInterface`, `objObjCode`, `preferenceID`, `scheduledReportID`, `securityAncestorsDisabled`, `securityRootID`, `securityRootObjCode`, `specialView`, `toolBar`, `viewControl`, `width`.
 
-The clone flow's `sanitize_clone.py` strips all of these from the source-environment copy before re-POSTing into the destination environment.
+The clone flow's `sanitize_clone.py` strips all of these from the source-tenant copy before re-POSTing into the destination tenant.
 
 ### 1.2.1 The `preferenceID` resource (chart + prompts spillover)
 
@@ -103,7 +103,7 @@ Created in Phase F.1 of the create flow. The skill captures the returned `ID` an
 
 ### 2.2 Empty / minimal UIFT
 
-A filter with `definition:{}` is legal — it produces an unfiltered report (every row of the uiObjCode that the user has read access to). The skill writes empty filters when the user explicitly declines a filter intent. The alternative is to write `filterID:null` on the REPORT row; both forms render the same in the UI, but the survey shows tenants overwhelmingly write an empty UIFT rather than null (29/30 reports have a non-null `filterID`).
+A filter with `definition:{}` is legal — it produces an unfiltered report (every row of the uiObjCode that the user has read access to). The skill writes empty filters when the consultant explicitly declines a filter intent. The alternative is to write `filterID:null` on the REPORT row; both forms render the same in the UI, but the survey shows tenants overwhelmingly write an empty UIFT rather than null (29/30 reports have a non-null `filterID`).
 
 The skill's convention in v0.9.0: write an empty UIFT (consistent with survey practice; downstream modify flows have a record to PUT against).
 
@@ -113,7 +113,7 @@ The skill's convention in v0.9.0: write an empty UIFT (consistent with survey pr
 
 Endpoint: `$$HOST/attask/api/v17.0/uigb`
 
-Created in Phase F.2 of the create flow when the user has specified grouping. Skipped entirely when they have not (in which case `groupByID:null` on the REPORT row and `reportType:"L"`).
+Created in Phase F.2 of the create flow when the consultant has specified grouping. Skipped entirely when they have not (in which case `groupByID:null` on the REPORT row and `reportType:"L"`).
 
 | Field | Type | Required on POST? | Notes |
 |---|---|---|---|
@@ -166,13 +166,13 @@ The v0.8.0 file documented `/report/metadata` discovery on the assumption that t
 
 The schema cache (`04-runtime-schema-discovery.md`) is still useful, but for a different purpose:
 
-- **Pre-flight validation of field existence on the target uiObjCode.** When the user asks for a column named `isTemplate` on a `PROJ` report, the skill needs to know that `PROJ` does not expose `isTemplate` (that field lives on `TMPL`). The cached `/PROJ/metadata` answers that question.
+- **Pre-flight validation of field existence on the target uiObjCode.** When the consultant asks for a column named `isTemplate` on a `PROJ` report, the skill needs to know that `PROJ` does not expose `isTemplate` (that field lives on `TMPL`). The cached `/PROJ/metadata` answers that question.
 - **Enum value enumeration.** Cached metadata gives the valid enum values for fields like `status` on `PROJ`, so the filter composer can reject typos.
 - **Reference-relation traversal.** Cached metadata tells the skill that `portfolio:name` is a valid reference traversal on `PROJ` (because `PROJ` has a `portfolio` reference, and `PFOLIO` has a `name` field).
 
 The create flow does NOT discover field names like `uiObjCode`, `filterType`, `layoutType`, `isNewFormat`, or any of the other REPORT/UIFT/UIGB/UIVW row-level fields at runtime. Those are hard-coded in `02-create-from-scratch-recipe.md`, frozen against the empirical survey. If Workfront ships a future major API surface that renames them, the skill breaks loudly — and that's the right failure mode for a known-canonical set.
 
-The fixture set under `tests/fixtures/metadata/` captures the canonical metadata for offline pre-flight tests.
+The fixture set under `skills/workfront-reports/tests/fixtures/metadata/` captures the canonical metadata for offline pre-flight tests.
 
 ---
 
@@ -190,9 +190,9 @@ Fields (per `python-workfront` v40 and Adobe's API explorer):
 | `securityObjID` | uuid | The newly-created report's ID |
 | `coreAction` | enum | `VIEW` (read-only) or `EDIT` (read-write) |
 
-The v0.9.0 skill documents the shape here but does NOT write AccessRules. Reports created by the skill inherit the user's own access; sharing the report with other users/teams/groups is a manual step in the in-product UI after creation, or a v0.10.0 candidate for an `accessRules:[{...}]` slot in the interview.
+The v0.9.0 skill documents the shape here but does NOT write AccessRules. Reports created by the skill inherit the consultant's own access; sharing the report with other users/teams/groups is a manual step in the in-product UI after creation, or a v0.10.0 candidate for an `accessRules:[{...}]` slot in the interview.
 
-The clone flow likewise does not carry source-environment AccessRules into the destination environment — accessor IDs are tenant-local and would not resolve. The skill prints a manual-share reminder after every clone.
+The clone flow likewise does not carry source-tenant AccessRules into the destination tenant — accessor IDs are tenant-local and would not resolve. The skill prints a manual-share reminder after every clone.
 
 ---
 

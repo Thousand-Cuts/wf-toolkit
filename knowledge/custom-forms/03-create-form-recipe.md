@@ -22,7 +22,7 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
 5. Show payload — print the call sequence with resolved JSON bodies + count
    ("this will fire N calls against $$HOST")
 
-6. Single confirm: the admin types `apply`
+6. Single confirm: consultant types `apply`
 
 7. Write in order (CORRECTED — see Phase A findings):
 
@@ -43,7 +43,7 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
                displayType=<TEXT|SLCT|CHCK|RDIO|TXTA|MULT|TYAH|RICH|CALC|WIDGET|DTXT>
                formatConstraint=<optional render hint>
                isRequired=<bool>
-               # description: OMIT unless the admin explicitly asked for
+               # description: OMIT unless the consultant explicitly asked for
                # end-user helper text. The `description` field renders as
                # "Instructions" under the field label in the form-fill UI —
                # do NOT write action-item refs, audit dates, or skill-internal
@@ -76,7 +76,7 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
        → cascade-rule IDs auto-assigned; nested matches' categoryCascadeRuleID is auto-derived
 
 8. Print result: form URL + the in-product builder URL + follow-up suggestions
-   ("attaching to existing records in bulk is out of scope — do it in-product")
+   ("attach to existing records via dedicated bulk-update tooling")
 ```
 
 **Total call count:** 1 (Category) + M (groups) + 2N (params + bulk-options) + 1 (final link PUT — also carries cascade rules) = `2 + M + 2N` typical. Cascade rules add zero new HTTP calls; they piggyback on the final PUT.
@@ -87,15 +87,15 @@ For DROP / RADIO / CHECKBOX parameters with many options (10+, real-world cases 
 
 1. **Inline paste** — line-separated, comma-separated, or `label = value` pairs (autodetected by `option_list_parser.py`).
 2. **CSV / TSV import** — header row required; columns `label`, `value` (opt), `displayOrder` (opt), `isHidden` (opt).
-3. **Clone options from an existing parameter** — same environment: `--clone-options-from <parameterID>`. Cross-environment: pass a source-environment parameterID; ID sanitisation applies.
+3. **Clone options from an existing parameter** — same tenant: `--clone-options-from <parameterID>`. Cross-tenant: pass a source-tenant parameterID; ID sanitisation applies.
 4. **Generate from a Workfront query** — e.g. "use the active portfolio names as options".
 
 When option count ≥10, the skill switches from N sequential POSTs to a single bulk POST per chunk of 100.
 
-> **Prod destination note:** the `WF_ENV_WRITE_ACK=1` prefix below assumes the admin has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
+> **Prod destination note:** the `WF_CLIENT_WRITE_ACK=1` prefix below assumes the consultant has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X PUT \
+WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X PUT \
   "/attask/api/v17.0/parameterOption?method=POST" \
   --data-urlencode 'updates=[{"parameterID":"<id>","label":"o1","value":"o1","displayOrder":1},...up to 100 entries...]'
 ```
@@ -140,7 +140,7 @@ Phase B-3 (2026-05-22) confirmed display logic IS REST-accessible via the `categ
 
 ### How Flow 1 handles cascade rules
 
-The admin can volunteer display rules in their initial natural-language brief alongside the field list. **No separate interview phase** — the parser runs over the brief and lifts out any sentences that match a recognised pattern. Supported phrasings (see `skills/workfront-custom-forms/scripts/cascade_rule_parser.py` for the canonical list):
+The consultant can volunteer display rules in their initial natural-language brief alongside the field list. **No separate interview phase** — the parser runs over the brief and lifts out any sentences that match a recognised pattern. Supported phrasings (see `skills/workfront-custom-forms/scripts/cascade_rule_parser.py` for the canonical list):
 
 | Pattern | Builds |
 |---|---|
@@ -155,7 +155,7 @@ Field and value names can be quoted (`'X'` or `"X"`) or left bare for single-wor
 
 ### Resolution + validation (runs before the apply gate)
 
-1. Resolve each rule's trigger / target / multi-match by Parameter name to the IDs the skill is about to create. Names that don't match any field in the form → reject with the closest-name suggestion (likely a typo).
+1. Resolve each rule's trigger / target / multi-match by Parameter name to the IDs the skill is about to create. Names that don't match any field in the form → reject with the closest-name suggestion (likely consultant typo).
 2. For SLCT/CHCK/RDIO triggers, validate each `value` exists as a `ParameterOption.value` on the trigger Parameter. Reject early with the available options — better than waiting for the server's `Cascade Rule Match value "X" is invalid` rejection.
 3. Render the parsed rules in human-readable prose alongside the parameter list in the apply-gate prompt:
 
@@ -166,7 +166,7 @@ Field and value names can be quoted (`'X'` or `"X"`) or left bare for single-wor
      Rule 3: Show the rest of the form when 'Region' ≠ 'EMEA'
    ```
 
-   The admin sees what the parser understood before any write. If wrong, they say "edit" and clarify.
+   The consultant sees what the parser understood before any write. If wrong, they say "edit" and clarify.
 
 ### Payload integration
 
@@ -174,7 +174,7 @@ No new HTTP calls — the existing `PUT /category/<id>` link step (step 7's fina
 
 ### Out of scope (Flow 1)
 
-- Section-level rules (`nextParameterGroupID`) — supported by Flow 2 modify; Flow 1 NL parser maps every target to a Parameter by default. If the admin wants a group-level rule, use Flow 2 after the form is created.
+- Section-level rules (`nextParameterGroupID`) — supported by Flow 2 modify; Flow 1 NL parser maps every target to a Parameter by default. If the consultant wants a group-level rule, use Flow 2 after the form is created.
 - `ruleType=SKIP` is supported but rarely the natural NL phrasing — `hide X when Y is Z` is parsed as SKIP+EXIST, which is the canonical SKIP form.
 
 ## Cross-references

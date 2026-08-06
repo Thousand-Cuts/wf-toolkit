@@ -29,7 +29,7 @@ Result shape (illustrative):
       }
     },
     "assignedTo": {
-      "name": "Jane Doe"
+      "name": "Jane Admin"
     }
   }
 }
@@ -147,13 +147,13 @@ A single Workfront record (`OPTASK`, `PROJ`, `TASK`, etc.) can have **multiple c
 GET /attask/api/v17.0/objectcategory/search?objID=<recordID>&fields=ID,objObjCode,categoryID,category:name
 ```
 
-Returns one row per attached form. Example response from a real request (names and IDs sanitized):
+Returns one row per attached form. Example response from a real request-queue issue:
 
 ```json
 {"data": [
-  {"ID":"...","objObjCode":"OPTASK","categoryID":"aabbccdd000000000000000000000011","category":{"name":"3. Marketing Piece Creation - Request"}},
-  {"ID":"...","objObjCode":"OPTASK","categoryID":"aabbccdd000000000000000000000012","category":{"name":"0. Internal Triage"}},
-  {"ID":"...","objObjCode":"OPTASK","categoryID":"aabbccdd000000000000000000000013","category":{"name":"0. Asset Calculations - Admin Only"}}
+  {"ID":"...","objObjCode":"OPTASK","categoryID":"69fa28a100056f842e48bcaa67671cfd","category":{"name":"3. LP - Marketing Piece Creation - Acute/Medical"}},
+  {"ID":"...","objObjCode":"OPTASK","categoryID":"69fb5660000648f5f08c526fedd7f3fc","category":{"name":"0. Internal/Triage"}},
+  {"ID":"...","objObjCode":"OPTASK","categoryID":"69fb574c00046f01dcad1d8ff2b34531","category":{"name":"0. Asset Calculations - Admin Only"}}
 ]}
 ```
 
@@ -164,6 +164,6 @@ Returns one row per attached form. Example response from a real request (names a
 **Symptoms of having missed OBJCAT in an audit:**
 - "The field exists tenant-wide but isn't attached to <form>" — true at the `CategoryParameter` level, but the field may still be reachable on the record via a sibling form attached via OBJCAT.
 - "DE:X returns null even though the form has the field" — the form may not be attached to *this* record (check `objID` on the join table) even though it's the queue topic's default.
-- "I need to add an internal-only field to a customer-facing form" — wrong frame. Add the field to an internal-prefix sibling form (a useful convention: a `0.<name>` prefix) and attach that sibling form to the topic via OBJCAT. Customer never sees it; AE / triager fills it during workflow.
+- "I need to add an internal-only field to a customer-facing form" — wrong frame. Add the field to an internal-prefix sibling form (a convention seen in the field: `0.<name>`) and attach that sibling form to the topic via OBJCAT. Customer never sees it; AE / triager fills it during workflow.
 
-Source: empirical discovery 2026-06-08 against a client preview sandbox, v17.0. Originally surfaced when an audit concluded a triage field was "missing from the request form" — it was on a sibling triage form auto-attached to every request via the queue topic's OBJCAT rows.
+Source: empirical discovery 2026-06-08 against a preview sandbox tenant v17.0. Originally surfaced when an audit concluded a shared-service field was "missing from the request form" — it was on a sibling triage form auto-attached to every request via the queue topic's OBJCAT rows.

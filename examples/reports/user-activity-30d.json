@@ -1,5 +1,5 @@
 {
-  "description": "USER report with $$TODAY-30d session token + asPercent column. reportType=L. Shape and token pattern verified against a private empirical survey corpus (not shipped with this repo).",
+  "description": "USER report with $$TODAY-30d session token + asPercent column. reportType=L. Mirrors empirical shape from /tmp/client-b-survey USER samples plus token pattern from client-c-survey/PROJ-revenue-prog-CHART-uift.json.",
   "calls": [
     {
       "step": 1,

@@ -1,5 +1,5 @@
 {
-  "description": "EXISTS block filter — 'documents where there EXISTS a related TASK assigned to me'. Demonstrates the 3 required control keys ($$EXISTSMOD, $$OBJCODE, $$ID with FIELD: prefix). Empirically verified against a surveyed DOCU approval report.",
+  "description": "EXISTS block filter — 'documents where there EXISTS a related TASK assigned to me'. Demonstrates the 3 required control keys ($$EXISTSMOD, $$OBJCODE, $$ID with FIELD: prefix). Mirrors client-b-sample/DOCU-pending-approval-uift.json.",
   "uift_definition": {
     "EXISTS:a:$$EXISTSMOD": "EXISTS",
     "EXISTS:a:$$OBJCODE": "TASK",

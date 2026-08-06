@@ -66,7 +66,7 @@ If you want an avatar associated with a grouping value, you have two options:
 1. **Native chip** — `group.N.valuefield=<rel>:name` + `group.N.linkedname=direct`. Whether the photo renders depends on tenant version; in many tenants the header shows the name as plain text without an avatar.
 2. **Move the chip to the view** — keep the group header plain text and put the avatar chip valueexpression on the FIRST column of the view's combined cell. Every row in a group has the same grouping value, so the chip repeats per row inside the group — but it's reliably rendered.
 
-The "move it to the view" pattern is the working answer for "grouped-by-person with avatars". Verified against Client E 2026-05-14: a `group.0.valueexpression` returning the chip markup rendered `Assignee: <span style='…'>JD</span>Jane Doe (1)` in every group bar until the UIGB was reverted to a plain `valuefield` and the chip moved into the view.
+The "move it to the view" pattern is the working answer for "grouped-by-person with avatars". Verified against Client E 2026-05-14: a `group.0.valueexpression` returning the chip markup rendered `Assignee: <span style='…'>SH</span>Sharon Hong (1)` in every group bar until the UIGB was reverted to a plain `valuefield` and the chip moved into the view.
 
 ## Avatar chip pattern (user fields inside a combined column)
 
@@ -90,13 +90,13 @@ Mechanics:
 - `{ownerID}` (or `{sponsorID}` / `{assignedToID}`) is the foreign-key field that gets interpolated into the URL. Use the FK directly — `{owner}.{ID}` also works but is one extra hop.
 - `linkedname=owner` (not `direct`) makes the whole cell clickable to the user's profile quick-view. Match the relation name to the user field — `linkedname=sponsor` for sponsor, `linkedname=assignedTo` for assignees.
 - Keep this column as ONE column in the shared group — don't break it into separate img + name sub-columns. Workfront re-flows the cell as a single HTML run.
-- `valueexpression` must stay on a single line — see the single-line rule in `SKILL.md`.
+- `valueexpression` must stay on a single line — see the consultant-rules note in `SKILL.md`.
 
 To swap the user relation, search-and-replace `owner` → `<other-relation>` and `ownerID` → `<other-relation>ID` everywhere in the expression. Common substitutions: `sponsor` / `sponsorID`, `assignedTo` / `assignedToID`, `enteredBy` / `enteredByID`, `manager` / `managerID`.
 
 ### Initial-only chip (no photo lookup)
 
-If avatar photos are not enabled in your instance or you prefer a uniform look, simplify the expression to always render the initials chip:
+If avatar photos are not enabled in the tenant or you prefer a uniform look, simplify the expression to always render the initials chip:
 
 ```
 column.N.valueexpression=CONCAT("<span style='display:inline-block;width:24px;height:24px;border-radius:50%;background:#6b7280;color:#fff;text-align:center;line-height:24px;font-size:11px;font-weight:600;vertical-align:middle;margin-right:6px'>",SUBSTR({owner}.{firstName},0,1),SUBSTR({owner}.{lastName},0,1),"</span>",{owner}.{name})

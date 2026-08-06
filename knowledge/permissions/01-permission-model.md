@@ -42,7 +42,7 @@ Default: DENY.
 ADD, DELETE, EDIT, LIMITED_EDIT, VIEW
 ```
 
-**Critical:** earlier spec drafts mentioned `CONTRIBUTE` and `MANAGE` — these **do not exist** on real Workfront tenants. The actual enum surveyed across 393 production ALVPER rows on a live Workfront tenant is the 5 values above.
+**Critical:** earlier spec drafts mentioned `CONTRIBUTE` and `MANAGE` — these **do not exist** on real Workfront tenants. The actual enum surveyed across 393 production ALVPER rows on the surveyed tenant is the 5 values above.
 
 `EDIT` is what the spec drafts called `CONTRIBUTE`/`MANAGE`. `DELETE` is the top of the read/write tier. `LIMITED_EDIT` is a constrained subset of EDIT (e.g. "edit assignments only"). **`ADD` is a separate axis** — it represents "can create new objects of this type" and is NOT on the linear VIEW→LIMITED_EDIT→EDIT→DELETE progression. Granting EDIT does NOT imply ADD.
 
@@ -88,7 +88,7 @@ The resolver's `attempted_feature` parameter lets a caller ask "does my user hav
 
 ## `fieldAccessPrivileges` is an orthogonal axis
 
-Separate from the ALVPER capability matrix and the `forbiddenActions` feature-flag denials, every AccessLevel carries a `fieldAccessPrivileges: string[]` of per-field-class grants (financial / DE custom-data / time-management / advanced per-object grants). See `02-access-level-reference` for the full 18-code enum and the empirical distribution across the 6 surveyed access levels.
+Separate from the ALVPER capability matrix and the `forbiddenActions` feature-flag denials, every AccessLevel carries a `fieldAccessPrivileges: string[]` of per-field-class grants (financial / DE custom-data / time-management / advanced per-object grants). See `02-access-level-reference` for the full 18-code enum and the empirical distribution across the 6 surveyed levels.
 
 v0.16.0: the resolver surfaces these on every verdict as `field_privileges: {raw, decoded, undecoded}` so an auditor explaining "why can't Adam see project financials?" can see at a glance whether Adam's access level has `VFN` / `EFN` even when the ALVPER `(PROJ, VIEW)` row would otherwise grant.
 

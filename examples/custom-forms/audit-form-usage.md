@@ -4,22 +4,22 @@ Flows 4a + 4b — the most-asked audit question in real assessments.
 
 ## Scenario A — "Where is form X attached?"
 
-> Admin: "Where is the 'Vendor Tracking' form attached? Before we deprecate it I need to know which projects are using it."
+> Consultant: "Where is the 'Vendor Tracking' form attached? Before we deprecate it I need to know which projects are using it."
 
 ```bash
 # 1. Resolve form name to ID + objCode
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/category/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/category/search \
   --data-urlencode "name=Vendor Tracking" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,objCode"
 # Returns: ID=cat-abc, objCode=PROJ
 
 # 2. Count
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/project/count \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/count \
   --data-urlencode "categoryID=cat-abc" --data-urlencode "categoryID_Mod=eq"
 # Returns: {"count": 47}
 
 # 3. First page
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/project/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/search \
   --data-urlencode "categoryID=cat-abc" --data-urlencode "categoryID_Mod=eq" \
   --data-urlencode "fields=ID,name,status" \
   --data-urlencode '$$LIMIT=200' --data-urlencode '$$FIRST=0'
@@ -44,27 +44,27 @@ Attached to 47 projects:
 
 ## Scenario B — "Which forms have field Y?"
 
-> Admin: "We want to rename the `Spend Approved` field. Which forms is it on?"
+> Consultant: "We want to rename the `Spend Approved` field. Which forms is it on?"
 
 ```bash
 # 1. Resolve parameter
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/parameter/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/parameter/search \
   --data-urlencode "name=Spend Approved" --data-urlencode "name_Mod=cieq" \
   --data-urlencode "fields=ID,name,displayName,parameterType"
-# Or, if the admin gave the DE: form, search by Parameter.name
+# Or, if the consultant gave the DE: form, search by Parameter.name
 # (strip the DE: prefix first).
 
 # Returns: parameterID = param-spend-123
 
 # 2. Find CategoryParameter rows referencing this parameter
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/categoryParameter/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/categoryParameter/search \
   --data-urlencode "parameterID=param-spend-123" \
   --data-urlencode "fields=categoryID"
 # Returns: [{categoryID: cat-abc}, {categoryID: cat-def}, {categoryID: cat-ghi}]
 
 # 3. Resolve each Category
 for catID in cat-abc cat-def cat-ghi; do
-  bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/category/$catID \
+  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/category/$catID \
     --data-urlencode "fields=ID,name,objCode"
 done
 ```
@@ -100,4 +100,4 @@ Suggested remediation:
 - Flow 4a uses the inline `categoryID` field on the target objCode — no join table walk needed.
 - Flow 4b walks Parameter → CategoryParameter → Category. Two API levels.
 - Both flows are read-only and paginate cleanly.
-- The "rename caveat" output combines the audit result with `09-gotchas.md` knowledge — proactive surfacing.
+- The "rename caveat" output combines the audit result with `[[09-gotchas]]` knowledge — proactive surfacing.

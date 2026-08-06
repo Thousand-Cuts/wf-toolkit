@@ -68,7 +68,7 @@ Replace `assignment` with `project`, `task`, `optask`, etc. for other object typ
 
 `GET /<objcode>/metadata` returns `fields.status.possibleValues` for each object — but only the BASE enum from `com.attask.common.constants.<Type>StatusEnum`. Custom statuses added by the org (system-level or group-level) do NOT appear there.
 
-Empirical example (client preview sandbox, v17.0, 2026-06-02): the tenant has a custom Issue status `LAP`. `GET /optask/metadata` returns only the 10 base values (`NEW`, `INP`, `AWF`, `ONH`, `ROP`, `CND`, `WTR`, `RLV`, `VCP`, `CLS`). `LAP` is absent. So metadata is a starting point, never the source of truth for custom statuses.
+Empirical example (a preview sandbox tenant, v17.0, 2026-06-02): the tenant has a custom Issue status `LAP`. `GET /optask/metadata` returns only the 10 base values (`NEW`, `INP`, `AWF`, `ONH`, `ROP`, `CND`, `WTR`, `RLV`, `VCP`, `CLS`). `LAP` is absent. So metadata is a starting point, never the source of truth for custom statuses.
 
 ### Verifying a custom status exists (write round-trip)
 
@@ -138,13 +138,13 @@ These are computed by Workfront based on schedule, not directly settable.
 
 ## Duration Type codes (Task)
 
-Task `durationType` controls whether effort or duration is the input. **Codes verified on a client preview sandbox (v18.0), 2026-06-24:**
+Task `durationType` controls whether effort or duration is the input. **Codes verified on client-c.preview v18.0, 2026-06-24:**
 
 | Code | Display name | Effort (`workRequired`) behavior |
 |---|---|---|
 | `A` | Calculated Assignment | **Default** for new/converted tasks. `workRequired` is *calculated* from the assignment — a direct PUT of `workRequired` is silently ignored. |
 | `D` | Effort Driven | `workRequired` is the **input**; duration is calculated from it. Use this to set or pin Planned Hours. |
-| `S` | Simple | Duration is a manual input, independent of effort — BUT POSTing `durationType:"S"` with a `duration` and no `workRequired` reads back **`duration:0`** (a planned-completion date collapses onto the start). To pin an explicit multi-day duration on a task, **omit `durationType`** (defaults to `A`) or use `D`. Verified on a live Workfront sandbox, v15.0, 2026-07-02. |
+| `S` | Simple | Duration is a manual input, independent of effort — BUT POSTing `durationType:"S"` with a `duration` and no `workRequired` reads back **`duration:0`** (a planned-completion date collapses onto the start). To pin an explicit multi-day duration on a task, **omit `durationType`** (defaults to `A`) or use `D`. Verified on a sandbox tenant v15.0, 2026-07-02. |
 
 (The UI also offers "Calculated Work"; that code was not verified — confirm via a GET on a task of that type before hardcoding.)
 

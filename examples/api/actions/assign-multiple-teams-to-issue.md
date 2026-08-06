@@ -9,8 +9,8 @@ Authorization: Bearer <token>
 
 {
   "teamIDs": [
-    "aabbccdd000000000000000000000001",
-    "aabbccdd000000000000000000000002"
+    "50d0dc4c0010afa2f9fdac7ec52fe7ce",
+    "5390effa0098dd5dded9985143c31f0f"
   ],
   "userIDs": [],
   "roleIDs": []

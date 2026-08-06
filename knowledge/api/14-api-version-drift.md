@@ -11,7 +11,7 @@ This file consolidates what changed across v20, v21, v22 — especially the item
 
 ## Layout Templates — unchanged across all three releases
 
-Zero changes to `UITMPL`, `LYTMPL`, or `LTMCL` in v20, v21, or v22. Confirmed empirical write-surface probe against a live Workfront sandbox on 2026-05-22:
+Zero changes to `UITMPL`, `LYTMPL`, or `LTMCL` in v20, v21, or v22. Confirmed empirical write-surface probe against a live production tenant on 2026-05-22:
 
 - **UITMPL operations: `[count, delete, get, report, search]`** — no `add`, no `edit`. POST returns `unable to find method for service endpoint type: ADD (class com.attask.biz.UITemplateMethods...)`. PUT returns the same for `EDIT`. The new-experience layout template is genuinely read-only over REST. Only 2 actions exposed: `migrateLayoutTemplates(IDs[], overrideIfExists)` and `migrateCustomersAllLayoutTemplates(overrideIfExists)` — Classic→New within-tenant only.
 - **LYTMPL operations: `[add, count, delete, edit, get, report, search]`** — full CRUD. Writable: `name`, `description`, `extRefID`, `groupID`, `showHomeTimestamps`, `defaultNavItem`, `licenseType`, `navItems` (via `updates=` JSON envelope). NOT writable: `navBar` is server-computed from `navItems`; submitted JSON is discarded.
@@ -49,7 +49,7 @@ Subsequent additions:
 | v21 | `HTML` | `SNGLROLLUP` | `Parameter.isActive` field (custom fields can be deactivated); `Category.catObjCode` and `objTypes` accept `TEAMOB` (custom forms on Teams) |
 | v22 | — | — | `Parameter.enteredByID`, `Parameter.entryDate`; `Category.entryDate` |
 
-The Phase B-1 probe on a client preview tenant (2026-05-22) discovered most of these empirically — `02-parameter-types.md` already documents `INTRNL/MULTINTRNL/UIEXTNSION/SNGLROLLUP/HTML` as working displayTypes/dataTypes. What it doesn't make explicit is that these are v20+/v21+ surfaces and may not work against a v17.0-pinned tenant.
+The Phase B-1 probe on client-d-preview (2026-05-22) discovered most of these empirically — `02-parameter-types.md` already documents `INTRNL/MULTINTRNL/UIEXTNSION/SNGLROLLUP/HTML` as working displayTypes/dataTypes. What it doesn't make explicit is that these are v20+/v21+ surfaces and may not work against a v17.0-pinned tenant.
 
 The most consequential is `Parameter.isActive` (v21). Custom-form field audits enumerating Parameters need to filter or report on isActive when run against v21+ tenants.
 
@@ -68,11 +68,11 @@ Adobe's API Explorer enumerates these `Parameter` fields, but they are post-v17 
 
 Practical implication for v17 tenants: pulling `displayType` and `dataType` is enough to characterize a field. Don't request `isPrivate` or `parameterType` in a `fields=` list against v17 — Workfront rejects the whole call rather than ignoring the unknown field.
 
-Verified on a client preview sandbox, v17.0, 2026-06-02.
+Verified on a preview sandbox tenant, v17.0, 2026-06-02.
 
 ## Financial layer — v20 rewrite + v21 cleanup
 
-Affects `workfront-api` callers in general and any bulk-update flows that touch rates / costs / currency.
+Affects `workfront-api` callers in general and dedicated bulk-update tooling flows that touch rates / costs / currency.
 
 **v20:**
 1. 30+ Project, 15+ Task, 12+ Template, 16+ Work, 9+ TemplateTask financial fields gained the `RESTRICTABLE` flag and converted from `double` → `java.math.BigDecimal`. Currency reads against v20+ tenants return BigDecimal-as-string, not JS numbers. Naïve `parseFloat()` is fine; naïve number arithmetic without coercion silently truncates precision on large amounts.
@@ -105,7 +105,7 @@ v22 added `ReportShareableFolder (RPSHFD)` with full CRUD (`add/count/delete/edi
 
 ## Other notable additions
 
-- **v20:** `Avatar.attachedObjectCode` + COPY operation on Avatar; `DOMAIN_EXTENDABLE` flag on Assignment / OpTask / Portfolio / Program / Task / Role / User; `SHARABLE` on Company; new `CustomerPreferences` project-settings values (worth surfacing in a platform assessment).
+- **v20:** `Avatar.attachedObjectCode` + COPY operation on Avatar; `DOMAIN_EXTENDABLE` flag on Assignment / OpTask / Portfolio / Program / Task / Role / User; `SHARABLE` on Company; new `CustomerPreferences` project-settings values (worth surfacing in platform assessments).
 - **v21:** `APPROVAL` / `OPTASK` / `PROJ` / `TASK` / `WORK` gained `actualWorkRequiredDouble`; `CUST.APDISAB`; `OriginalRequest (ORGREQ)` added as a new resource; `PARAM.HTML dataType` adds a rich-text variant distinct from `RICH`.
 - **v22:** `USER.userLocations` collection removed entirely (`USRLOC` object removed); `TASK.convertedOpTaskID` + `convertedOpTask` reference (task↔issue conversion is now traceable); `JournalEntry.changeType` gained `PFM` (folder move) value.
 
@@ -119,4 +119,4 @@ v22 added `ReportShareableFolder (RPSHFD)` with full CRUD (`add/count/delete/edi
 
 ## Source
 
-Adobe Experience League release notes at `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/api-notes/new-api-version-{20,21,22}`. Layout-template empirical re-verify against a live Workfront sandbox on 2026-05-22.
+Adobe Experience League release notes at `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/api-notes/new-api-version-{20,21,22}`. Layout-template empirical re-verify against a live production tenant on 2026-05-22.

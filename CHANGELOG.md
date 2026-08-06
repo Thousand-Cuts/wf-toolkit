@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.0 — 2026-08-06
+
+Knowledge sync from the maintainers' verification pipeline (all findings
+tested against live tenants before entering the record):
+
+- **api:** status/enum corrections (Project "Approved" is `APR` not `APV`;
+  On Target stores `ON` not `OT`), convertToTask effort model, templateID
+  project creation, proofing recipes, silent-no-op traps, API v20-22 diffs.
+- **custom-forms:** parameter-type coverage matrix, display-logic REST
+  surface (categoryCascadeRules), audit recipes, metadata census.
+- **permissions:** ALVPER capability matrix survey, fieldAccessPrivileges
+  enum, inheritance walker, layout-template gotcha, internal-endpoint
+  findings.
+- **reports:** pre-flight validation, filter/view patterns, runtime schema
+  discovery, sanitizer rules.
+- **textmode/calculated-fields/business-rules:** assorted verified gotchas.
+
 All notable changes to this plugin are documented here. Versioning follows semver: patch for fixes, minor for new skills/features, major for breaking changes.
 
 ## 0.1.0 — 2026-07-29

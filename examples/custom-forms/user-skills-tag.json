@@ -30,5 +30,5 @@
       ]
     }
   },
-  "_TODO_phase_a_widen": "Phase A only tested PROJ; USER-level forms are likely identical but worth a sandbox confirm. The (TEXT, CHCK) combination is empirically valid (34 production examples in a sampled reference instance)."
+  "_TODO_phase_a_widen": "Phase A only tested PROJ; USER-level forms are likely identical but worth a sandbox confirm. The (TEXT, CHCK) combination is empirically valid (34 production examples in the production sample)."
 }

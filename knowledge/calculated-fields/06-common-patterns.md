@@ -1,6 +1,6 @@
 # 06 — Common Patterns
 
-All examples follow the required format: **Format line is stated first**, then the expression.
+All examples follow the required coworker format: **Format line is stated first**, then the expression.
 
 ---
 

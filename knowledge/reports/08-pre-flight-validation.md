@@ -1,20 +1,18 @@
 # 08 — Pre-Flight Validation
 
-*Citations of the form client-X-sample/... refer to a private empirical survey corpus used to derive these patterns; the corpus is not included in this repo.*
-
 Documents the pre-flight validation gate inserted between Phase C (compose payloads) and Phase E (apply gate) in the create and modify recipes. Catches errors like `isTemplate` on `PROJ` — fields that don't exist on the target object — before any byte writes. Builds on top of `schema_cache.py`'s cached `/<uiObjCode>/metadata` per `04-runtime-schema-discovery.md`. Every URL in this file uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
 
 The algorithm documented here is the contract `scripts/pre_flight_validator.py` (and its test suite) asserts against. The text here is normative: if a future change to the validator disagrees with this file, one of them is wrong and the prose is the tiebreaker until the disagreement is resolved.
 
 ## § 1. Why pre-flight exists
 
-Workfront's REST API is generous about what it accepts at POST time. A UIFT/UIGB/UIVW body that references fields the target object doesn't have — `isTemplate` on `PROJ`, `homeTeamID` on `DOCU`, `DE:Approved Hours` on an environment with no such custom-form parameter — POSTs cleanly. The 200 OK arrives, the row gets created, and the failure mode only surfaces later: the report either renders empty, renders with "Invalid Parameter" in the column header, or refuses to open in the in-product Edit builder. Either way, the user has to delete the broken row and start over, and the cleanup of orphaned UIFT/UIGB/UIVW rows (per `05-gotchas.md` § 5) is manual.
+Workfront's REST API is generous about what it accepts at POST time. A UIFT/UIGB/UIVW body that references fields the target object doesn't have — `isTemplate` on `PROJ`, `homeTeamID` on `DOCU`, `DE:Approved Hours` on a tenant with no such custom-form parameter — POSTs cleanly. The 200 OK arrives, the row gets created, and the failure mode only surfaces later: the report either renders empty, renders with "Invalid Parameter" in the column header, or refuses to open in the in-product Edit builder. Either way, the consultant has to delete the broken row and start over, and the cleanup of orphaned UIFT/UIGB/UIVW rows (per `05-gotchas.md` § 5) is manual.
 
 Discovered live on 2026-05-13: a `PROJ` report was composed with `"isTemplate": "false"` in `UIFT.definition`. The POST sequence succeeded — UIFT, UIGB, UIVW, REPORT all created — but rendering returned a 200 with no rows and the column header showed "Invalid Parameter: isTemplate." The PROJ object has no `isTemplate` field at all; templates live under a separate objCode (`TMPL`). The fix was obvious in retrospect (drop the filter), but the discovery took 40 minutes of confused log-reading.
 
 Pre-flight is the first line of defense against this class of error. It runs entirely against cached schema data plus a small batched DE-parity probe and produces a structured report the recipe consumes before reaching the `apply` gate. No POSTs happen until pre-flight is green.
 
-The validator does not aim to be exhaustive. Workfront's published filter-hop limit and the runtime behaviour of some operators are not fully documented. The goal is to catch the high-confidence "this field does not exist" and "this DE: parameter is not on any custom form on the destination" cases — the classes of error that have actually surfaced in real clone and create work.
+The validator does not aim to be exhaustive. Workfront's published filter-hop limit and the runtime behaviour of some operators are not fully documented. The goal is to catch the high-confidence "this field does not exist" and "this DE: parameter is not on any custom form on the destination" cases — the classes of error that have actually surfaced in the firm's clone and create work.
 
 ## § 2. When pre-flight fires
 
@@ -26,17 +24,17 @@ B. Interview
 C. Compose payloads (2/3/4 JSON bodies prepared, in-memory only)
 D. Pre-flight validation                    ← THIS GATE
    → On valid:true:  proceed to E
-   → On valid:false: print errors + suggestions; user types `edit` to revise
+   → On valid:false: print errors + suggestions; consultant types `edit` to revise
 E. Single `apply` gate
 F. Write (POST sequence)
 G. Post-write verify
 ```
 
-No bytes are written before pre-flight is green AND `apply` is typed. The two gates are independent: pre-flight can fail and the user can correct, then the `apply` gate still has to be passed before the actual POST sequence runs.
+No bytes are written before pre-flight is green AND `apply` is typed. The two gates are independent: pre-flight can fail and the consultant can correct, then the `apply` gate still has to be passed before the actual POST sequence runs.
 
 On the modify flow (PUT variant in `02-create-from-scratch-recipe.md` § Modify flow), pre-flight fires between "compose the PUT body" and "apply" — same position in the recipe, same gate behaviour.
 
-On the clone flow (`03-clone-and-adapt-recipe.md`), pre-flight runs after the sanitizer has rewritten tenant-specific IDs and dates. The order matters: a sanitized bundle is what gets validated against the destination environment's schema, not the source-environment bundle.
+On the clone flow (`03-clone-and-adapt-recipe.md`), pre-flight runs after the sanitizer has rewritten tenant-specific IDs and dates. The order matters: a sanitized bundle is what gets validated against the destination tenant's schema, not the source-tenant bundle.
 
 The validator never writes to disk except its own stdout; it never makes write API calls; it never asks for additional credentials beyond the `--host` (used to look up the right cached metadata file). It is read-only against the schema cache plus, at most, a single `/parameter/search` GET batched across all `DE:` references in the bundle.
 
@@ -56,7 +54,7 @@ if schema is None:
 
 The same lookup is performed for any `EXISTS:<letter>:$$OBJCODE` value found in the bundle (each EXISTS block's `$$OBJCODE` becomes a secondary resolution context). The validator may end up holding 1–4 cached metadata documents at once: the outer `uiObjCode`, plus one per EXISTS block, plus any join-target objCodes resolved during 3d.
 
-If a metadata fetch fails (network error, 404, malformed JSON), the validator returns `valid:false` with a single error of `reason: "could not resolve metadata for <objCode> on <host>"` and no field-level checks. The recipe surfaces this as a hard stop — the user either fixes credentials or refreshes the schema cache before retrying.
+If a metadata fetch fails (network error, 404, malformed JSON), the validator returns `valid:false` with a single error of `reason: "could not resolve metadata for <objCode> on <host>"` and no field-level checks. The recipe surfaces this as a hard stop — the consultant either fixes credentials or refreshes the schema cache before retrying.
 
 ### 3b. Extract every field-name reference from the bundle
 
@@ -145,12 +143,12 @@ Each normalized tuple is resolved against cached metadata. The resolution rules:
 - **CONTROL keys** (`$$EXISTSMOD`, `$$OBJCODE`, `$$ID`, bare `ID` in EXISTS join slot): always valid; never resolved against metadata.
 - **SESSION tokens** (`$$USER.*`, `$$TODAY*`, `$$NOW`, appearing as VALUES on the right side of a key/value pair): always valid; never resolved (they are tenant-neutral runtime placeholders).
 - **Plain field** (`prefix=None`, `joinPath=[]`): assert `baseField` is in cached `fields` for the current resolution context (initially the bundle's `uiObjCode`). On miss: error with Levenshtein-3 suggestions from the field list (§ 4a) and, if the (objCode, field) pair is in `SYNONYM_HINTS` (§ 4b), the hint is appended verbatim.
-- **`DE:` prefix, no join** (`prefix="DE"`, `joinPath=[]`): batch the baseField into a single `/parameter/search?name=<base1>&name=<base2>&...&name_Mod=in&fields=customerID,group,objCode,parameterGroup` query (one round-trip for the whole bundle, not per-field). Match → valid. No match → error listing the custom forms (if any) on the destination that have a parameter by that name, plus a suggestion to check custom-form parity on the destination environment.
+- **`DE:` prefix, no join** (`prefix="DE"`, `joinPath=[]`): batch the baseField into a single `/parameter/search?name=<base1>&name=<base2>&...&name_Mod=in&fields=customerID,group,objCode,parameterGroup` query (one round-trip for the whole bundle, not per-field). Match → valid. No match → error listing the custom forms (if any) on the destination that have a parameter by that name, plus a suggestion to check custom-form parity on the destination tenant.
 - **Join path** (`joinPath` non-empty): walk hop by hop. For each hop `h_i`, assert that `h_i` exists as a relation on the current context's metadata `references` block. Read the relation's `targetTypeObjCode` (or the field metadata's `referencedObjectObjCode`, depending on the metadata shape — `04-runtime-schema-discovery.md` documents both forms). Set that as the new resolution context. After all hops, apply the baseField check on the final context.
 - **`EXISTS:<letter>`** (`prefix` starts with `EXISTS:`): extract the EXISTS block's `$$OBJCODE` from the same bundle (looking up the sibling key `"EXISTS:<letter>:$$OBJCODE"` in `UIFT.definition`). Use that objCode as the resolution context for everything inside that block. Resolve the rest of the tuple against the EXISTS context's cached metadata (which 3a fetched if not already cached).
 - **`OR:<n>:`** (`prefix` starts with `OR:`): the OR-group prefix does not change the resolution context. Inherit the same uiObjCode context as bare keys. Strip the OR prefix; resolve the remainder normally. OR-groups condition logic, not scope.
-- **Decomposition of combined prefixes.** When the prefix tuple contains `+` (e.g., `"OR:1+DE"`, `"EXISTS:a+DE"`), split on `+` and apply each prefix's resolution rule in sequence. For `OR:1+DE`: first strip the OR-group context (inherits same uiObjCode as bare keys), then apply DE: parity check against the destination environment (no metadata lookup). For `EXISTS:a+DE`: first resolve to the EXISTS block's `$$OBJCODE` sub-context, then apply DE: parity check against that sub-context.
-- **`DE:` inside a join** (`prefix="DE"`, `joinPath` non-empty): resolve the join first to get the join target's objCode; then run the DE: parameter check against the join target (the destination environment must have a custom form on the joined object's objCode with a parameter by that name).
+- **Decomposition of combined prefixes.** When the prefix tuple contains `+` (e.g., `"OR:1+DE"`, `"EXISTS:a+DE"`), split on `+` and apply each prefix's resolution rule in sequence. For `OR:1+DE`: first strip the OR-group context (inherits same uiObjCode as bare keys), then apply DE: parity check against the destination tenant (no metadata lookup). For `EXISTS:a+DE`: first resolve to the EXISTS block's `$$OBJCODE` sub-context, then apply DE: parity check against that sub-context.
+- **`DE:` inside a join** (`prefix="DE"`, `joinPath` non-empty): resolve the join first to get the join target's objCode; then run the DE: parameter check against the join target (the destination tenant must have a custom form on the joined object's objCode with a parameter by that name).
 
 The walk is deterministic and produces, for each tuple, exactly one of: `valid`, `error` (with reason + suggestions), or `warning` (when the validator is uncertain — e.g., URL-template parses).
 
@@ -184,7 +182,7 @@ Output is a single JSON document on stdout:
 
 The top-level `valid` is `true` if and only if `errors` is empty. Warnings do not affect `valid`.
 
-`errors[].path` uses dotted-and-bracketed JSON-pointer-ish syntax (`UIVW.definition.column[2].valuefield`, `UIFT.definition.OR:1:assignedToID`) so the recipe can echo the exact location back to the user.
+`errors[].path` uses dotted-and-bracketed JSON-pointer-ish syntax (`UIVW.definition.column[2].valuefield`, `UIFT.definition.OR:1:assignedToID`) so the recipe can echo the exact location back to the consultant.
 
 `errors[].suggestions` is always an array (possibly empty). Levenshtein-3 matches are formatted as `did you mean \`<field>\`?`. Synonym hints are appended verbatim from the `SYNONYM_HINTS` table.
 
@@ -217,13 +215,13 @@ SYNONYM_HINTS = {
 }
 ```
 
-The PROJ-vs-TMPL pair is the most important entry; it's the error that motivated the validator in the first place (live test, 2026-05-13 — see § 1). The TASK-vs-TTSK pair is its sibling: template tasks live under `TTSK`, not under `TASK` with an `isTemplate=true` flag. The `isComplete` entries cover the common assumption that Workfront has a boolean completion field; in reality, completion is encoded in the `status` enum (literal status code, varies per tenant) plus `statusEquatesWith` (canonical equivalence state, stable across tenants — `06-filter-patterns.md` § 10 documents the choice).
+The PROJ-vs-TMPL pair is the most important entry; it's the error that motivated the validator in the first place (live test, 2026-05-13 — see § 1). The TASK-vs-TTSK pair is its sibling: template tasks live under `TTSK`, not under `TASK` with an `isTemplate=true` flag. The `isComplete` entries cover the common consultant assumption that Workfront has a boolean completion field; in reality, completion is encoded in the `status` enum (literal status code, varies per tenant) plus `statusEquatesWith` (canonical equivalence state, stable across tenants — `06-filter-patterns.md` § 10 documents the choice).
 
-The table is extensible. v0.9.0 ships with the six entries above. When the user hits a "no field X" error without a useful suggestion, offer to draft a GitHub issue at https://github.com/Thousand-Cuts/wf-toolkit/issues proposing the new entry (objCode, missing field, and the hint that would have helped).
+The table is extensible. v0.9.0 ships with the six entries above. When a consultant hits a "no field X" error without a useful suggestion, the follow-up is a one-line PR to add an entry — file under `docs/roadmap.md` if it's not immediately actionable.
 
 ### 4c. DE: form-context suggestion
 
-When a `DE:` parity check returns zero matches on the destination environment, the suggestion lists which custom forms exist on the destination that have a parameter (parameter = the custom-field configuration row) so the user can manually add the missing parameter to the right form. The suggestion text looks like:
+When a `DE:` parity check returns zero matches on the destination tenant, the suggestion lists which custom forms exist on the destination that have a parameter (parameter = the custom-field configuration row) so the consultant can manually add the missing parameter to the right form. The suggestion text looks like:
 
 ```
 DE:Approved Hours not found on destination. Custom forms on PROJ with parameters: "Project Intake" (12 params), "Asset PVA" (4 params), "Promo Brief" (6 params). Add the parameter to whichever form is intended.
@@ -254,7 +252,7 @@ PSEUDO_FIELDS = {
 
 Slot constraint matters: `statusEquatesWith` is valid in UIFT keys but NOT in UIVW column valuefield. The validator emits a "wrong slot" error in the latter case rather than silently accepting.
 
-The per-tenant whitelist at `~/.cache/wf-toolkit/reports-pseudo-fields-<host-hash>.json` overlays this global table — see `09-verification-flow.md` for the auto-capture flow that populates it from `--force` writes.
+The per-tenant whitelist at `~/.cache/wf-claude-toolkit/reports-pseudo-fields-<host-hash>.json` overlays this global table — see `09-verification-flow.md` for the auto-capture flow that populates it from `--force` writes.
 
 ## § 5. Performance and blast radius
 
@@ -262,18 +260,18 @@ Pre-flight is sub-second on typical bundles. Bundle size in practice is 10–30 
 
 - **`/parameter/search` calls are batched.** One query with multiple OR-prefixed `name=` clauses covers every `DE:` reference in the bundle. The query is skipped entirely when the bundle has no `DE:` references.
 - **`/customform/search` is conditional.** Only fired when at least one DE: parameter check fails, and the response is used to enrich suggestions, not to gate validity.
-- **Schema-cache hit path: zero network calls** beyond the (conditional) DE: parity probe. Schema reads come from `~/.cache/wf-toolkit/reports-schema-<host-hash>.json`.
+- **Schema-cache hit path: zero network calls** beyond the (conditional) DE: parity probe. Schema reads come from `~/.cache/wf-claude-toolkit/reports-schema-<host-hash>.json`.
 - **Schema-cache miss path: one `/<objCode>/metadata` GET per missing objCode.** Handled by `schema_cache.fetch_and_put`. EXISTS blocks may cause additional misses (one per distinct `$$OBJCODE`), but in practice every EXISTS objCode (`TASK`, `OPTASK`, `DOCU`, `HOUR`, `PRFAPL`) is part of the standard 4-call burst that `04-runtime-schema-discovery.md` documents, so the cache is usually warm.
 
 The validator does not parallelize anything; it's already fast enough on cached data, and the conditional API calls are at most one or two round-trips. The cost ceiling is bounded by `O(N)` in number of field references and `O(1)` in network round-trips when the cache is warm.
 
-The blast radius of a wrong pre-flight result is limited. A false positive (validator says invalid when the field actually exists) costs the user a round of clarification — the recipe prints the error and asks to revise; the user can type `force` to override (see § 7 CLI flags). A false negative (validator says valid when the field doesn't exist) lets a broken report POST through — the same outcome as no pre-flight at all, so this case is no worse than the v0.8.0 baseline. The validator's job is to convert as many false negatives as possible into true positives, not to be exhaustive.
+The blast radius of a wrong pre-flight result is limited. A false positive (validator says invalid when the field actually exists) costs the consultant a round of clarification — the recipe prints the error and asks to revise; the consultant can type `force` to override (see § 7 CLI flags). A false negative (validator says valid when the field doesn't exist) lets a broken report POST through — the same outcome as no pre-flight at all, so this case is no worse than the v0.8.0 baseline. The validator's job is to convert as many false negatives as possible into true positives, not to be exhaustive.
 
 ## § 6. Limitations
 
 - **Best-effort, not a guarantee.** The validator's coverage of join paths is limited to what's expressed in the cached `/metadata` response. Workfront's relation-hop limit is undocumented; a deeply nested join might pass pre-flight (all hops resolve in metadata) but fail at POST or at render. The validator does not enforce a static hop depth — it defers to the metadata.
-- **Hard-coded synonym hints are curated, not exhaustive.** If the user hits a "no field X" error without a useful suggestion, offer to draft a GitHub issue at https://github.com/Thousand-Cuts/wf-toolkit/issues proposing a `SYNONYM_HINTS` entry. The validator does not learn from the user's session.
-- **DE: parity assumes the schema cache is populated.** On a fresh destination environment (first session, no cache), pre-flight runs the 4-call burst first (per `04-runtime-schema-discovery.md`). If `/customform/search` is unavailable (the user's API key lacks the permission), the DE: form-context suggestion (§ 4c) is suppressed and the validator falls back to the generic "DE:`<name>` not found on destination — add the parameter to the right custom form" reason without the form list.
+- **Hard-coded synonym hints are curated, not exhaustive.** If a consultant hits a "no field X" error without a useful suggestion, file a `docs/roadmap.md` follow-up to extend `SYNONYM_HINTS`. The validator does not learn from the consultant's session.
+- **DE: parity assumes the schema cache is populated.** On a fresh destination tenant (first session, no cache), pre-flight runs the 4-call burst first (per `04-runtime-schema-discovery.md`). If `/customform/search` is unavailable (the consultant's API key lacks the permission), the DE: form-context suggestion (§ 4c) is suppressed and the validator falls back to the generic "DE:`<name>` not found on destination — add the parameter to the right custom form" reason without the form list.
 - **Calc-language semantics inside `valueexpression` are not validated.** The validator extracts `{<field>}` references via regex and resolves those as ordinary field references, but it does not parse `CONCAT`, `IF`, `CASE`, `ROUND`, `SUB`, `ISBLANK`, `STRING`, or any other calc function. Syntax errors inside `valueexpression` strings are surfaced as warnings (the regex either fails or produces nonsensical "fields" that don't resolve), but the validator does not assert calc-function arity or argument types. That validation, if it's ever needed, lives in `workfront-textmode`.
 - **Matrix reports** (`REPORT.reportType: "M"`) are unverified by the empirical survey. Pre-flight passes them as-is.
 - **`textmode:"true"` columns without `valueexpression`.** A column that opts into Text Mode but doesn't supply a `valueexpression` may KEEP the `DE:` prefix in `valuefield` rather than dropping it (the standard rule). Empirical: `client-a-sample/PROJ-planning-grid-NOFILTER-uivw.json` has a `"textmode": "true"` column with `"valuefield": "DE:Week"` — the `DE:` is kept, not dropped. The validator accepts BOTH forms (`DE:` kept AND `DE:` dropped) when the column has `textmode: "true"` and no `valueexpression`. In all other column slots, only the standard form (DE: dropped in `valuefield`, kept in `querysort` and `aggregator.valuefield`) is accepted.
@@ -292,15 +290,15 @@ python3 skills/workfront-reports/scripts/pre_flight_validator.py \
 Flags:
 
 - `--from-stdin` (required): read the JSON bundle from stdin. The bundle is the in-memory document the recipe composed at Phase C — a single JSON object with top-level keys `uift` (optional — empty `definition:{}` when no filter), `uigb` (optional — omitted when no grouping), `uivw`, `report` matching the pieces the recipe will POST. (Keys are lowercase, matching both recipes' compose phase and the `pre_flight_validator.py` `bundle.get("uift")` lookup.)
-- `--host` (required): destination environment host (e.g., `acme.my.workfront.com`). Used to look up the right schema-cache file.
+- `--host` (required): destination tenant host (e.g., `acme.my.workfront.com`). Used to look up the right schema-cache file.
 - `--api-key <key>` (optional): only required if the validator needs to fetch metadata or run the DE: parity probe and the schema cache is cold. The recipe normally pre-populates the cache before calling the validator, so this flag is usually unused.
-- `--force` (optional): set `valid:true` in the output regardless of errors; errors are downgraded to warnings with `forced:true`. The recipe surfaces this as a user override after a clarifying conversation. Use sparingly — `--force` exists for the edge case where the user knows something the validator doesn't (e.g., an environment with a non-standard custom form not visible to `/customform/search`).
-- `--learn` (optional): take `uiObjCode:fieldname[:slot]` plus `--host` and record the field into the per-tenant whitelist at `~/.cache/wf-toolkit/reports-pseudo-fields-<host-hash>.json`. The next pre-flight run on the same host accepts the field without `--force`. Used for one-off user-confirmed pseudo-fields the global PSEUDO_FIELDS table doesn't know about.
-- `--learn-from-blocked` (optional): convenience form of `--learn` that reads the most recent blocked references from the prior session's pre-flight report and prompts the user to confirm each one for whitelist capture. Avoids re-typing the `uiObjCode:fieldname` tuple.
+- `--force` (optional): set `valid:true` in the output regardless of errors; errors are downgraded to warnings with `forced:true`. The recipe surfaces this as a consultant override after a clarifying conversation. Use sparingly — `--force` exists for the edge case where the consultant knows something the validator doesn't (e.g., a tenant with a non-standard custom form not visible to `/customform/search`).
+- `--learn` (optional): take `uiObjCode:fieldname[:slot]` plus `--host` and record the field into the per-tenant whitelist at `~/.cache/wf-claude-toolkit/reports-pseudo-fields-<host-hash>.json`. The next pre-flight run on the same host accepts the field without `--force`. Used for one-off consultant-confirmed pseudo-fields the global PSEUDO_FIELDS table doesn't know about.
+- `--learn-from-blocked` (optional): convenience form of `--learn` that reads the most recent blocked references from the prior session's pre-flight report and prompts the consultant to confirm each one for whitelist capture. Avoids re-typing the `uiObjCode:fieldname` tuple.
 - `--learn-objcode <code>` (optional, paired with `--learn`): specify the uiObjCode for the field being learned when it can't be inferred from the host's last bundle.
 - `--forget <uiObjCode:fieldname>` (optional): remove a single entry from the per-tenant whitelist. The opposite of `--learn`.
 - `--forget-all` (optional): clear the entire per-tenant whitelist for `--host`. Used when migrating to a new schema or when the auto-captured entries have drifted.
-- `--whitelist-dir <path>` (optional): override the default whitelist cache directory (`~/.cache/wf-toolkit/`). Used in tests; users normally leave this unset.
+- `--whitelist-dir <path>` (optional): override the default whitelist cache directory (`~/.cache/wf-claude-toolkit/`). Used in tests; consultants normally leave this unset.
 
 Output:
 
@@ -313,7 +311,7 @@ Exit codes:
 - `1` — `valid: false` (one or more errors).
 - `2` — usage error (missing required flag, malformed stdin, schema-fetch failure).
 
-The recipe distinguishes 1 from 2: a 1 returns to Phase B (the user edits the composition); a 2 stops the run and surfaces the error verbatim.
+The recipe distinguishes 1 from 2: a 1 returns to Phase B (the consultant edits the composition); a 2 stops the run and surfaces the error verbatim.
 
 ## § 8. Integration in SKILL.md
 
@@ -331,13 +329,13 @@ if jq -e '.valid' /tmp/preflight.json > /dev/null; then
 else
     echo "Pre-flight: errors"
     jq -r '.errors[] | "- " + .path + ": " + .reason + "\n  " + (.suggestions | join("\n  "))' /tmp/preflight.json
-    # user types `edit` to revise, `apply` to override (requires --force)
+    # consultant types `edit` to revise, `apply` to override (requires --force)
 fi
 ```
 
 The skill's `SKILL.md` describes this insertion at the Phase C/E boundary. The four-call write sequence section (which `00-rubric-and-workflow.md` documents) is unchanged by pre-flight — the POSTs still go UIFT → UIGB → UIVW → REPORT in Phase F; pre-flight just runs before the gate that authorizes them.
 
-The Claude.ai recipe parallels the same shape: compose → pre-flight → apply → write. On the Claude.ai surface (no shell), the validator's JSON output is rendered inline and the user types `edit` or `apply` directly into the conversation.
+The Claude.ai recipe parallels the same shape: compose → pre-flight → apply → write. On the Claude.ai surface (no shell), the validator's JSON output is rendered inline and the consultant types `edit` or `apply` directly into the conversation.
 
 ## § 9. Cross-references
 

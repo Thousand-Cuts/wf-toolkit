@@ -2,7 +2,7 @@
 
 **v0.13.x said:** Display logic (show/hide rules) is NOT REST-accessible in v17.0; configure in the Workfront UI.
 
-**v0.25.0 (Phase B-3, 2026-05-22) reverses that claim.** Display logic IS REST-accessible via the `categoryCascadeRules` collection on Category. Phase A missed it because it enumerated Category's `fields` only, not its `collections`. The full write path — including server validation — was verified empirically (2026-05-22).
+**v0.25.0 (Phase B-3, 2026-05-22) reverses that claim.** Display logic IS REST-accessible via the `categoryCascadeRules` collection on Category. Phase A missed it because it enumerated Category's `fields` only, not its `collections`. The full empirical write — including server validation — is documented in the internal verification notes.
 
 ## The objects
 
@@ -34,7 +34,7 @@ toEndOfForm             — boolean; when true, show all subsequent fields (skip
 | `DISPLAY` | 382 | When the match condition fires, **show** the `nextParameterID` / `nextParameterGroupID` |
 | `SKIP` | 0 | When the match condition fires, **skip** (hide) the target. Inverse of DISPLAY |
 
-Both values are accepted by the API. `SKIP` is observed nowhere in client-d-preview production but is a valid enum value — likely corresponds to a UI option in the form-editor's logic panel that real-world tenants haven't used.
+Both values are accepted by the API. `SKIP` is observed nowhere in client-d-preview production but is a valid enum value — likely corresponds to a UI option in the form-editor's logic panel that the firm's clients haven't used.
 
 ### Section-level (ParameterGroup) display logic (Phase B-4)
 
@@ -72,7 +72,7 @@ Note the spelling: it's `NOTEXIST` (one token, no underscore). Easy to guess wro
 Create cascade rules via PUT-on-Category with the nested collection in the body:
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   -X PUT /attask/api/v17.0/category/<cat_id> \
   --data-urlencode 'updates={
     "categoryCascadeRules": [
@@ -115,8 +115,8 @@ Workfront does NOT validate that a multi-match condition is semantically satisfi
 
 ## What this unblocks
 
-- **Flow 1 (NL-create):** can now author cascade rules end-to-end. Interview the admin for trigger + condition + target, build the CTCSRL+CTCSRM payload, PUT it onto the Category in the same multi-call sequence as Parameter creation.
-- **Flow 5 (cross-environment clone):** can now lift cascade rules along with the form. The `parameterID` references inside CTCSRL/CTCSRM need remapping (source IDs → destination IDs) the same way `categoryParameters.parameterID` does. `form_sanitizer.py` should be extended to walk `categoryCascadeRules`.
+- **Flow 1 (NL-create):** can now author cascade rules end-to-end. Interview the consultant for trigger + condition + target, build the CTCSRL+CTCSRM payload, PUT it onto the Category in the same multi-call sequence as Parameter creation.
+- **Flow 5 (cross-tenant clone):** can now lift cascade rules along with the form. The `parameterID` references inside CTCSRL/CTCSRM need remapping (source IDs → destination IDs) the same way `categoryParameters.parameterID` does. `form_sanitizer.py` should be extended to walk `categoryCascadeRules`.
 - **Flow 3 (single-form audit):** the audit output should include cascade rules — currently it only enumerates parameters.
 
 ## What's still NOT REST-accessible
@@ -129,7 +129,7 @@ A handful of UI-only configurations remain outside the REST surface:
 
 ## Historical context
 
-Earlier HAR-capture work (2026-05-18) captured the UI's `/internal/customForms/saveForm` payload and concluded the auth wall meant display logic was inaccessible. The work isn't wasted — the captured payload shape clarified how the UI bundles cascade rules with other form-edit operations. But the REST surface (`categoryCascadeRules` collection) is simpler and doesn't require any of the `/internal/*` auth scaffolding.
+The HAR-capture work captured the UI's `/internal/customForms/saveForm` payload and concluded the auth wall meant display logic was inaccessible. The work isn't wasted — the captured payload shape clarified how the UI bundles cascade rules with other form-edit operations. But the REST surface (`categoryCascadeRules` collection) is simpler and doesn't require any of the `/internal/*` auth scaffolding.
 
 The Phase B lesson: when probing for a documented surface, enumerate both `fields` AND `collections` from `/metadata`. Filter both with the same keyword set. `categoryCascadeRules` would have been visible from day one if Phase A's metadata pass had included collections.
 
@@ -138,4 +138,4 @@ The Phase B lesson: when probing for a documented surface, enumerate both `field
 - `knowledge/custom-forms/02-parameter-types.md` — ParameterOption shape (the `value` field is what cascade matches reference).
 - `knowledge/custom-forms/01-object-model.md` — Category/Parameter/CategoryParameter relationships (cascade rules sit alongside these).
 - `knowledge/custom-forms/03-create-form-recipe.md` — Flow 1 NL-create (will gain cascade-rule authoring in v0.26.0).
-- `knowledge/custom-forms/06-clone-and-adapt-recipe.md` — Flow 5 cross-environment clone (will gain cascade-rule cloning in v0.26.0).
+- `knowledge/custom-forms/06-clone-and-adapt-recipe.md` — Flow 5 cross-tenant clone (will gain cascade-rule cloning in v0.26.0).

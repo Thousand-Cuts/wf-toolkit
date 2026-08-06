@@ -4,13 +4,13 @@ Composite audit. Builds on Flow 2 to find AccessRules where the accessor is a de
 
 ## Scenario
 
-> Admin: "Clean up orphan shares from people who've left. Show me what's outstanding."
+> Consultant: "Clean up orphan shares from people who've left. Show me what's outstanding."
 
 ## Calls fired
 
 ```bash
 # Step 1 — all inactive users
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/search \
   --data-urlencode "isActive=false" --data-urlencode "isActive_Mod=eq" \
   --data-urlencode "fields=ID,name,emailAddr,deactivatedAt" \
   --data-urlencode '$$LIMIT=500'
@@ -20,7 +20,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17
 # object. Iterate over parents and use accessRules:accessorID filter.)
 for userID in <list-of-inactive-userIDs>; do
   for OBJ in project portfolio program task optask report dashboard document template; do
-    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/$OBJ/search \
+    ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/$OBJ/search \
       --data-urlencode "accessRules:accessorID=$userID" \
       --data-urlencode "accessRules:accessorID_Mod=eq" \
       --data-urlencode "fields=ID,name,accessRules:accessorID,accessRules:coreAction,accessRules:isInherited" \
@@ -63,14 +63,15 @@ Top user — Old Employee 1 (47 rules):
 - Inactive users keep their rules — the user is denied at layer 1 (user_active) of the resolver, but the rule remains in the parent's accessRules collection.
 - Audit noise: a year of deactivations can accrue hundreds of orphan rules.
 - **`isInherited` on rules** — some orphan rules are inherited from parent objects (the orphan shares the share, not the parent's deactivated owner). When cleaning up, deleting the inherited row on the child does nothing; you have to clean up at the ancestor.
-- This is a v1 read-only diagnostic; the cleanup itself is out of scope for this toolkit — do it in-product.
+- This is a v1 read-only diagnostic; cleanup (bulk DELETE of orphan rules) is dedicated bulk-update tooling territory.
 
 ## What to do next
 
-To remediate:
+If the consultant wants to remediate:
 
 1. Export this list (CSV).
 2. Filter out `isInherited=true` rows — those need cleanup at the ancestor, not the child.
-3. Work through the remaining orphan-rule ID list (with object names and coreActions) manually in-product — unshare via each object's Sharing dialog.
+3. Hand off to dedicated bulk-update tooling with a "bulk delete AccessRules where ID in [...]" task targeting the direct rules.
+4. Audit-log the deletion (bulk-updates skill handles pre-state capture).
 
-`workfront-permissions` stays read-only: it produces the target list; executing the cleanup is out of scope for this toolkit — do it in-product.
+This is exactly the composability the toolkit aims for: read-only `workfront-permissions` produces the target list; write-capable bulk tooling executes the cleanup.

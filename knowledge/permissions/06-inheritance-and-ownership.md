@@ -8,7 +8,7 @@ Updated 2026-05-18 with Phase A empirical findings — **inheritance surfaces in
 
 The owner of an object has implicit **`DELETE`** (Workfront's top-tier coreAction). Always. Cannot be removed without changing ownership.
 
-Most-overlooked permission source. An admin debugging "why can Adam edit project X?" who hasn't checked `project.ownerID` will spend an hour walking sharing rules unnecessarily.
+Most-overlooked permission source. A consultant debugging "why can Adam edit project X?" who hasn't checked `project.ownerID` will spend an hour walking sharing rules unnecessarily.
 
 ### Which objCodes have an `ownerID` field
 
@@ -32,19 +32,19 @@ A child object's `accessRules` collection includes inherited rules **inline**. E
 - `ancestorID: <parent object GUID>`
 - `ancestorObjCode: <parent objCode>` (e.g. `PORT`, `PROG`, `PROJ`, `FOLDER`)
 
-Empirical example from a live-tenant scratch project:
+Empirical example from a scratch project on the surveyed tenant:
 
 ```json
 {
-  "ID": "0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a01",
-  "accessorID": "0b0b0b0b...0b0b02",
+  "ID": "6a04b5b000afe123b71f49ab5e84d3aa",
+  "accessorID": "67b794fc...178510",
   "accessorObjCode": "USER",
   "coreAction": "DELETE",
   "isInherited": true,
-  "ancestorID": "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c03",
+  "ancestorID": "6a04ae7f00004c1ae87a7c9f7fb1511a",
   "ancestorObjCode": "PORT",
   "securityObjCode": "PROJ",
-  "securityObjID": "0d0d0d0d0d0d0d0d0d0d0d0d0d0d0d04"
+  "securityObjID": "6a04b5b000afe05bcb18320a3c7565b6"
 }
 ```
 

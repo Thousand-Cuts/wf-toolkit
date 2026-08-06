@@ -78,13 +78,13 @@ Workfront Layout Templates are split across **two separate REST objCodes** depen
 
 **Practical rule:** If you're auditing or assigning Layout Templates on any tenant created after Workfront's new-experience rollout, query `/UITMPL/search` (not `/layoutTemplate/search`) and walk the priority chain (User → Role → Team → Group) using `uiTemplateID`. Querying only `/layoutTemplate/search` on a modern tenant returns 6 stock rows and makes it look like the customer has done nothing — even when they've built a full persona-based LT program.
 
-A full coverage audit extends this into a priority-chain walk (User → Role → Team → Group via `uiTemplateID`), plus a license-type breakdown of uncovered users and role-inheritance gap analysis.
+For the full coverage-audit pattern (priority-chain walk, license-type breakdown of uncovered users, role-inheritance gap analysis), run the same walk per layout template.
 
 ## A note on JRNLE (field-change history / audit log)
 
 The field-level audit trail is the **`JRNLE`** object (`JournalEntry`), endpoint `/attask/api/v17.0/JRNLE/search`. This is the authoritative record of *who changed which field, from what, to what, and when* — and it captures changes the in-app **Updates feed does not surface**. For example, `ownerID` changes are not a default Update Type, so they never appear in the project's Updates tab, but every owner change is recorded in `JRNLE`. Reach for this whenever a user asks "was field X ever set to Y?" or "what changed the owner/status/group and who did it?"
 
-- **Object code is `JRNLE`, not `JOURNENT`.** `JOURNENT` is a legacy/guessed code and returns `Unknown object type` on modern versions (verified failing on v19.0, two client production tenants, 2026-07-06).
+- **Object code is `JRNLE`, not `JOURNENT`.** `JOURNENT` is a legacy/guessed code and returns `Unknown object type` on modern versions (verified failing on v19.0, two production tenants, 2026-07-06).
 - **Query by parent:** filter on `projectID` (or `taskID`, `opTaskID`), or on `objObjCode` + `objID` for any object. Add `$$LIMIT` — a busy object accumulates many rows.
 - **Value fields are split by type** (there is no generic `oldValue`/`newValue` — asking for those errors out):
   - reference/text fields → `oldTextVal` / `newTextVal` (for reference fields like `ownerID` these hold the **object ID** — resolve via a follow-up `USER`/etc. lookup)

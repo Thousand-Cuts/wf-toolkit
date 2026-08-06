@@ -1,5 +1,5 @@
 {
-  "description": "UIVW column with styledef.case[].comparison — paint the row red if overdue, amber if due within 2 days. Empirically verified against a surveyed TASK view's plannedCompletionDate column.",
+  "description": "UIVW column with styledef.case[].comparison — paint the row red if overdue, amber if due within 2 days. Mirrors client-b-sample/TASK-ready-to-work-uivw.json plannedCompletionDate column.",
   "uivw_definition_column_entry": {
     "descriptionkey": "plannedcompletiondate",
     "namekey": "plannedcompletiondate.abbr",

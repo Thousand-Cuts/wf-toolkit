@@ -1,35 +1,37 @@
-# Example — Cross-environment access level compare
+# Example — Cross-tenant access level compare
 
-Flow 5 — diff "Standard" between two environments (sandbox vs production). Updated 2026-05-18 with the ALVPER-collection diff approach.
+Flow 5 — diff "Standard" between two tenants. Updated 2026-05-18 with the ALVPER-collection diff approach.
 
 ## Scenario
 
-> Admin: "We reworked the 'Standard' access-level design in the sandbox. What does production's 'Standard' grant that the sandbox version doesn't (or vice versa)?"
+> Consultant: "We're migrating Acme onto our reference access-level design. What does their 'Standard' grant that ours doesn't (or vice versa)?"
 
 ## Calls fired
 
 ```bash
-# Pull from SOURCE (sandbox, acme.preview.workfront.com) — /wf-env-use sandbox
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/search \
+# Pull from SOURCE (firm's tenant)
+./skills/workfront-api/scripts/wf-use.sh firm-reference
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/search \
   --data-urlencode "name=Standard" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,fieldAccessPrivileges,accessRestrictions,accessLevelPermissions:*" \
-  > /tmp/reference-standard.json
+  > /tmp/firm-standard.json
 
-# Pull from DEST (production, acme.my.workfront.com) — /wf-env-use prod
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/search \
+# Pull from DEST (client tenant)
+./skills/workfront-api/scripts/wf-use.sh acme-tenant
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/search \
   --data-urlencode "name=Standard" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,fieldAccessPrivileges,accessRestrictions,accessLevelPermissions:*" \
-  > /tmp/prod-standard.json
+  > /tmp/acme-standard.json
 
 # User counts on each side (informs blast radius)
-# /wf-env-use sandbox
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/count \
-  --data-urlencode "accessLevelID=<sandboxStandardID>" \
+./skills/workfront-api/scripts/wf-use.sh firm-reference
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/count \
+  --data-urlencode "accessLevelID=<firmStandardID>" \
   --data-urlencode "accessLevelID_Mod=eq"
 
-# /wf-env-use prod
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/count \
-  --data-urlencode "accessLevelID=<prodStandardID>" \
+./skills/workfront-api/scripts/wf-use.sh acme-tenant
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/count \
+  --data-urlencode "accessLevelID=<acmeStandardID>" \
   --data-urlencode "accessLevelID_Mod=eq"
 ```
 
@@ -56,8 +58,8 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17
 ```
 Comparing AccessLevel "Standard"
 
-  SOURCE: sandbox (37 users hold this level, isAdmin=false, licenseType=F)
-  DEST:   prod    (192 users hold this level, isAdmin=false, licenseType=F)
+  SOURCE: firm-reference (192 users hold this level, isAdmin=false, licenseType=F)
+  DEST:   acme-tenant   (37 users hold this level, isAdmin=false, licenseType=F)
 
 ALVPER row counts:
   SOURCE: 92 rows
@@ -98,14 +100,14 @@ To make DEST match SOURCE:
                                  CHANGE_STATUS on (OPTASK,EDIT)
   Add to fieldAccessPrivileges: VTMAWMG, VALLTM
 
-Blast radius if DEST is updated: 192 users immediately receive new
-capabilities. (Per `01-permission-model.md`, the additive model means
+Blast radius if DEST is updated: 37 users immediately receive new
+capabilities. (Per [[01-permission-model]], the additive model means
 adding rows can ONLY grant access, never remove it.)
 ```
 
 ## What this demonstrates
 
-- Cross-environment access-level names mean nothing without the ALVPER diff.
+- Cross-tenant access-level names mean nothing without the ALVPER diff.
 - **ALVPER tuple-set diff** is the right normaliser — different from a flat dict comparison.
 - **forbiddenActions sub-diff** is meaningful because feature-flag denials change effective behaviour without changing coreAction.
 - User counts gate the "should we do this?" question.
@@ -113,4 +115,4 @@ adding rows can ONLY grant access, never remove it.)
 
 ## What to do next
 
-Take the diff into your change-approval discussion. v2 of this skill will be able to author the matching changes against DEST with a dry-run preview and impact-by-user count. For v1, the changes are made in-product.
+The consultant takes the diff to a discussion with the client. v2 of this skill will be able to author the matching changes against DEST with a dry-run preview and impact-by-user count. For v1, the consultant makes the changes in-product or via dedicated bulk-update tooling if it grows to handle this.

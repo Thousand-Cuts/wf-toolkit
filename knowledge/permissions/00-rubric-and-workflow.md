@@ -4,30 +4,30 @@ When to use the `workfront-permissions` skill, the interview script for each flo
 
 ## When to use this skill
 
-Use when you have a permissions question that's already happened (or about to happen):
+Use when the consultant has a permissions question that's already happened (or about to happen):
 
 - "User X can't see / edit / delete object Y — why?"
 - "What can user X actually do?"
 - "Who has access to object Y?"
 - "What does access level Z grant?"
-- "Compare access level Z between two environments (e.g., sandbox and production)."
+- "Compare access level Z between our tenant and a client's."
 - "Find AccessRules pointing at deactivated users." (composite audit)
 
 Do **not** use when:
 
-- You want to *change* a permission (read-only in v1; bulk sharing changes are out of scope for this toolkit — do them in-product; v2 will own access-level authoring).
+- The consultant wants to *change* a permission (read-only in v1; route to dedicated bulk-update tooling for bulk sharing changes; v2 will own access-level authoring).
 - The question is about login failures or token expiry (route to `workfront-api` knowledge file 02).
-- The question is part of a broader assessment / health check (out of scope for this toolkit — this skill answers specific permission questions, not scorecards).
+- The question is part of a broader assessment / health check (route to platform-assessment tooling).
 
 ## Flow decision tree
 
 ```
-Admin intent
+Consultant intent
   ├── "why can't <user> <do thing> <to object>?"   → Flow 1 (debug)
   ├── "what can <user> do?" / "everything <user> has access to"  → Flow 2 (user audit)
   ├── "who can see/edit <object>?"                  → Flow 3 (object audit)
   ├── "what does access level <name> grant?"        → Flow 4 (level inspection)
-  ├── "compare access level <name> between <a> and <b>"  → Flow 5 (cross-environment diff)
+  ├── "compare access level <name> between <a> and <b>"  → Flow 5 (cross-tenant diff)
   └── ad-hoc audit (orphan shares, etc.)            → 05-audit-recipes.md "composite audits"
 ```
 
@@ -35,7 +35,7 @@ Admin intent
 
 ### Flow 1 — Debug
 
-Resolve these inputs (ask only what's missing from the request):
+Resolve these inputs (ask only what's missing from the consultant's request):
 
 | Input | How to resolve |
 |---|---|
@@ -56,22 +56,20 @@ Single input: objectID + objCode. Ask whether to expand group accessors to user 
 
 Single input: access level name or ID. Resolve via `/accessLevel/search` if name given.
 
-### Flow 5 — Cross-environment diff
+### Flow 5 — Cross-tenant diff
 
-Inputs: access level name (string), source $$HOST, destination $$HOST. Both environments registered (per `workfront-api` `knowledge/api/13-local-verification.md`).
+Inputs: access level name (string), source $$HOST, destination $$HOST. Both credentials configured (per `workfront-api` `knowledge/api/13-local-verification.md`).
 
 ## Safety baseline (also in SKILL.md)
 
 - Read-only — no PUT/POST/DELETE
 - Pin `v17.0` per repo convention
 - Admin-tier API key recommended; degrade gracefully if not present
-- **Credentials via wrapper.** Every API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh`, which sources `~/wf-envs/<active>/.env` (set via `wf-env-setkey.sh` in your terminal — no key in chat). Read-only environment folders (`WF_READ_ONLY=1`) are recommended; this skill is hard GET-only.
-- Surface `WF_ENV_LABEL` in every printout
-
-## Closing phase: divergence policy
-
-If live behavior diverges from what this skill documents: trust the observed behavior for the task at hand, and treat the divergence as possibly environment-specific (Workfront version, package, or configuration). If it looks globally true, offer to draft a GitHub issue at https://github.com/Thousand-Cuts/wf-toolkit/issues with the endpoint, API version, date, and observed-vs-documented behavior. Never edit the installed plugin's files.
+- **Credentials via wrapper.** Every API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh`, which sources `~/wf-clients/<active>/.env` (set via `wf-client-setkey.sh` in the consultant's terminal — no key in chat). Read-only client folders (`WF_READ_ONLY=1`) are recommended; this skill is hard GET-only.
+- Surface `WF_CLIENT_LABEL` in every printout
 
 ## Cross-skill references
 
 - `workfront-api` — auth + pagination + 13-local-verification for creds
+- platform-assessment tooling — overlapping audit territory; this skill is question-focused, that one is scorecard-focused
+- dedicated bulk-update tooling — v2 destination for bulk sharing changes

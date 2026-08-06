@@ -80,4 +80,4 @@ Always configure and test business rules in a **sandbox or Preview** environment
 | Auto-share or auto-attach a form on a condition | **Business rule (automation)** |
 | Show, hide, or require a field on the form UI | Custom-form **display/skip logic** (`workfront-custom-forms`) |
 | Compute and store a derived value | **Calculated field** (`workfront-calc-fields`) |
-| Multi-step side effects, external calls, scheduled writes | **Fusion** |
+| Multi-step side effects, external calls, scheduled writes | **Fusion** (`workfront-fusion`) |

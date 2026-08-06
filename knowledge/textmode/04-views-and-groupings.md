@@ -121,7 +121,7 @@ group.1.linkedname=direct
 | `actualHours` (built-in) | Main-parent tasks + standalone (NOT children — they roll up to their parent) |
 | Custom data fields (calc fields on custom forms) | Everything — parents, children, standalone |
 
-The mismatch between `actualHours` (parent-rollup) and Number-custom-field (children-only) trips admins regularly. To get a uniform rollup, wrap the source value in a calculated custom field. Source: Adobe `report-elements/groupings-overview`.
+The mismatch between `actualHours` (parent-rollup) and Number-custom-field (children-only) trips consultants regularly. To get a uniform rollup, wrap the source value in a calculated custom field. Source: Adobe `report-elements/groupings-overview`.
 
 ## Aggregators
 

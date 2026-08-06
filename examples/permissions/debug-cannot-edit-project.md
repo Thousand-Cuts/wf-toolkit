@@ -4,7 +4,7 @@ Flow 1 end-to-end. Updated 2026-05-18 with Phase A field names + enum.
 
 ## Scenario
 
-> Admin: "Adam Gray can't edit the Q4 Marketing Plan project. Why?"
+> Consultant: "Adam Gray can't edit the Q4 Marketing Plan project. Why?"
 
 ## Inputs resolved
 
@@ -18,16 +18,16 @@ action:  "edit" → EDIT
 
 ```bash
 # User context
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/64f91a53... \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/64f91a53... \
   --data-urlencode "fields=ID,name,isActive,accessLevelID,accessLevel:name,
 groups:ID,groups:name,teams:ID,roles:ID"
 
 # Access level WITH its ALVPER collection (the capability matrix)
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/<accessLevelID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/<accessLevelID> \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,accessLevelPermissions:*"
 
 # Project with accessRules (inline includes inherited)
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/project/6a04ae7f... \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/6a04ae7f... \
   --data-urlencode "fields=ID,name,ownerID,accessRules:*"
 ```
 
@@ -66,7 +66,7 @@ Suggestions (least blast radius first):
 
 ## What to do next
 
-Apply the lowest-blast-radius suggestion. In practice, option 2 (group share) is the usual pick because the user belongs to a group that should reasonably have access.
+Apply the lowest-blast-radius suggestion. In practice, the consultant usually picks option 2 (group share) because the user belongs to a group that should reasonably have access.
 
 ## Variant: feature-flag check
 

@@ -1,5 +1,5 @@
 {
-  "description": "OR-group filter demonstrating OR:<n>: prefix syntax. Reads as: (rush_request=Rush AND status=NEW AND team in my_teams) OR (rush_request=Rush AND assignee=me AND status=NEW). Empirically verified against a surveyed OPTASK rush-queue report.",
+  "description": "OR-group filter demonstrating OR:<n>: prefix syntax. Reads as: (rush_request=Rush AND status=NEW AND team in my_teams) OR (rush_request=Rush AND assignee=me AND status=NEW). Mirrors client-d-sample/OPTASK-rush-L-uift.json.",
   "uift_definition": {
     "DE:Is this a rush request?": "🔥 Rush",
     "DE:Is this a rush request?_Mod": "in",

@@ -2,7 +2,7 @@
 
 End-to-end walkthrough for creating a new Workfront report via the REST API. Same recipe covers the modify variant (PUT-in-place against existing UI-objects). All wire calls use `--data-urlencode 'updates={JSON}'` form-encoded; raw JSON request body is rejected by the v17.0 endpoint. The `definition` field is a JSON object on every UI-object row, not a stringified DSL payload (see `01-report-object-shape.md` § 1.3). 2, 3, or 4 calls fire depending on whether the report has a filter and a grouping. Every URL uses `v17.0` per `knowledge/api/01-api-fundamentals.md`.
 
-The flow has eight phases. Each phase has a hard handoff — no phase begins until the previous one is acknowledged by the admin. The `apply` gate (Phase E) and the pre-flight gate (Phase D) are both required; neither can be skipped.
+The flow has eight phases. Each phase has a hard handoff — no phase begins until the previous one is acknowledged by the consultant. The `apply` gate (Phase E) and the pre-flight gate (Phase D) are both required; neither can be skipped.
 
 ```
 A. Setup and schema discovery
@@ -17,24 +17,24 @@ H. Print URLs
 
 ## Phase A — Setup and schema discovery
 
-### A.1 Resolve the destination environment
+### A.1 Resolve the destination client
 
 Run:
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh --dest
 ```
 
-- Exit 0: prints the active slug (the destination environment). Read `~/wf-envs/<slug>/.env` for `WF_HOST`, `WF_ENV_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
-- Exit 2: no active environment. Tell the admin to register one via `/wf-env-add <slug>`, set the key with `wf-env-setkey.sh <slug>` in their terminal, then `/wf-env-use <slug>`, and re-invoke.
+- Exit 0: prints the active slug (the destination tenant). Read `~/wf-clients/<slug>/.env` for `WF_HOST`, `WF_CLIENT_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
+- Exit 2: no active client. Tell the consultant to register one via `/wf-client-add <slug>`, set the key with `wf-client-setkey.sh <slug>` in their terminal, then `/wf-client-use <slug>`, and re-invoke.
 
-The wrapper handles auth; you never see the API key. Auth specifics (sessionID vs API key vs OAuth2 vs JWT) live in `workfront-api`; this recipe uses the `wf-env-curl.sh` wrapper which puts `apiKey=` in the URL query string.
+The wrapper handles auth; you never see the API key. Auth specifics (sessionID vs API key vs OAuth2 vs JWT) live in `workfront-api`; this recipe uses the `wf-client-curl.sh` wrapper which puts `apiKey=` in the URL query string.
 
 ### A.2 Handshake — confirm the tenant
 
-Before any work, verify the active environment folder's host + key combination points at the customer the admin thinks it does:
+Before any work, verify the active client folder's host + key combination points at the customer the consultant thinks it does:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/user/search \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID,customer:name'
 ```
@@ -43,7 +43,7 @@ Extract `data[0].customer.name` from the response and echo back:
 
 > "Connecting to **<customer-name>** at **<host>** — correct? [y/n]"
 
-On 401/403 — tell the admin to rotate via `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-setkey.sh <slug> --rotate`. On `y` — proceed. No write happens before this `y`.
+On 401/403 — tell the consultant to rotate via `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-setkey.sh <slug> --rotate`. On `y` — proceed. No write happens before this `y`.
 
 ### A.3 Schema discovery burst
 
@@ -61,25 +61,25 @@ If the burst returns 401/403, stop. Auth issues belong in `workfront-api`; this 
 
 ## Phase B — Interview
 
-The skill walks the admin through the missing slots. Ask only for what the NL brief did not provide. Each ask has a single canonical form:
+The skill walks the consultant through the missing slots. Ask only for what the NL brief did not provide. Each ask has a single canonical form:
 
 | Slot | Prompt | Notes |
 |---|---|---|
 | `uiObjCode` | "What object does this report report on?" | Valid values: PROJ, TASK, OPTASK, USER, HOUR, ASSGN, TPRO, TTSK, DOCU, PRGM, PRFAPL, PARAM, PGRP, and the long tail of standard Workfront object codes. Stored on REPORT, UIFT, UIGB, UIVW (must match on all four). |
 | `name` | "What should the report be called?" | This becomes the REPORT row's `name` and the prefix for the three sibling UI-object names (`"<name> — filter"`, etc.). |
 | `description` | "Optional description for the report's About panel?" | May be `null`. |
-| Filter intent | "What records should this report show? (NL is fine.)" | Convert via `06-filter-patterns.md` to a `UIFT.definition` JSON object. If the admin declines a filter, the skill still writes an empty UIFT (`definition: {}`) per `01-report-object-shape.md` § 2.2. |
+| Filter intent | "What records should this report show? (NL is fine.)" | Convert via `06-filter-patterns.md` to a `UIFT.definition` JSON object. If the consultant declines a filter, the skill still writes an empty UIFT (`definition: {}`) per `01-report-object-shape.md` § 2.2. |
 | Columns | "What columns should the report show?" | Convert via `07-view-patterns.md` to a `UIVW.definition.column[]` array. The view is always written — a report cannot have `viewID:null`. |
 | GroupBy intent | "Should the report group by anything? (Optional.)" | If yes → UIGB.definition.group[] per `07-view-patterns.md` § 12. If no → SKIP the UIGB POST entirely; the REPORT row gets `groupByID: null` and `reportType: "L"` (list) instead of `"A"` (analytical). |
-| Chart intent | "Should the report include a chart?" | **v0.9.0 limitation:** the skill can set chart-related booleans on the REPORT row, but the actual chart configuration is NOT persisted via the v0.9.0 API surface (it lives behind `preferenceID`, see `05-gotchas.md` #12). When asked, the skill creates the report as a TABLE and tells the admin to finish chart configuration in the in-product builder at `$$HOST/report/<id>`. |
+| Chart intent | "Should the report include a chart?" | **v0.9.0 limitation:** the skill can set chart-related booleans on the REPORT row, but the actual chart configuration is NOT persisted via the v0.9.0 API surface (it lives behind `preferenceID`, see `05-gotchas.md` #12). When asked, the skill creates the report as a TABLE and tells the consultant to finish chart configuration in the in-product builder at `$$HOST/report/<id>`. |
 | Prompts | "Should this report take user-prompted filter parameters?" | Same v0.9.0 limitation as chart. Setting `showPrompts:true` writes through; the prompt parameter definitions do not. v0.10.0 candidate. |
 | Sort | "Any sort order? (Optional.)" | Column-level: `column.sortOrder` / `column.sortType` per `07-view-patterns.md` § 2. REPORT-level: `REPORT.sortBy` / `sortType` (rare; only used as a cross-view override). |
 
-If the admin types `edit` at any later phase, return here with prior answers prefilled.
+If the consultant types `edit` at any later phase, return here with prior answers prefilled.
 
 The interview never speculates about filter or column syntax inline. NL ("show projects that are active") becomes a JSON-object filter via the patterns in `06-filter-patterns.md`. NL ("show name, owner, planned completion") becomes a `column[]` array via the patterns in `07-view-patterns.md`. The skill consults those files, not its own memory, on every interview pass.
 
-**Sharecol breadcrumb defaulting.** If the interview surfaces 2 or more metadata pairs that all decorate the primary entity's display cell, compose a sharecol group rather than separate columns. The default layout is `<b>Label: </b>value<br>` stacked, with `displayname` set from the entity type and `<hr>` between the header and the body. Don't prompt the admin for the HTML; surface it at Phase C compose. Reference: `07-view-patterns.md` § 10 has the canonical pattern, the 4 sanitizer rules, and the v0.9.2 live-test rationale (run-together formatting from inline whitespace collapse).
+**Sharecol breadcrumb defaulting.** If the interview surfaces 2 or more metadata pairs that all decorate the primary entity's display cell, compose a sharecol group rather than separate columns. The default layout is `<b>Label: </b>value<br>` stacked, with `displayname` set from the entity type and `<hr>` between the header and the body. Don't prompt the consultant for the HTML; surface it at Phase C compose. Reference: `07-view-patterns.md` § 10 has the canonical pattern, the 4 sanitizer rules, and the v0.9.2 live-test rationale (run-together formatting from inline whitespace collapse).
 
 ## Phase C — Compose payloads
 
@@ -114,7 +114,7 @@ The skill consults `06-filter-patterns.md` § 1-2 for the operator catalogue and
 
 ### C.2 UIGB payload (groupBy)
 
-`POST $$HOST/attask/api/v17.0/uigb` — **OMIT this entire call if the admin declined grouping.**
+`POST $$HOST/attask/api/v17.0/uigb` — **OMIT this entire call if the consultant declined grouping.**
 
 ```json
 {
@@ -258,22 +258,22 @@ Required fields per `01-report-object-shape.md` § 1: `name`, `uiObjCode`, `repo
 
 `reportType` picks from `"A"` (analytical, grouped) / `"L"` (list, no grouping) / `"M"` (matrix, not supported in v0.9.0):
 
-- If the admin specified at least one group → `"A"` with `groupByID` set.
-- If the admin declined grouping → `"L"` with `groupByID: null`.
+- If the consultant specified at least one group → `"A"` with `groupByID` set.
+- If the consultant declined grouping → `"L"` with `groupByID: null`.
 - Never `"M"` from v0.9.0.
 
 See `01-report-object-shape.md` § 1.1 for the enum semantics.
 
-The skill prints all 2-4 payloads to terminal before Phase D, named with their target endpoint. The admin can request edits at this point; `edit` returns to Phase B with prior answers prefilled.
+The skill prints all 2-4 payloads to terminal before Phase D, named with their target endpoint. The consultant can request edits at this point; `edit` returns to Phase B with prior answers prefilled.
 
 ## Phase D — Pre-flight validation
 
 Run the pre-flight validator against the composed bundle. This is the v0.9.0 gate that catches the "field does not exist on the target object" class of error — the PROJ-vs-TMPL trap from `05-gotchas.md` #9 — before any bytes write.
 
-Source the active environment's .env to make `WF_HOST` and `WF_API_KEY` available to the validator. The script's CLI is unchanged.
+Source the active client's .env to make `WF_HOST` and `WF_API_KEY` available to the validator. The script's CLI is unchanged.
 
 ```bash
-set -a; source ~/wf-envs/<active-slug>/.env; set +a
+set -a; source ~/wf-clients/<active-slug>/.env; set +a
 jq -n \
    --arg uift   "$(cat /tmp/uift-payload.json)" \
    --arg uigb   "$(cat /tmp/uigb-payload.json)" \
@@ -287,9 +287,9 @@ jq -n \
 
 The validator returns a structured JSON report with `valid:true|false`, an `errors` array, a `warnings` array, and per-entry suggestions. Algorithm details in `08-pre-flight-validation.md`.
 
-**On `valid:false`** — print the errors with suggestions (e.g., "the template-flag field you referenced is not on PROJ; templates are a separate objCode `TMPL` — drop this filter, or change `uiObjCode` to `TMPL`"). The admin types `edit` to revise. No bytes write. Loop back to Phase B with the offending slot pre-selected for revision.
+**On `valid:false`** — print the errors with suggestions (e.g., "the template-flag field you referenced is not on PROJ; templates are a separate objCode `TMPL` — drop this filter, or change `uiObjCode` to `TMPL`"). The consultant types `edit` to revise. No bytes write. Loop back to Phase B with the offending slot pre-selected for revision.
 
-**On `valid:true` with warnings** — surface the warnings (column-to-uiObjCode coherence checks per `05-gotchas.md` #1, locale-shift on hard-coded dates per `05-gotchas.md` #6) and proceed to Phase E. Warnings are soft signals the admin should see before authorizing the write; they don't block.
+**On `valid:true` with warnings** — surface the warnings (column-to-uiObjCode coherence checks per `05-gotchas.md` #1, locale-shift on hard-coded dates per `05-gotchas.md` #6) and proceed to Phase E. Warnings are soft signals the consultant should see before authorizing the write; they don't block.
 
 **On `valid:true` with zero errors and zero warnings** — proceed to Phase E.
 
@@ -301,7 +301,7 @@ Banner template (substitute live values for the placeholders):
 
 > "Writing to **<customer-name>** at **<host>**. Will POST **N×** UIFT, **N×** UIGB, **1×** UIVW, then **1×** REPORT referencing those IDs. Pre-flight: **GREEN** (0 errors, N warnings). Type `apply` to proceed, `edit` to change a field, or anything else to abort."
 
-`N×` for UIFT is `1` (always written, even when empty) and for UIGB is `0` or `1` (0 if the admin declined grouping; 1 otherwise). UIVW and REPORT are always 1 each.
+`N×` for UIFT is `1` (always written, even when empty) and for UIGB is `0` or `1` (0 if the consultant declined grouping; 1 otherwise). UIVW and REPORT are always 1 each.
 
 Only the literal string `apply` proceeds. `y`, `yes`, `apply now`, blank-Enter — none of those count. `edit` returns to Phase B with fields prefilled. Anything else aborts.
 
@@ -309,25 +309,25 @@ Only the literal string `apply` proceeds. `y`, `yes`, `apply now`, blank-Enter �
 
 2-4 POSTs in sequence. Each uses `--data-urlencode 'updates=<json>'` form-encoded; raw JSON body via `-d` is rejected by the v17.0 endpoint. Capture the returned ID from each before firing the next.
 
-If the destination is prod, prepend `WF_ENV_WRITE_ACK=1` after the admin types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
+If the destination is prod, prepend `WF_CLIENT_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
 
 ```bash
 # 1. UIFT (filter)
-FILTER_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+FILTER_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   -X POST /attask/api/v17.0/uift \
   --data-urlencode "updates=$(cat /tmp/uift-payload.json)" \
   | jq -r '.data.ID')
 echo "[1/4] UIFT created: $FILTER_ID"
 
-# 2. UIGB (groupBy) — SKIP this entire block if the admin declined grouping.
-GROUP_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+# 2. UIGB (groupBy) — SKIP this entire block if the consultant declined grouping.
+GROUP_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   -X POST /attask/api/v17.0/uigb \
   --data-urlencode "updates=$(cat /tmp/uigb-payload.json)" \
   | jq -r '.data.ID')
 echo "[2/4] UIGB created: $GROUP_ID"
 
 # 3. UIVW (view)
-VIEW_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+VIEW_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   -X POST /attask/api/v17.0/uivw \
   --data-urlencode "updates=$(cat /tmp/uivw-payload.json)" \
   | jq -r '.data.ID')
@@ -338,14 +338,14 @@ jq --arg fid "$FILTER_ID" --arg gid "$GROUP_ID" --arg vid "$VIEW_ID" \
    '.filterID=$fid | .groupByID=$gid | .viewID=$vid' \
    /tmp/report-payload.json \
    > /tmp/report-payload-resolved.json
-REPORT_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+REPORT_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   -X POST /attask/api/v17.0/report \
   --data-urlencode "updates=$(cat /tmp/report-payload-resolved.json)" \
   | jq -r '.data.ID')
 echo "[4/4] REPORT created: $REPORT_ID"
 ```
 
-If the admin declined grouping → omit step 2 and pass `null` for `groupByID` in step 4's jq patch (`.groupByID=null` rather than `.groupByID=$gid`).
+If the consultant declined grouping → omit step 2 and pass `null` for `groupByID` in step 4's jq patch (`.groupByID=null` rather than `.groupByID=$gid`).
 
 Wire-format anchors worth repeating:
 
@@ -355,13 +355,13 @@ Wire-format anchors worth repeating:
 
 ## Phase G — Smoke-test verify
 
-Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the destination environment's exports folder for the audit trail:
+Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the client's deliverables folder for the audit trail:
 
 ```bash
-DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest)
-SMOKE_OUT=~/wf-envs/${DEST_SLUG}/exports/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
-mkdir -p ~/wf-envs/${DEST_SLUG}/exports
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh --dest)
+SMOKE_OUT=~/wf-clients/${DEST_SLUG}/deliverables/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
+mkdir -p ~/wf-clients/${DEST_SLUG}/deliverables
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
   /attask/api/v17.0/report/$REPORT_ID \
   --data-urlencode 'fields=*,definition,filterID,groupByID,viewID' \
   | tee "$SMOKE_OUT" | python3 -m json.tool
@@ -370,11 +370,11 @@ echo "Smoke-test saved to $SMOKE_OUT"
 
 Compare the response's `filterID` / `groupByID` / `viewID` against the IDs captured in Phase F.1, F.2, F.3. If any differ, Workfront silently re-resolved the report to point at a pre-existing UI-object whose `definition` matches byte-for-byte. The report renders correctly, but the UI-object the skill POSTed is now orphaned in the tenant.
 
-Print the diff so the admin knows which sub-objects they actually own:
+Print the diff so the consultant knows which sub-objects they actually own:
 
-> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<our-uift-id>`."
+> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X DELETE /attask/api/v17.0/uift/<our-uift-id>`."
 
-This is the #1 silent-failure mode for reports authored via API. The smoke-test catches it; without the smoke-test, the admin has no signal.
+This is the #1 silent-failure mode for reports authored via API. The smoke-test catches it; without the smoke-test, the consultant has no signal.
 
 ## Phase H — Print URLs
 
@@ -390,26 +390,26 @@ The bare URL opens the report's editor (Columns / Groupings / Filters / Chart ta
 
 ## Error handling
 
-Inline only — no auto-rollback, no retry beyond what's listed here. The skill streams DELETE curls for the orphaned UI-objects so the admin has manual rollback in terminal scrollback.
+Inline only — no auto-rollback, no retry beyond what's listed here. The skill streams DELETE curls for the orphaned UI-objects so the consultant has manual rollback in terminal scrollback.
 
 | Failure | Skill response |
 |---|---|
-| Pre-flight (Phase D) returns `valid:false` | Print errors + per-entry suggestions. Admin types `edit` to revise. No bytes write. |
+| Pre-flight (Phase D) returns `valid:false` | Print errors + per-entry suggestions. Consultant types `edit` to revise. No bytes write. |
 | UIFT POST fails (Phase F.1) | No UI-objects created yet. Print the API error verbatim. Stop. |
-| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<filterID>`. Print the API error. Stop. |
+| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X DELETE /attask/api/v17.0/uift/<filterID>`. Print the API error. Stop. |
 | UIVW POST fails (Phase F.3) | Print DELETE curls for both UIFT and UIGB. Print the API error. Stop. |
 | REPORT POST fails (Phase F.4) | Print DELETE curls for all three UI-objects. Print the API error. If the error names a specific field, surface the field name and the cached metadata's enum (if applicable). Stop. |
-| `uiObjCode` value rejected (Phase F.4) | Print the valid enum from the cached `/report/metadata`. Ask the admin for a new value and retry F.4 with the three UI-objects still in place. The UI-objects' `uiObjCode` does NOT have to match the REPORT row's `uiObjCode` on POST — but the report won't render correctly until it does, so the skill warns. |
+| `uiObjCode` value rejected (Phase F.4) | Print the valid enum from the cached `/report/metadata`. Ask the consultant for a new value and retry F.4 with the three UI-objects still in place. The UI-objects' `uiObjCode` does NOT have to match the REPORT row's `uiObjCode` on POST — but the report won't render correctly until it does, so the skill warns. |
 | REPORT POST returns success but smoke-test shows re-resolution | Print the diff per Phase G. The report renders correctly; the orphaned UI-objects need manual cleanup. See `05-gotchas.md` #5. |
-| Smoke-test GET fails (Phase G) | Likely a permissions issue on the new report (rare). Print the URL and let the admin verify in the UI. |
+| Smoke-test GET fails (Phase G) | Likely a permissions issue on the new report (rare). Print the URL and let the consultant verify in the UI. |
 
 ## Modify flow (the PUT variant)
 
-When the admin gives a report ID or URL and a change ("change the filter to only show projects with planned completion in the next 30 days"), the recipe is a variant of create — GET-then-PUT in place. Same wire-format correction (`--data-urlencode 'updates=...'`). Same pre-flight gate inserted between compose and apply.
+When the consultant gives a report ID or URL and a change ("change the filter to only show projects with planned completion in the next 30 days"), the recipe is a variant of create — GET-then-PUT in place. Same wire-format correction (`--data-urlencode 'updates=...'`). Same pre-flight gate inserted between compose and apply.
 
 1. **GET the report** with everything that might change:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
      /attask/api/v17.0/report/<reportID> \
      --data-urlencode 'fields=*,definition,filterID,groupByID,viewID,uiObjCode' \
      | python3 -m json.tool
@@ -418,17 +418,17 @@ When the admin gives a report ID or URL and a change ("change the filter to only
 
 2. **GET each referenced UI-object** with `fields=*,definition`:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
      /attask/api/v17.0/uift/<filterID> \
      --data-urlencode 'fields=*,definition'
    # Repeat for /uigb/<groupByID> and /uivw/<viewID>. Skip a GET if its ID is null.
    ```
 
-3. **Print the current state** — the full JSON for the report and its three UI-objects. This is the rollback artifact; the admin copies it from terminal scrollback if they need to revert. There is no auto-rollback in v0.9.0.
+3. **Print the current state** — the full JSON for the report and its three UI-objects. This is the rollback artifact; the consultant copies it from terminal scrollback if they need to revert. There is no auto-rollback in v0.9.0.
 
 4. **UI-object re-use check.** Before any PUT, search for other reports that reference the same UI-object IDs:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
      /attask/api/v17.0/report/search \
      --data-urlencode 'filterID=<filterID>' \
      --data-urlencode 'fields=ID,name' \
@@ -436,23 +436,23 @@ When the admin gives a report ID or URL and a change ("change the filter to only
    # Repeat with groupByID=<groupByID> and viewID=<viewID>.
    ```
    If more than 1 result comes back per UI-object, it is shared with other reports. PUT-in-place affects every consumer. Two options the skill surfaces:
-   1. **PUT in place anyway** — affects every consumer. Useful when the admin wants the change applied to a family of reports.
+   1. **PUT in place anyway** — affects every consumer. Useful when the consultant wants the change applied to a family of reports.
    2. **POST a new UI-object and re-point only this report.** The skill POSTs a fresh UIFT (or UIGB / UIVW), then PUTs `/report/<reportID>` with `filterID=<new-uift-id>`. The other consumers keep referencing the original.
 
-   The default is option 2 — preserve the other consumers. The admin decides. See `05-gotchas.md` #7.
+   The default is option 2 — preserve the other consumers. The consultant decides. See `05-gotchas.md` #7.
 
 5. **Compose the new definitions** via `06-filter-patterns.md` / `07-view-patterns.md`. The composed JSON-object `definition` replaces the old one on PUT.
 
 6. **Pre-flight validation** of the new bundle. Same gate as Phase D of create. The validator runs against the composed `{report, uift, uigb, uivw}` shape regardless of whether the bundle is for create or modify.
 
-7. **Single `apply` gate** with a banner naming the destination environment and the IDs that will be mutated. Same wording as Phase E.
+7. **Single `apply` gate** with a banner naming the destination tenant and the IDs that will be mutated. Same wording as Phase E.
 
 8. **PUT in place** against the existing UI-object IDs (preserves IDs and external references). Same wire format as create — `--data-urlencode 'updates=...'`:
 
-   If the destination is prod, prepend `WF_ENV_WRITE_ACK=1` after the admin types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
+   If the destination is prod, prepend `WF_CLIENT_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
 
    ```bash
-   WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+   WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
      -X PUT /attask/api/v17.0/uift/<filterID> \
      --data-urlencode 'updates={"definition":{"status":"CUR","status_Mod":"in","plannedCompletionDate":"$$TODAY+30d","plannedCompletionDate_Mod":"lte"}}'
    ```
@@ -462,7 +462,7 @@ When the admin gives a report ID or URL and a change ("change the filter to only
 
 ### Hard-block on `uiObjCode` change
 
-If the admin requests a `uiObjCode` mutation on modify, **hard-block**. Print:
+If the consultant requests a `uiObjCode` mutation on modify, **hard-block**. Print:
 
 > "Changing `uiObjCode` is destructive — every column in the view is resolved against the target object, so the report will render empty after the change. Every filter line is similarly resolved. Delete and recreate the report instead."
 
@@ -474,11 +474,11 @@ Then offer to run the create flow with the new `uiObjCode`. See `05-gotchas.md` 
 
 What this means in practice:
 
-- The interview's `Chart intent` and `Prompts` slots are captured for the admin's record, but the skill creates the report as a **TABLE**.
+- The interview's `Chart intent` and `Prompts` slots are captured for the consultant's record, but the skill creates the report as a **TABLE**.
 - The skill prints: "I've created the report as a table at `$$HOST/report/<id>`. The chart configuration is stored behind a `preferenceID` resource we don't yet write — open the report's editor and use the Chart tab to finish configuration."
-- Setting `showPrompts:true` on the REPORT row writes through, but the actual prompt parameter definitions do not. The admin must add prompts via the in-product builder's Prompts tab.
+- Setting `showPrompts:true` on the REPORT row writes through, but the actual prompt parameter definitions do not. The consultant must add prompts via the in-product builder's Prompts tab.
 
-v0.10.0 candidate: probe the `preferenceID` resource against Client C's 2 chart reports to figure out the round-trip.
+v0.10.0 candidate: probe the `preferenceID` resource against Client C's 2 chart reports to figure out the round-trip. Tracked in `docs/roadmap.md`.
 
 ## Cross-references
 
@@ -488,6 +488,6 @@ v0.10.0 candidate: probe the `preferenceID` resource against Client C's 2 chart 
 - Pre-flight validation algorithm (Phase D gate): `08-pre-flight-validation.md`. Field-existence checks against cached metadata; enum-value checks; uiObjCode-match checks; required-field checks per object; DE: parity probe.
 - Schema cache and the metadata burst: `04-runtime-schema-discovery.md`. Per-host-hash cache; 24-hour TTL; the 5-call burst in Phase A.3.
 - Gotchas (REPORT row's empty `definition`, silent re-resolution, chart/prompts spillover via `preferenceID`, UI-object re-use on modify, PROJ-vs-TMPL invalid-field class of error, DE: prefix asymmetry, hard-coded host URLs in `valueexpression`): `05-gotchas.md`.
-- The cross-environment clone variant of this recipe: `03-clone-and-adapt-recipe.md`. Same compose → pre-flight → apply → write spine; sanitization phase inserted before compose.
-- Auth, `$$HOST` resolution, API version pinning: `workfront-api`. The v0.9.0 skill pins to `v17.0`; auth is handled by the `wf-env-curl.sh` wrapper (API key injected from the active environment's `.env`).
+- The cross-tenant clone variant of this recipe: `03-clone-and-adapt-recipe.md`. Same compose → pre-flight → apply → write spine; sanitization phase inserted before compose.
+- Auth, `$$HOST` resolution, API version pinning: `workfront-api`. The v0.9.0 skill pins to `v17.0`; auth is handled by the `wf-client-curl.sh` wrapper (API key injected from the active client's `.env`).
 - Text-mode authoring inside `valueexpression` strings (CONCAT, IF, CASE, ROUND, SUB, ISBLANK, brace-bracket field references): `workfront-textmode`. This recipe writes JSON; `workfront-textmode` owns the calc-language DSL inside any `valueexpression` value.
