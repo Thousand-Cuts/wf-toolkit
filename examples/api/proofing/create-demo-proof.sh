@@ -30,14 +30,14 @@
 #     and is a full-account bearer credential. Treat the cookie file like a password.
 #
 # ── Usage ─────────────────────────────────────────────────────────────────────
-#   export WF_HOST=yourtenant.my.workfront.com
+#   export WF_HOST=a live production tenant
 #   export WF_API_KEY=...
 #   # cookie file = the raw `Cookie:` header from any /internal/ request (DevTools)
 #   ./create-demo-proof.sh <cookie-file> <file-path.jpg> <projectID>
 #
 set -euo pipefail
 
-: "${WF_HOST:?set WF_HOST (e.g. tenant.my.workfront.com)}"
+: "${WF_HOST:?set WF_HOST (e.g. a live production tenant)}"
 : "${WF_API_KEY:?set WF_API_KEY}"
 COOKIE_FILE="${1:?usage: create-demo-proof.sh <cookie-file> <file-path> <projectID>}"
 FILE="${2:?path to a real image or PDF to proof}"

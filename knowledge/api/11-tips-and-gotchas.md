@@ -121,7 +121,7 @@ The same collection-replace semantics apply (see "Collection updates replace, no
 
 **How to spot one ahead of time:** the child `objCode` doesn't appear in `03-object-codes.md`, and a direct `GET /<objcode>/search` returns the "not a top level object" error. `NONWKD` (non-working day on a schedule) is one verified example.
 
-Verified on `client-d.preview.workfront.com`, v17.0, 2026-05-21: `POST /nonwkd` returned the 422 above; `PUT /sched/<id>` with `updates={"nonWorkDays":[...]}` succeeded and the collection reflected the new rows on a follow-up `GET /sched/<id>?fields=nonWorkDays:nonWorkDate`.
+Verified on a preview sandbox tenant, v17.0, 2026-05-21: `POST /nonwkd` returned the 422 above; `PUT /sched/<id>` with `updates={"nonWorkDays":[...]}` succeeded and the collection reflected the new rows on a follow-up `GET /sched/<id>?fields=nonWorkDays:nonWorkDate`.
 
 ## Collection filtering requires a separate query
 

@@ -206,12 +206,12 @@ When authoring a filter, ALWAYS write `"DE:<name>"`. When authoring a column or 
 {
   "displayname": "Proof Link",
   "textmode": "true",
-  "valueexpression": "CONCAT(\"<a href='https://client-d.my.workfront.com/document/\",{ID},\"'>View</a>\")",
+  "valueexpression": "CONCAT(\"<a href='https://a live production tenant/document/\",{ID},\"'>View</a>\")",
   "valueformat": "HTML"
 }
 ```
 
-When the consultant clones this report from Client D to a different tenant (Client E, say), the `https://client-d.my.workfront.com/...` literal goes along for the ride — clicking the link in the cloned report opens Client D's tenant, not the destination's. Embarrassing in front of a client.
+When the consultant clones this report from Client D to a different tenant (Client E, say), the `https://a live production tenant/...` literal goes along for the ride — clicking the link in the cloned report opens Client D's tenant, not the destination's. Embarrassing in front of a client.
 
 **What the skill does:** During clone-flow Phase 4 sanitization, the walker scans every `valueexpression` for `https://[a-z][a-z0-9-]+\.(my|sb01|preview)\.workfront\.com/` patterns. Matches land in the new `host_rewrite` bucket. The interactive review at Phase 5 asks per-entry:
 
@@ -219,7 +219,7 @@ When the consultant clones this report from Client D to a different tenant (Clie
 - **Keep** — leave as-is (rare; only if pointing at a third-party asset that's the same across tenants)
 - **Drop** — strip the containing column/expression entirely
 
-**Empirical evidence:** Client D's `OPTASK-rush-L-uivw.json`, `OPTASK-mktg-retail-uivw.json`, `DOCU-proofs-retail-uivw.json`, and `PRFAPL-completed-L-uivw.json` all carry hard-coded `https://client-d.my.workfront.com/...` strings inside `valueexpression`.
+**Empirical evidence:** Client D's `OPTASK-rush-L-uivw.json`, `OPTASK-mktg-retail-uivw.json`, `DOCU-proofs-retail-uivw.json`, and `PRFAPL-completed-L-uivw.json` all carry hard-coded `https://a live production tenant/...` strings inside `valueexpression`.
 
 ---
 
