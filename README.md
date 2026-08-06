@@ -1,5 +1,9 @@
 # wf-toolkit
 
+![License: MIT](https://img.shields.io/badge/license-MIT-141412?labelColor=FFE81C)
+![Skills: 7](https://img.shields.io/badge/skills-7-141412?labelColor=FFE81C)
+![Verified against live tenants](https://img.shields.io/badge/verified-live%20tenants-141412?labelColor=FFE81C)
+
 ![wf-toolkit demo: asking for a color-coded status column and receiving verified text mode](.github/demo.gif)
 
 
@@ -14,15 +18,15 @@ One source of truth per topic — `knowledge/<topic>/` and `examples/<topic>/` p
 
 Every skill lives at `skills/<name>/`. Version history is in `CHANGELOG.md`.
 
-| Skill | What it does | Claude.ai Project |
+| Skill | The time it saves | Claude.ai Project |
 |---|---|---|
-| `workfront-textmode` | In-product text mode: views, filters, groupings, valueexpressions | `claude-projects/textmode/` |
-| `workfront-api` | REST API: auth, `/search` filters, pagination, External Lookup | `claude-projects/api/` |
-| `workfront-calc-fields` | Calculated custom fields (in-product authoring) | `claude-projects/calculated-fields/` |
-| `workfront-custom-forms` | Design, audit, and clone custom forms and display logic | `claude-projects/custom-forms/` |
-| `workfront-permissions` | Read-only permission diagnostics ("why can't X edit Y?") | `claude-projects/permissions/` |
-| `workfront-business-rules` | Author/debug validation & automation business rules (IF() block-on-save) | — (Route A only) |
-| `workfront-reports` | Create / modify / clone reports via the REST API | `claude-projects/reports/` |
+| `workfront-textmode` | Views, filters, groupings, `valueexpression` — without the trial-and-error loop text mode usually costs | `claude-projects/textmode/` |
+| `workfront-api` | Auth, `/search` filters, EXISTS queries, pagination, External Lookup — the undocumented wire formats included | `claude-projects/api/` |
+| `workfront-calc-fields` | Calculated-field syntax that persists on records — not the report-time expressions it gets confused with | `claude-projects/calculated-fields/` |
+| `workfront-custom-forms` | Forms, 200-option dropdowns, display logic, cross-tenant clones — including the writes that 400 without the right envelope | `claude-projects/custom-forms/` |
+| `workfront-permissions` | "Why can't X edit Y?" answered by walking the actual permission graph, read-only | `claude-projects/permissions/` |
+| `workfront-business-rules` | Validation and automation rules (`IF()` block-on-save) authored and debugged | — (Route A only) |
+| `workfront-reports` | Reports created, modified, and cloned via the API — schema discovered at runtime | `claude-projects/reports/` |
 
 Skills that touch your Workfront instance read credentials from `~/wf-envs/<active>/.env` via a shell wrapper — under Route A, no API key ever enters chat. See "Environments" below.
 
@@ -138,6 +142,10 @@ attempted, what the docs claimed, what actually happened. Findings are
 verified against a live tenant before they enter the knowledge files, so the
 record stays trustworthy. The verified-gotcha convention this repo uses is
 described in [the field report that introduced it](https://thousandcuts.ai/guides/workfront-mcp-claude).
+
+## If it saved you an hour
+
+A star helps other Workfront admins find this. That's the whole ask.
 
 ## Maintained by
 
