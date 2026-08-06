@@ -58,7 +58,7 @@ In order:
 6. **Group / Team / Role AccessRules** — same shape, accessor type matches user's memberships.
 7. **Inline-inherited rules** — same matcher; the rule's `isInherited=true` + `ancestorID` + `ancestorObjCode` surface the provenance.
 
-> **Removed in v0.15.0:** an earlier "system-wide override" layer (formerly step 4) modelled tenant-wide visibility toggles like "users see all projects". HAR capture #6 (2026-05-18) disproved that those toggles exist as discoverable settings in modern v17.0 — see `07-system-wide-overrides`.
+> **Removed in v0.15.0:** an earlier "system-wide override" layer (formerly step 4) modelled tenant-wide visibility toggles like "users see all projects". HAR capture #6 (2026-05-18) disproved that those toggles exist as discoverable settings in modern v17.0 — see `07-system-wide-overrides` and the internal verification notes §Finding 7.
 
 ## The exact-match rule (not ordinal)
 

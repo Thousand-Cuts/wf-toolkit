@@ -129,7 +129,7 @@ A handful of UI-only configurations remain outside the REST surface:
 
 ## Historical context
 
-The HAR-capture work captured the UI's `/internal/customForms/saveForm` payload and concluded the auth wall meant display logic was inaccessible. The work isn't wasted — the captured payload shape clarified how the UI bundles cascade rules with other form-edit operations. But the REST surface (`categoryCascadeRules` collection) is simpler and doesn't require any of the `/internal/*` auth scaffolding.
+The HAR-capture work (the internal verification notes) captured the UI's `/internal/customForms/saveForm` payload and concluded the auth wall meant display logic was inaccessible. The work isn't wasted — the captured payload shape clarified how the UI bundles cascade rules with other form-edit operations. But the REST surface (`categoryCascadeRules` collection) is simpler and doesn't require any of the `/internal/*` auth scaffolding.
 
 The Phase B lesson: when probing for a documented surface, enumerate both `fields` AND `collections` from `/metadata`. Filter both with the same keyword set. `categoryCascadeRules` would have been visible from day one if Phase A's metadata pass had included collections.
 

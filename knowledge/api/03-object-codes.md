@@ -78,7 +78,7 @@ Workfront Layout Templates are split across **two separate REST objCodes** depen
 
 **Practical rule:** If you're auditing or assigning Layout Templates on any tenant created after Workfront's new-experience rollout, query `/UITMPL/search` (not `/layoutTemplate/search`) and walk the priority chain (User → Role → Team → Group) using `uiTemplateID`. Querying only `/layoutTemplate/search` on a modern tenant returns 6 stock rows and makes it look like the customer has done nothing — even when they've built a full persona-based LT program.
 
-For the full coverage-audit pattern (priority-chain walk, license-type breakdown of uncovered users, role-inheritance gap analysis), run the same walk per layout template.
+For the full coverage-audit pattern (priority-chain walk, license-type breakdown of uncovered users, role-inheritance gap analysis), run the same walk per layout template.md`.
 
 ## A note on JRNLE (field-change history / audit log)
 

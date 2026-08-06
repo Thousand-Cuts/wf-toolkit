@@ -48,7 +48,7 @@ Verified empirically against a live production tenant v17.0, 2026-05-18, across 
 | `ADOBEXD`, `IMAGE`, `PDF`, `UIEXTNSION`, `VIDEO`, `WFNATIVE`, `WFPLANNING` | Widget subtypes — require `dataType=WIDGET`. Pairing pattern is `(WIDGET, <subtype>)`, e.g., `(WIDGET, ADOBEXD)` for an Adobe XD embed. Replaces the deprecated `(WIDGET, WIDGET)` pairing. | No |
 | `ROLLUP`, `SNGLROLLUP`, `TIMEPHASED` | Aggregation displayTypes — require `dataType` from `{NMBR, CURC, DATE}`. Pairings: `(NMBR, ROLLUP)`, `(NMBR, SNGLROLLUP)`, `(DATE, TIMEPHASED)`, plus `(CURC, ROLLUP)`, `(CURC, SNGLROLLUP)` per server hint. Aggregates child-record values (sum / avg / min / max for ROLLUP; date-bucketed for TIMEPHASED). | No |
 
-**Phase B-1 caveat:** the 8 displayTypes from DOCUMENT through TIMEPHASED were probed with a minimal `(TEXT, X)` payload. DOCUMENT and the lookup families returned recognized-but-needs-config errors confirming the displayType exists. The widget subtypes and rollup variants returned "wrong Format" errors confirming the displayType is real but the dataType pairing was wrong. Phase B-2 will re-probe with correct dataType + extra payload fields.
+**Phase B-1 caveat:** the 8 displayTypes from DOCUMENT through TIMEPHASED were probed with a minimal `(TEXT, X)` payload. DOCUMENT and the lookup families returned recognized-but-needs-config errors confirming the displayType exists. The widget subtypes and rollup variants returned "wrong Format" errors confirming the displayType is real but the dataType pairing was wrong. Phase B-2 will re-probe with correct dataType + extra payload fields. See the internal verification notes.
 
 Attempting to POST a ParameterOption to a parameter whose `displayType` doesn't accept options returns: `"Parameter with selected Display Type does not support Parameter Options"`.
 
@@ -75,7 +75,7 @@ Empirically verified via Phase B `phase_b_probe.py coverage-matrix` against a li
 | `(RICH, RICH)` | Rich text | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | `(WIDGET, WIDGET)` | Widget (deprecated) | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ | ✗ |
 
-**Excluded objCodes (Category-create rejected):** `PROG`, `TMPL`, `TTSK` are NOT valid `Category.objTypes` values. Server returns `invalid value <X> for enum CategoryObjTypesEnum`. Custom forms cannot be created against Programs, Templates, or Template Tasks.
+**Excluded objCodes (Category-create rejected):** `PROG`, `TMPL`, `TTSK` are NOT valid `Category.objTypes` values. Server returns `invalid value <X> for enum CategoryObjTypesEnum`. Custom forms cannot be created against Programs, Templates, or Template Tasks. See the internal verification notes § 1.
 
 
 

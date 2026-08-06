@@ -74,4 +74,4 @@ If the consultant wants to remediate:
 3. Hand off to dedicated bulk-update tooling with a "bulk delete AccessRules where ID in [...]" task targeting the direct rules.
 4. Audit-log the deletion (bulk-updates skill handles pre-state capture).
 
-This is exactly the composability the toolkit aims for: read-only `workfront-permissions` produces the target list; write-capable bulk tooling executes the cleanup.
+This is exactly the composability the toolkit aims for: read-only `workfront-permissions` produces the target list; write-capable dedicated bulk-update tooling executes the cleanup.
