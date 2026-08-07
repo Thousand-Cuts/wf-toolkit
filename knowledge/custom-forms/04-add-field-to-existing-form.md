@@ -119,7 +119,7 @@ Implications:
 Workfront rejects duplicate `name` values tenant-wide. Pre-flight check:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/parameter/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/parameter/search \
   --data-urlencode "name=<proposed-name>" \
   --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name"

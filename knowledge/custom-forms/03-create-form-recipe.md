@@ -92,10 +92,10 @@ For DROP / RADIO / CHECKBOX parameters with many options (10+, real-world cases 
 
 When option count ≥10, the skill switches from N sequential POSTs to a single bulk POST per chunk of 100.
 
-> **Prod destination note:** the `WF_CLIENT_WRITE_ACK=1` prefix below assumes the consultant has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
+> **Prod destination note:** the `WF_ENV_WRITE_ACK=1` prefix below assumes the consultant has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X PUT \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X PUT \
   "/attask/api/v17.0/parameterOption?method=POST" \
   --data-urlencode 'updates=[{"parameterID":"<id>","label":"o1","value":"o1","displayOrder":1},...up to 100 entries...]'
 ```

@@ -44,10 +44,10 @@ For dropdowns with many options, route to bulk-options input modes in `03-create
 
 ## Safety baseline
 
-- **Credentials** in `~/wf-clients/<slug>/.env` at mode 600 (set via `wf-client-setkey.sh` in the consultant's terminal). Every client-tenant API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh` — no key in argv, no key in chat. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
+- **Credentials** in `~/wf-envs/<slug>/.env` at mode 600 (set via `wf-env-setkey.sh` in the consultant's terminal). Every client-tenant API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh` — no key in argv, no key in chat. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials.
 - **Read-only folders** (`WF_READ_ONLY=1`) refuse writes. NL-create + add-field flows refuse to start; audit flows (GET-only) work.
-- **Prod destinations** require `WF_CLIENT_WRITE_ACK=1` per wrapper write call (after consultant types `yes` once per session).
-- **`[wf-api-verify]` prefix is for maintainer-side verification flows only** (toolkit dev sanity-checking against the firm's WF). Enforced by `wf-curl.sh`; **`wf_verify_` snake_case prefix on Parameter** since Workfront rejects `[` in Parameter `name`/`label`. See `09-gotchas` and `knowledge/api/13-local-verification.md`. Client-engagement writes (through `wf-client-curl.sh`) do NOT use this prefix.
+- **Prod destinations** require `WF_ENV_WRITE_ACK=1` per wrapper write call (after consultant types `yes` once per session).
+- **`[wf-api-verify]` prefix is for maintainer-side verification flows only** (toolkit dev sanity-checking against the firm's WF). Enforced by `wf-curl.sh`; **`wf_verify_` snake_case prefix on Parameter** since Workfront rejects `[` in Parameter `name`/`label`. See `09-gotchas` and `knowledge/api/13-local-verification.md`. Client-engagement writes (through `wf-env-curl.sh`) do NOT use this prefix.
 - One `apply` gate per multi-call sequence
 - `dataType` / `displayType` changes are hard-blocked (data-destructive — see `09-gotchas` #2)
 - `ParameterOption.value` renames are hard-blocked (orphans records — see `09-gotchas` #9)

@@ -282,7 +282,7 @@ The blast radius of a wrong pre-flight result is limited. A false positive (vali
 
 ```bash
 # WF_HOST / WF_API_KEY exported first, e.g. via
-# `set -a; source ~/wf-clients/<slug>/.env; set +a`
+# `set -a; source ~/wf-envs/<slug>/.env; set +a`
 python3 skills/workfront-reports/scripts/pre_flight_validator.py \
     --from-stdin \
     < bundle.json

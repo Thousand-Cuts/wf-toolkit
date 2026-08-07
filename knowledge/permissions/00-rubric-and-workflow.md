@@ -65,8 +65,8 @@ Inputs: access level name (string), source $$HOST, destination $$HOST. Both cred
 - Read-only — no PUT/POST/DELETE
 - Pin `v17.0` per repo convention
 - Admin-tier API key recommended; degrade gracefully if not present
-- **Credentials via wrapper.** Every API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh`, which sources `~/wf-clients/<active>/.env` (set via `wf-client-setkey.sh` in the consultant's terminal — no key in chat). Read-only client folders (`WF_READ_ONLY=1`) are recommended; this skill is hard GET-only.
-- Surface `WF_CLIENT_LABEL` in every printout
+- **Credentials via wrapper.** Every API call goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh`, which sources `~/wf-envs/<active>/.env` (set via `wf-env-setkey.sh` in the consultant's terminal — no key in chat). Read-only environment folders (`WF_READ_ONLY=1`) are recommended; this skill is hard GET-only.
+- Surface `WF_ENV_LABEL` in every printout
 
 ## Cross-skill references
 

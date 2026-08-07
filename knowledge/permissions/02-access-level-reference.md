@@ -43,7 +43,7 @@ Each row represents **one granted permission**: "this access level grants `coreA
 **Important:** ALVPER is a **collection-only** object. `/accessLevelPermission/metadata` returns empty — there's no top-level endpoint. Must be accessed via the parent AccessLevel:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/accessLevel/<id> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/<id> \
   --data-urlencode "fields=*,accessLevelPermissions:*"
 ```
 
@@ -92,7 +92,7 @@ So restricted access levels (e.g. "Standard with Limits") use `forbiddenActions`
 ## Inspecting a single access level (Flow 4)
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/accessLevel/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/search \
   --data-urlencode "name=Standard" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=*,accessLevelPermissions:*"
 ```
@@ -100,7 +100,7 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/
 Plus user count:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/user/count \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/count \
   --data-urlencode "accessLevelID=<id>" \
   --data-urlencode "accessLevelID_Mod=eq"
 ```
@@ -114,12 +114,12 @@ The user count is critical context for any subsequent design discussion — chan
 ```bash
 # Pull source (firm's tenant)
 ./skills/workfront-api/scripts/wf-use.sh firm-reference
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/accessLevel/<src-id> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/<src-id> \
   --data-urlencode "fields=*,accessLevelPermissions:*" > /tmp/src-level.json
 
 # Pull dest (client tenant)
 ./skills/workfront-api/scripts/wf-use.sh acme-tenant
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/accessLevel/<dest-id> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/accessLevel/<dest-id> \
   --data-urlencode "fields=*,accessLevelPermissions:*" > /tmp/dest-level.json
 
 # Diff the ALVPER collections by (objObjCode, coreAction).

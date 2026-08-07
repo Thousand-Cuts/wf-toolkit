@@ -35,7 +35,7 @@ The most common ways consultants get tripped up by Workfront custom forms. Updat
 - `Parameter.label`: hyphenated like `wf-verify Vendor Name`
 - Category is fine — `[wf-api-verify]` works on `Category.name`.
 
-This means the toolkit-wide prefix convention is partially incompatible with custom forms. The `wf-curl.sh` wrapper (maintainer-side, for the `[wf-api-verify]` flow) enforces a Phase A-aware prefix policy that maps `Parameter` to the `wf_verify_` snake_case variant. For client-engagement writes through `wf-client-curl.sh`, there is no prefix enforcement at all — the wrapper has no prefix guard, since real client forms shouldn't carry a verify-prefix in the first place.
+This means the toolkit-wide prefix convention is partially incompatible with custom forms. The `wf-curl.sh` wrapper (maintainer-side, for the `[wf-api-verify]` flow) enforces a Phase A-aware prefix policy that maps `Parameter` to the `wf_verify_` snake_case variant. For client-engagement writes through `wf-env-curl.sh`, there is no prefix enforcement at all — the wrapper has no prefix guard, since real client forms shouldn't carry a verify-prefix in the first place.
 
 ## 6. `objTypes` is immutable
 

@@ -72,7 +72,7 @@ Note the spelling: it's `NOTEXIST` (one token, no underscore). Easy to guess wro
 Create cascade rules via PUT-on-Category with the nested collection in the body:
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X PUT /attask/api/v17.0/category/<cat_id> \
   --data-urlencode 'updates={
     "categoryCascadeRules": [

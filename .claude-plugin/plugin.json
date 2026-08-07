@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "wf-toolkit",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Workfront skills for Claude Code: text mode, REST API, calculated custom fields, custom forms, permissions diagnostics, business rules, reports.",
   "author": {
     "name": "Thousand Cuts"

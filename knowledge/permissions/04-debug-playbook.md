@@ -8,8 +8,8 @@ Updated 2026-05-18 with Phase A empirical findings. The GET sequence is simpler 
 
 ```
 1. Confirm credentials (admin-tier API key recommended)
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh
-   # (sources ~/wf-clients/<active>/.env; refuses if no active client)
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh
+   # (sources ~/wf-envs/<active>/.env; refuses if no active environment)
 
 2. Resolve inputs
    - userID from email/name:

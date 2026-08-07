@@ -21,20 +21,20 @@ H. Print URLs
 
 Run:
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh --dest
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest
 ```
 
-- Exit 0: prints the active slug (the destination tenant). Extract `WF_HOST`, `WF_CLIENT_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`, and `WF_READ_ONLY` with `grep -E '^(WF_HOST|WF_CLIENT_LABEL|WF_ENV_TYPE|WF_SCOPE_PORTFOLIO_ID|WF_READ_ONLY)=' ~/wf-clients/<slug>/.env` — never read the full `.env`; it holds `WF_API_KEY`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
-- Exit 2: no active client. Tell the consultant to register one via `/wf-client-add <slug>`, set the key with `wf-client-setkey.sh <slug>` in their terminal, then `/wf-client-use <slug>`, and re-invoke.
+- Exit 0: prints the active slug (the destination tenant). Extract `WF_HOST`, `WF_ENV_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`, and `WF_READ_ONLY` with `grep -E '^(WF_HOST|WF_ENV_LABEL|WF_ENV_TYPE|WF_SCOPE_PORTFOLIO_ID|WF_READ_ONLY)=' ~/wf-envs/<slug>/.env` — never read the full `.env`; it holds `WF_API_KEY`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
+- Exit 2: no active environment. Tell the consultant to register one via `/wf-env-add <slug>`, set the key with `wf-env-setkey.sh <slug>` in their terminal, then `/wf-env-use <slug>`, and re-invoke.
 
-The wrapper handles auth; you never see the API key. Auth specifics (sessionID vs API key vs OAuth2 vs JWT) live in `workfront-api`; this recipe uses the `wf-client-curl.sh` wrapper which puts `apiKey=` in the URL query string.
+The wrapper handles auth; you never see the API key. Auth specifics (sessionID vs API key vs OAuth2 vs JWT) live in `workfront-api`; this recipe uses the `wf-env-curl.sh` wrapper which puts `apiKey=` in the URL query string.
 
 ### A.2 Handshake — confirm the tenant
 
-Before any work, verify the active client folder's host + key combination points at the customer the consultant thinks it does:
+Before any work, verify the active environment folder's host + key combination points at the customer the consultant thinks it does:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/user/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/search \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID,customer:name'
 ```
@@ -43,7 +43,7 @@ Extract `data[0].customer.name` from the response and echo back:
 
 > "Connecting to **<customer-name>** at **<host>** — correct? [y/n]"
 
-On 401/403 — tell the consultant to rotate via `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-setkey.sh <slug> --rotate`. On `y` — proceed. No write happens before this `y`.
+On 401/403 — tell the consultant to rotate via `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-setkey.sh <slug> --rotate`. On `y` — proceed. No write happens before this `y`.
 
 ### A.3 Schema discovery burst
 
@@ -270,10 +270,10 @@ The skill prints all 2-4 payloads to terminal before Phase D, named with their t
 
 Run the pre-flight validator against the composed bundle. This is the v0.9.0 gate that catches the "field does not exist on the target object" class of error — the PROJ-vs-TMPL trap from `05-gotchas.md` #9 — before any bytes write.
 
-Source the active client's `.env` with `set -a` to export `WF_HOST` and `WF_API_KEY`; the validator reads both from the environment, so the key never appears in the process argv (it would be visible in `ps`).
+Source the active environment's `.env` with `set -a` to export `WF_HOST` and `WF_API_KEY`; the validator reads both from the environment, so the key never appears in the process argv (it would be visible in `ps`).
 
 ```bash
-set -a; source ~/wf-clients/<active-slug>/.env; set +a
+set -a; source ~/wf-envs/<active-slug>/.env; set +a
 jq -n \
    --arg uift   "$(cat /tmp/uift-payload.json)" \
    --arg uigb   "$(cat /tmp/uigb-payload.json)" \
@@ -309,25 +309,25 @@ Only the literal string `apply` proceeds. `y`, `yes`, `apply now`, blank-Enter �
 
 2-4 POSTs in sequence. Each uses `--data-urlencode 'updates=<json>'` form-encoded; raw JSON body via `-d` is rejected by the v17.0 endpoint. Capture the returned ID from each before firing the next.
 
-If the destination is prod, prepend `WF_CLIENT_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
+If the destination is prod, prepend `WF_ENV_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
 
 ```bash
 # 1. UIFT (filter)
-FILTER_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+FILTER_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/uift \
   --data-urlencode "updates=$(cat /tmp/uift-payload.json)" \
   | jq -r '.data.ID')
 echo "[1/4] UIFT created: $FILTER_ID"
 
 # 2. UIGB (groupBy) — SKIP this entire block if the consultant declined grouping.
-GROUP_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+GROUP_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/uigb \
   --data-urlencode "updates=$(cat /tmp/uigb-payload.json)" \
   | jq -r '.data.ID')
 echo "[2/4] UIGB created: $GROUP_ID"
 
 # 3. UIVW (view)
-VIEW_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+VIEW_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/uivw \
   --data-urlencode "updates=$(cat /tmp/uivw-payload.json)" \
   | jq -r '.data.ID')
@@ -338,7 +338,7 @@ jq --arg fid "$FILTER_ID" --arg gid "$GROUP_ID" --arg vid "$VIEW_ID" \
    '.filterID=$fid | .groupByID=$gid | .viewID=$vid' \
    /tmp/report-payload.json \
    > /tmp/report-payload-resolved.json
-REPORT_ID=$(WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+REPORT_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/report \
   --data-urlencode "updates=$(cat /tmp/report-payload-resolved.json)" \
   | jq -r '.data.ID')
@@ -358,10 +358,10 @@ Wire-format anchors worth repeating:
 Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the client's deliverables folder for the audit trail:
 
 ```bash
-DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh --dest)
-SMOKE_OUT=~/wf-clients/${DEST_SLUG}/deliverables/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
-mkdir -p ~/wf-clients/${DEST_SLUG}/deliverables
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest)
+SMOKE_OUT=~/wf-envs/${DEST_SLUG}/deliverables/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
+mkdir -p ~/wf-envs/${DEST_SLUG}/deliverables
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   /attask/api/v17.0/report/$REPORT_ID \
   --data-urlencode 'fields=*,definition,filterID,groupByID,viewID' \
   | tee "$SMOKE_OUT" | python3 -m json.tool
@@ -372,7 +372,7 @@ Compare the response's `filterID` / `groupByID` / `viewID` against the IDs captu
 
 Print the diff so the consultant knows which sub-objects they actually own:
 
-> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X DELETE /attask/api/v17.0/uift/<our-uift-id>`."
+> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<our-uift-id>`."
 
 This is the #1 silent-failure mode for reports authored via API. The smoke-test catches it; without the smoke-test, the consultant has no signal.
 
@@ -396,7 +396,7 @@ Inline only — no auto-rollback, no retry beyond what's listed here. The skill 
 |---|---|
 | Pre-flight (Phase D) returns `valid:false` | Print errors + per-entry suggestions. Consultant types `edit` to revise. No bytes write. |
 | UIFT POST fails (Phase F.1) | No UI-objects created yet. Print the API error verbatim. Stop. |
-| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X DELETE /attask/api/v17.0/uift/<filterID>`. Print the API error. Stop. |
+| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<filterID>`. Print the API error. Stop. |
 | UIVW POST fails (Phase F.3) | Print DELETE curls for both UIFT and UIGB. Print the API error. Stop. |
 | REPORT POST fails (Phase F.4) | Print DELETE curls for all three UI-objects. Print the API error. If the error names a specific field, surface the field name and the cached metadata's enum (if applicable). Stop. |
 | `uiObjCode` value rejected (Phase F.4) | Print the valid enum from the cached `/report/metadata`. Ask the consultant for a new value and retry F.4 with the three UI-objects still in place. The UI-objects' `uiObjCode` does NOT have to match the REPORT row's `uiObjCode` on POST — but the report won't render correctly until it does, so the skill warns. |
@@ -409,7 +409,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 
 1. **GET the report** with everything that might change:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      /attask/api/v17.0/report/<reportID> \
      --data-urlencode 'fields=*,definition,filterID,groupByID,viewID,uiObjCode' \
      | python3 -m json.tool
@@ -418,7 +418,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 
 2. **GET each referenced UI-object** with `fields=*,definition`:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      /attask/api/v17.0/uift/<filterID> \
      --data-urlencode 'fields=*,definition'
    # Repeat for /uigb/<groupByID> and /uivw/<viewID>. Skip a GET if its ID is null.
@@ -428,7 +428,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 
 4. **UI-object re-use check.** Before any PUT, search for other reports that reference the same UI-object IDs:
    ```bash
-   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      /attask/api/v17.0/report/search \
      --data-urlencode 'filterID=<filterID>' \
      --data-urlencode 'fields=ID,name' \
@@ -449,10 +449,10 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 
 8. **PUT in place** against the existing UI-object IDs (preserves IDs and external references). Same wire format as create — `--data-urlencode 'updates=...'`:
 
-   If the destination is prod, prepend `WF_CLIENT_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
+   If the destination is prod, prepend `WF_ENV_WRITE_ACK=1` after the consultant types `yes` at the prod-write-ack prompt (see SKILL.md safety baseline).
 
    ```bash
-   WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+   WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      -X PUT /attask/api/v17.0/uift/<filterID> \
      --data-urlencode 'updates={"definition":{"status":"CUR","status_Mod":"in","plannedCompletionDate":"$$TODAY+30d","plannedCompletionDate_Mod":"lte"}}'
    ```
@@ -489,5 +489,5 @@ v0.10.0 candidate: probe the `preferenceID` resource against Client C's 2 chart 
 - Schema cache and the metadata burst: `04-runtime-schema-discovery.md`. Per-host-hash cache; 24-hour TTL; the 5-call burst in Phase A.3.
 - Gotchas (REPORT row's empty `definition`, silent re-resolution, chart/prompts spillover via `preferenceID`, UI-object re-use on modify, PROJ-vs-TMPL invalid-field class of error, DE: prefix asymmetry, hard-coded host URLs in `valueexpression`): `05-gotchas.md`.
 - The cross-tenant clone variant of this recipe: `03-clone-and-adapt-recipe.md`. Same compose → pre-flight → apply → write spine; sanitization phase inserted before compose.
-- Auth, `$$HOST` resolution, API version pinning: `workfront-api`. The v0.9.0 skill pins to `v17.0`; auth is handled by the `wf-client-curl.sh` wrapper (API key injected from the active client's `.env`).
+- Auth, `$$HOST` resolution, API version pinning: `workfront-api`. The v0.9.0 skill pins to `v17.0`; auth is handled by the `wf-env-curl.sh` wrapper (API key injected from the active environment's `.env`).
 - Text-mode authoring inside `valueexpression` strings (CONCAT, IF, CASE, ROUND, SUB, ISBLANK, brace-bracket field references): `workfront-textmode`. This recipe writes JSON; `workfront-textmode` owns the calc-language DSL inside any `valueexpression` value.

@@ -97,7 +97,7 @@ Treat `formatConstraint` as a render-hint string, not a behavioural enum.
 Minimum POST body to create an External Lookup parameter:
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/parameter \
   --data-urlencode 'updates={
     "name": "Choose Vendor",
@@ -130,7 +130,7 @@ See the internal verification notes § 1 for a cascading-lookup example and more
 Minimum POST body:
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   -X POST /attask/api/v17.0/parameter \
   --data-urlencode 'updates={
     "name": "Choose User",
@@ -151,12 +151,12 @@ Workfront's server error message when `refObjCode` is missing says `"required ke
 
 ## Sample POST bodies
 
-> **Prod destination note:** the `WF_CLIENT_WRITE_ACK=1` prefix on each example below assumes the consultant has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials for the full gate flow. If the active client is preview/sandbox, `WF_CLIENT_WRITE_ACK=1` is a no-op (the wrapper only enforces the ack on `WF_ENV_TYPE=prod` folders).
+> **Prod destination note:** the `WF_ENV_WRITE_ACK=1` prefix on each example below assumes the consultant has typed `yes` to the prod-write-ack prompt for this batch. See `skills/workfront-custom-forms/SKILL.md` § Safety / Credentials for the full gate flow. If the active environment is preview/sandbox, `WF_ENV_WRITE_ACK=1` is a no-op (the wrapper only enforces the ack on `WF_ENV_TYPE=prod` folders).
 
 ### Single-line text
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
   --data-urlencode "name=wf_verify_vendor_name_<ts>" \
   --data-urlencode "label=Vendor Name" \
   --data-urlencode "dataType=TEXT" \
@@ -168,7 +168,7 @@ WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-clien
 ### Dropdown (needs ParameterOption rows after)
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
   --data-urlencode "name=wf_verify_department_<ts>" \
   --data-urlencode "label=Department" \
   --data-urlencode "dataType=TEXT" \
@@ -180,7 +180,7 @@ WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-clien
 ### Currency
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
   --data-urlencode "name=wf_verify_spend_approved_<ts>" \
   --data-urlencode "label=Spend Approved" \
   --data-urlencode "dataType=CURC" \
@@ -190,7 +190,7 @@ WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-clien
 ### Calculated number (formula set later via CategoryParameter PUT)
 
 ```bash
-WF_CLIENT_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
   --data-urlencode "name=wf_verify_over_budget_<ts>" \
   --data-urlencode "label=Over Budget Flag" \
   --data-urlencode "dataType=NMBR" \

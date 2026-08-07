@@ -40,12 +40,12 @@ If the consultant modifies a report that has subscriptions (`SCHREP` — schedul
 **What the skill does:** before any modify-flow PUT, run one extra GET to count consumers:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/schrep/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/schrep/search \
   --data-urlencode 'reportID=<reportID>' \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID'
 # And:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/ptlsec/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/ptlsec/search \
   --data-urlencode 'reportID=<reportID>' \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID'
@@ -87,7 +87,7 @@ Workfront sometimes returns a different `filterID` / `groupByID` / `viewID` than
 **What the skill does:** after every REPORT POST, run the smoke-test GET:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/report/<reportID> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/report/<reportID> \
   --data-urlencode 'fields=*,filterID,groupByID,viewID'
 ```
 
@@ -124,7 +124,7 @@ A consequence of gotcha #5 plus the modify-flow design: a single UIFT/UIGB/UIVW 
 **What the skill does:** before any modify-flow PUT against a UIFT/UIGB/UIVW row, search for other consumers:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/report/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/report/search \
   --data-urlencode 'filterID=<filterID>' \
   --data-urlencode 'fields=ID,name' \
   --data-urlencode '$$LIMIT=20'
@@ -147,7 +147,7 @@ A `DE:<name>` reference inside any source `definition` string works on the desti
 The clone flow runs parity checks at Phase 5 per `03-clone-and-adapt-recipe.md`:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-curl.sh /attask/api/v17.0/parameter/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/parameter/search \
   --data-urlencode 'name=<name>' \
   --data-urlencode 'name_Mod=eq' \
   --data-urlencode 'fields=ID,name,parameterGroup:name' \

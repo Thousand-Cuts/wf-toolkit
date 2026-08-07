@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.1.6 — 2026-08-07
+
+Fixes credential-store naming throughout `knowledge/` — it referred to scripts and an environment variable that this plugin does not ship.
+
+- Script references now point at the `wf-env-*.sh` scripts that actually ship (`wf-env-curl.sh`, `wf-env-resolve.sh`, `wf-env-setkey.sh`, `wf-env-use.sh`). The docs previously named `wf-client-*.sh`, which do not exist here — every documented API call in custom-forms, permissions, and reports pointed at a missing script.
+- Credential path corrected from `~/wf-clients/<slug>/.env` to `~/wf-envs/<slug>/.env`.
+- **`WF_CLIENT_WRITE_ACK` corrected to `WF_ENV_WRITE_ACK`** (22 occurrences). The shipped `wf-env-curl.sh` only honours `WF_ENV_WRITE_ACK`, so following the old docs would leave every write to a `WF_ENV_TYPE=prod` environment refused with exit 3.
+- `WF_CLIENT_LABEL` corrected to `WF_ENV_LABEL`.
+- Prose describing the local credential folder now says "environment folder" / "active environment". References to a *client tenant* — meaning a real customer Workfront instance — are unchanged.
+
 ## 1.1.5 — 2026-08-07
 
 Credential-handling hardening in the reports skill (manual port of upstream fixes).
