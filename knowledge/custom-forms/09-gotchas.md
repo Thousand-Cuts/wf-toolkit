@@ -341,6 +341,17 @@ The `objCode` probe is the discriminator. That literal key appears in every stor
 
 **Scope of this verification — read before citing it:** tested with `refObjCode: PROJ` via `/optask/search` on the REST API. Not re-tested for `refObjCode: USER`, and **not** tested through a report **prompt**, which adds a UI resolution layer above the filter. Community reports of typeahead *prompts* returning zero rows are therefore **not** explained by this mechanic — at the API level the filter works correctly when handed an ID, so a prompt failure points at the prompt layer or at a separate companion field, not at envelope storage.
 
+## 34. Internal Lookup (INTRNL/MULTINTRNL) end-user search matches the referenced object's name — not its reference number
+
+**Surprise:** "Users could always paste a reference number (e.g. `172401`) into our legacy Typeahead picker and get the project. The same number typed into the new Internal Lookup field returns *No results* — only searching by the object's name works."
+
+**Mechanic:** a reported behavioral difference, not an Adobe-documented one: the INTRNL/MULTINTRNL widget's backing search appears to match only the referenced object's **name**, where the legacy TYAH widget also matched `referenceNumber`. The data layer is not the constraint — `referenceNumber` is a searchable field at the REST layer — so the restriction lives in the widget's UI query (inference; the thread's only explanation is a secondhand "our Adobe rep [said] this is intentional with this update", with no release note or in-thread Adobe statement backing it). Note this scopes `02-parameter-types` § TYAH's "identical in behavior to INTRNL+USER": that equivalence covers DE: value semantics — end-user search affordances differ.
+
+**Mitigation:** when a client workflow depends on typing/pasting reference numbers to pick an object, do not spec an INTRNL/MULTINTRNL field for the picker. Options: (a) author the field as `(TEXT, TYAH)` + `refObjCode` if the legacy widget is still available and still matches reference numbers in the target tenant — verify there before promising it; (b) add a companion plain-text field carrying the reference number so users can search/filter on it (same mirror-a-searchable-scalar pattern as #33's name workaround); (c) train users to search by name and surface the reference number in the naming convention. Raise it at form-design review for request-intake and cross-object-linking solutions — the OP hit it after build.
+
+<!-- UNVERIFIED -->
+UI behavior — no read-only API call can observe it. Reported 2026-07: the OP's accepted self-answer relays an unconfirmed Adobe-rep statement; the underlying name-only-match behavior was independently corroborated by two other posters in the thread. Confirm by typing a known reference number into an INTRNL field on the target tenant. Provenance in Sources below.
+
 ## Cross-references
 
 - `01-object-model` — value-vs-label distinction, composite CategoryParameter ID
@@ -349,3 +360,9 @@ The `objCode` probe is the discriminator. That literal key appears in every stor
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)
 - `calculated-fields/05-cross-object-references` — `{program}.{DE:NAME}` dotted syntax for cross-object refs; DE: lookups use parameter **name**, not label
 - dedicated bulk-update tooling — backfill / migration patterns
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/use-reference-number-in-internal-lookup-251783` | INTRNL end-user search matches name only, not reference number (gotcha #34) — best answer by jayciedido, 2026-07-17 |

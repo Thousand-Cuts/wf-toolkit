@@ -93,7 +93,7 @@ These match what's in text-mode collections (see text-mode file `08-collections.
 
 ### On User
 - `roles`
-- `teams`
+- `teams` — clearing this collection on a PUT does NOT touch the separate `homeTeamID` scalar; see `11-tips-and-gotchas.md` § "Clearing a user's teams"
 
 ### On Issue / OpTask
 - `assignments`
@@ -167,3 +167,9 @@ Returns one row per attached form. Example response from a real request-queue is
 - "I need to add an internal-only field to a customer-facing form" — wrong frame. Add the field to an internal-prefix sibling form (a convention seen in the field: `0.<name>`) and attach that sibling form to the topic via OBJCAT. Customer never sees it; AE / triager fills it during workflow.
 
 Source: empirical discovery 2026-06-08 against a preview sandbox tenant v17.0. Originally surfaced when an audit concluded a shared-service field was "missing from the request form" — it was on a sibling triage form auto-attached to every request via the queue topic's OBJCAT rows.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/fusion-module-to-clear-other-teams-251712` | the `teams`-vs-`homeTeamID` write-semantics pointer on USER — best answer by Tracy_Parmeter, 2026-07-16 |

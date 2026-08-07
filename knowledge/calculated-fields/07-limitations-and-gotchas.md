@@ -64,6 +64,15 @@ Duration and time-related fields (e.g., `actualDurationMinutes`, `workRequired`)
 
 When a custom form with a calculated field is attached to an existing object, the calculated field is **not automatically computed** until the object is saved or recalculated. Newly attached forms show blank calc field values until the first recalc event.
 
+## CONTAINS on a Multi-Select Tests Option Values, Not Labels
+
+<!-- UNVERIFIED -->
+A probe like `IF(CONTAINS("Taiwan",{DE:Country})="true",1,0)` silently evaluates to 0 on every record whenever the option's displayed **label** differs from its stored **value** (label "Taiwan" / value "TW" — the working probe is `CONTAINS("TW",…)`). No error is raised — just a wrong 0. A multi-select's stored value is a single concatenated string of the selected options' `ParameterOption.value` entries; `label` is display-only and never stored (the same value-vs-label fact is documented for the API layer in `custom-forms/09-gotchas.md` #9 and `custom-forms/03-create-form-recipe.md` § Label vs value handling — this is its calc-expression consequence). Before writing the expression, pull the option list and read the `value` column: `GET /parameterOption/search?parameterID=<id>&fields=ID,label,value`.
+
+Two cautions the community source did not raise: (a) `CONTAINS` is a raw substring test — option values that are prefixes/substrings of each other (e.g. "Design" and "Design Review") double-count; guarantee non-overlapping values before shipping the pattern. (b) If the probe feeds report aggregation, the field's Format must be **Number** at creation — format is permanent after first save (see "Format Is Permanent" above and `04-format-types.md`).
+
+Community-reported, not reproduced in-house: all 200 `parameterOption` rows sampled on the surveyed sandbox tenant 2026-08-07 had `value == label`, so the divergence case could not be exercised there. Provenance in Sources below.
+
 ## What Calculated Fields Cannot Do
 
 - Cannot aggregate across children (no SUM of task hours on a project)
@@ -73,3 +82,9 @@ When a custom form with a calculated field is attached to an existing object, th
 - Cannot produce multiple output values (one scalar per field)
 - Cannot use JavaScript, HTML, or Markdown in the stored value
 - Cannot access user-session context (logged-in user, current date with local timezone) reliably
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/best-way-to-report-the-counts-of-selections-from-a-multi-select-field-251655` | CONTAINS-on-multi-select matches `ParameterOption.value`, not `.label` — best answer by Lyndsy-Denk, 2026-07-10 |

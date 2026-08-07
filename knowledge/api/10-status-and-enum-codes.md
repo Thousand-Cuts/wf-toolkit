@@ -153,6 +153,9 @@ Task `durationType` controls whether effort or duration is the input. **Codes ve
 - **`plannedHours` is NOT a Task/Issue API field.** Both GET and PUT return `APIModel V18_0 does not support field plannedHours (Task)` (same on v17.0). The writable effort field is **`workRequired`, in minutes** (480 = 8h); `plannedHours` exists only in reports / text mode. See `04-fields-and-naming`.
 - **Effort can't live on a task with no assignments.** Setting `workRequired` on an unassigned task reads back `0` regardless of duration type — there's no assignment to hold the hours. Assign first, then set effort.
 
+<!-- UNVERIFIED -->
+> **Community-reported exception to the second gotcha — a flagged contradiction, not yet arbitrated.** An Adobe support response relayed in an Experience League Fusion thread (best answer, retested by the asker) reports that on **TASK** (not TTSK), setting `isWorkRequiredLocked: true` in the same create call makes the supplied `work` value persist on a Simple-duration, Fixed-Dates, *unassigned* task — the lock reportedly stops "project dates, task constraints, and other task values" from recomputing it away. What IS confirmed: the field exists on TASK in v17.0. Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /TASK/metadata` lists `isWorkRequiredLocked` (alongside `isDurationLocked`, `work`, `workRequired`). The behavioral claim requires a write to confirm; until a sandbox test settles it, the "assign first, then set effort" guidance above stands. Also unconfirmed: the thread's instruction to map `work` (hours) instead of `workRequired` (minutes) may just reflect the asker's own units mix-up rather than being a necessary part of the fix. The separately documented TTSK finding is unaffected — `isWorkRequiredLocked=true` was among the forms that failed there, but only on TTSK (`11-tips-and-gotchas.md` § "Template task `workRequired` is set via `bulkCopy`").
+
 ## Approval-process action codes
 
 Approval steps return action codes like `APV` (approved), `REJ` (rejected), and various pending states. The exact set depends on the approval process configuration — verify per endpoint.
@@ -163,6 +166,29 @@ Approval steps return action codes like `APV` (approved), `REJ` (rejected), and 
 - **Codes are stable across UI customizations.** An admin can rename "Complete" to "Done" in the UI without changing the underlying code `CPL`.
 - **Filters and reports compare codes.** A filter `status=Complete` won't match anything — the stored value is `CPL`.
 
+## Extracting labels anyway: `statusLabel` on the unversioned `api-unsupported` path
+
+The guidance above stands — codes are what you filter, store, and hardcode on. But for one-off extraction (a label column in a data pull, an audit sheet), the unversioned `api-unsupported` path exposes a derived `statusLabel` field that the versioned APIModel withholds:
+
+```
+GET /attask/api-unsupported/PROJ/search?fields=ID,name,status,statusLabel&$$LIMIT=3
+→ {"name": "...", "status": "CUR", "statusLabel": "Current"}
+```
+
+The same request on the versioned path fails — negative control:
+
+```
+GET /attask/api/v17.0/PROJ/search?fields=ID,name,status,statusLabel&$$LIMIT=2
+→ {"error":{"message":"APIModel V17_0 does not support field statusLabel (Project)"}}
+```
+
+- **Works on TASK and OPTASK too** (`CPL → "Complete"`, `NEW → "New"`).
+- **Resolves tenant-configured labels, not just the base enum.** A 100-project sample returned the distinct pairs `('AAM','Queue')`, `('CUR','Current')`, `('PLN','Planning')` — `AAM → "Queue"` is not a base-enum display name, so unlike `/metadata` (base-enum-only blind spot above), `statusLabel` reflects the tenant's configured label.
+- **Unversioned = extraction-only.** `api-unsupported` carries no version segment and the same caveat this repo applies to `api-internal`: subject to change without notice, do not use in production. For durable code, keep resolving labels client-side from the code tables above.
+- **Locale sensitivity NOT tested** (single-locale tenant). Do not assume the returned label is stable across user locales — locale drift is the very reason the codes-not-labels rule exists.
+
+Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: the `api-unsupported` PROJ/TASK/OPTASK searches above (3/3, 1/1, 1/1 rows carrying `statusLabel`), the v17.0 negative control error verbatim, and the 100-project distinct-pair sample including `('AAM','Queue')`.
+
 ## Verifying codes in your instance
 
 For any enumerated field:
@@ -170,3 +196,10 @@ For any enumerated field:
 1. The API Explorer's data type for the field tells you it's an enum.
 2. The Workfront UI's setup area for that object (e.g., **Setup → Project Preferences → Statuses**) lists the codes alongside their display names.
 3. A quick GET against an example record shows the actual value — `"status": "INP"` tells you the code is `INP` regardless of how it's labeled in the UI.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/how-to-get-full-project-status-label-via-rest-api-251487` | `statusLabel` via the unversioned `api-unsupported` path — best answer by KellieGardner, 2026-07-07 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/creating-tasks-through-fusion-with-planned-hours-and-no-assignment-251651` | `isWorkRequiredLocked` at create time reported to persist work on unassigned TASKs (unverified contradiction) — best answer by CamiD, 2026-07-14 |

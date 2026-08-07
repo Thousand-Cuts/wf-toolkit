@@ -42,6 +42,8 @@ Each version is supported for 3 years, then enters a 1-year deprecated state (st
 
 **`api-internal`** — An unversioned path that always reflects the latest internal build. Subject to change without notice. Do not use in production. Replace with a versioned URL.
 
+**`api-unsupported`** — A sibling unversioned path that additionally exposes derived fields the versioned APIModel withholds (e.g. `statusLabel`). Same caveat as `api-internal`: extraction-only, never in production. See `10-status-and-enum-codes.md` § "Extracting labels anyway".
+
 ## Choosing a version (consulting default)
 
 When you don't know which version a client's instance supports, default to **v17.0**. It has been stable across virtually every modern Workfront deployment and avoids breaking against older instances. Use a newer version only when the user explicitly confirms — or you can verify — that their instance supports it.
@@ -159,3 +161,4 @@ Pick based on consumer, not capability — the API can do almost everything text
 | `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/tips-troubleshooting-apis/locate-domain-for-api` | Production domain format |
 | `https://experienceleague.adobe.com/en/docs/workfront/using/administration-and-setup/set-up-wf/testing-environments/wf-preview-sandbox-environment` | Preview sandbox URL format, refresh cadence, auth behavior |
 | `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/api-notes/deprecation-api-internal` | api-internal deprecation guidance |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/how-to-get-full-project-status-label-via-rest-api-251487` | existence of the unversioned `api-unsupported` path — best answer by KellieGardner, 2026-07-07 |

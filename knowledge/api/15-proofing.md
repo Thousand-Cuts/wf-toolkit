@@ -5,10 +5,12 @@ How to drive Workfront proofing programmatically: create proofs, stamp reviewer 
 | Action | Surface | Reachable from main REST API? |
 |---|---|---|
 | Create a proof (+ workflow/stages/recipients) | **ProofHQ API or Fusion Create Proof** — `document/createProof` exists but is a verified no-op via REST (see §1) | ⛔ not via main REST |
-| Make a reviewer decision (Approved / Changes required …) | Main Workfront REST API — `docv/setDocumentReviewerDecision` | ✅ yes (carries an optional decision comment) |
+| Make a reviewer decision (Approved / Changes required …) | Documented: main WF REST `docv/setDocumentReviewerDecision`. Verified working: ProofHQ REST, or Fusion → SOAP `updateProofReviewer` | ⚠️ documented but unverified — `403`'d live (see §3) |
 | Add a standalone proof comment (page-anchored, markup, threads) | **Workfront Proof / ProofHQ API** (`rest.proofhq.com`, or legacy SOAP) | ❌ **not in the main API** — no comment action exists on any proofing object |
 
-**The one thing to remember:** decisions *and* a decision-comment go through the plain Workfront REST API, so you can fabricate "Approved / Changes required" review history with no ProofHQ hop. Only free-standing markup comments force you onto the ProofHQ API.
+**The one thing to remember:** the main Workfront REST API is the only *documented* decision path — `docv/setDocumentReviewerDecision` writes a decision plus an optional comment in one call — but it is **not round-trip-verified**. The one live attempt `403`'d even after the recipient was promoted to approver, because Workfront does not see a ProofHQ-side role change (§3). Every decision actually stamped on this tenant went through ProofHQ: Fusion → SOAP `updateProofReviewer` (`statusCode 200`), or `PUT rest.proofhq.com/api/v1/proofs/{token}/recipients/{rt}` with a `decision` body. **Stamp decisions there until the main-API setter is proven.** Proof comments have no main-API action at all; only the decision comment rides along with that setter.
+
+> 📖 **Companion file:** [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md) catalogs the **complete** ProofHQ SOAP surface (all 90 operations, proven to have no hidden methods) and documents the **verified recipe for posting drawing markup** — arrows, boxes, lines, freehand, highlights. It also **corrects two claims in this file**; both are flagged inline below (§3).
 
 ---
 
@@ -24,7 +26,7 @@ Verified live against a live production tenant (v17.0), 2026-07-02/03, acting as
 - ✅ **Legacy SOAP API authenticated end-to-end** — `soap.proofhq.com/soap.php` `doLogin(Login, Password)` succeeded with the account password (no Public API toggle needed); session + org confirmed; `getAllProofs` and other reads work. Decisions have a clear write path (`updateProofReviewer` → `RecipientDecision`). See §3.
 - ⛔ **File-based proof CREATION is walled for raw clients** — `createProof` requires a `Hash` that only `doUpload` produces, and `doUpload`'s attachment encoding is proprietary/undocumented (no `mime:` binding in the WSDL; raw SwA → `Bad Request`). No create-from-URL alternative exists. A real file→proof pipeline needs **Fusion's Create Proof module** or ProofHQ's SOAP SDK — not hand-rolled curl. (I did **not** create/mutate anything: `doUpload` returned empty and `createProof` 400'd on the missing Hash, so nothing landed in the account's 17 real proofs.)
 - ✅ **Full create → reviewer → decision VERIFIED end-to-end via Fusion** (2026-07-03): a live scenario (Get File → Upload File → Create Proof → getProofReviewers → updateProofReviewer) created a fresh proof and stamped `Approved` (`statusCode 200`). This is the working demo-data generator — see the Fusion section below and `examples/fusion/06-demo-proof-generator.json`. Dynamic reviewer ref: `{{<getReviewers>.body.data.item[1].id}}` (1-indexed; `item[]` alone resolves empty in a text field).
-- ⛔ **Original top-level comments remain the one gap** — no SOAP `addComment`; needs REST `POST /proofs/{token}/comments` with a Public-API `authtoken`. Decisions (incl. a decision comment) are fully covered.
+- ✅ **Original top-level comments ARE reachable — via ProofHQ REST, with only a Workfront API key.** Not from SOAP (no `addComment` — absent from all 90 operations) and not from the main WF REST API (no comment action on DOCU/DOCV/PRFAPL). But `POST /proofs/{token}/comments` on `rest.proofhq.com` works against a **proof-scoped `sessionId`** minted by `getProofingTokens` (PUT, API key) → viewer RPC `startup` — **no Public-API `authtoken` and no session cookie**. Verified 2026-08-06 on a partner-sandbox proof account, where the Public API feature is *off*: five markup comments posted `201`, read back, deleted `204`. `text` is the only required field; `drawings[]` is optional. Re-mint per proof. Recipe: [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md) §6.1.
 
 ---
 
@@ -44,7 +46,7 @@ Proofing spans three objCodes. Proof *creation* hangs off the document; proof *s
 - Fields: `ID`, `approverDecision`, `approverID`, `approverStage`, `decisionDate`, `documentVersionID`, `isAwaitingDecision`, `proofCreationDate`, `workflowTemplate`
 - You *observe* per-reviewer decisions here (this is what proof-decision reports read); you never write to it directly. Writes land via `setDocumentReviewerDecision` on the DOCV, which updates the underlying proof, which surfaces as `PRFAPL` rows.
 
-**Proof-workflow *configuration* is not exposed.** `/proofWorkflow/search`, `/proofApprovalWorkflow/search`, and case variants all return `Unknown object type`. You can read the workflow *template* a proof used (`workflowTemplate` on PRFAPL, `getProofTemplate` on DOCU), but workflows are configured only in the UI (Setup → System → Proof → Workflows). See the platform-assessment record.
+**Proof-workflow *configuration* is not exposed by the main Workfront REST API.** `/proofWorkflow/search`, `/proofApprovalWorkflow/search`, and case variants all return `Unknown object type`. (**ProofHQ REST does expose per-proof stages** — `GET /proofs/{token}/stages` and friends, verified `200`; see [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md) §6.5. Different API.) You can read the workflow *template* a proof used (`workflowTemplate` on PRFAPL, `getProofTemplate` on DOCU), but workflows are configured only in the UI (Setup → System → Proof → Workflows). See the platform-assessment record.
 
 ---
 
@@ -197,7 +199,7 @@ Then send header **`sessionId: <id>`** on every subsequent call. Verified live: 
 
 Regional bases: US `https://rest.proofhq.com/api/v1`, EU `https://rest.proofhq.eu/api/v1` (preview: `rest.preview.proofhq.com` / `.eu`). Pick the region matching `mediaViewerApi`'s host.
 
-> ⚠️ **The Integrations tab (and thus the `authtoken`) only exists if the account's Public API feature is enabled.** On a tenant where it's off, Proof → User Settings shows only Settings / Proofing defaults / Tags / Out of office — no Integrations tab (verified 2026-07-03 on a partner-sandbox proof account). Enabling Public API is an **account-admin** action (a Supervisor profile is not enough to see the token until the feature is on). Without it, the REST path is unavailable and the only automation routes are Fusion (below) or the internal app API (not supported — see next note).
+> ⚠️ **The Integrations tab (and thus the `authtoken`) only exists if the account's Public API feature is enabled.** On a tenant where it's off, Proof → User Settings shows only Settings / Proofing defaults / Tags / Out of office — no Integrations tab (verified 2026-07-03 on a partner-sandbox proof account). Enabling Public API is an **account-admin** action (a Supervisor profile is not enough to see the token until the feature is on). Without it the `/authorize` + `authtoken` route is unavailable — but that is **not** the only REST path: the viewer-RPC session described in the correction above reaches `rest.proofhq.com` with just a Workfront API key. Only proof *creation* still needs Fusion or the internal app API (not supported — see next note).
 
 > **Internal proof-app API is undocumented and unsupported — but IS scriptable with a captured session cookie.** The embedded proofing UI lives at `https://<tenant>.my.workfront.com/proof/` and its backends (`/proof/ajax/…`, `/internal/…`, heartbeat `/proof/checksession.php`) authenticate with the **httpOnly web-session cookie** + `x-xsrf-token`. It is not a *supported* integration point and can change without notice — but the cookie *can* be extracted from DevTools and replayed, and doing so drives the full create → comment → reply → decision flow headlessly (see "Full headless flow" below, and `examples/api/proofing/create-demo-proof.sh`). Prefer Fusion for durable automation; the cookie path is for on-demand demo-data generation.
 
@@ -210,7 +212,18 @@ This is the definitive explanation of why the public REST `createProof` no-ops �
 
 **Verified live:** the `sessionId` minted this way authenticates the full ProofHQ REST API — `GET rest.proofhq.com/api/v1/proofs/<token>` returned complete proof JSON (`processingStatus: "success"`, etc.). So `rest.proofhq.com` (create via `POST /proofs`, comments, decisions) **is** reachable — but the credential comes from this internal bridge, which **bypasses the personal `authtoken`/Integrations path entirely** (that's why the `/authorize` route was a dead end when Public API was off).
 
-**Both `/internal/` endpoints reject the API key** (`apiKey` → HTTP 302 redirect-to-login). So there is **no public-API-key path** to create a proof or mint the ProofHQ session: everything routes through the Workfront **web session cookie**. To automate you'd have to replicate a full browser login (username/password → session cookie) — fragile and unsupported. **Fusion works precisely because its connection carries a real user session**, giving the connector this same internal access under the hood.
+**Both `/internal/` endpoints reject the API key** (`apiKey` → HTTP 302 redirect-to-login). So there is no public-API-key path **to create a proof**: creation routes through the Workfront **web session cookie** (or Fusion). **Fusion works precisely because its connection carries a real user session**, giving the connector this same internal access under the hood.
+
+> ✅ **CORRECTION (2026-08-06): minting a ProofHQ REST session does NOT require a cookie.** This section originally said there was no API-key path to *either* creating a proof or minting the session. The first half stands; **the second half is wrong.** The proof *viewer's* JSON-RPC exposes a `startup` method that accepts the `token` + `codetodecode` from `getProofingTokens` (an ordinary API-key call) and returns a `sessionId` that authenticates `rest.proofhq.com` directly:
+>
+> ```
+> PUT  $$HOST/attask/api/v17.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>   → token, codetodecode
+> POST https://us.my.workfront.com/proof/rpc/index.php
+>      headers: tcmssubdomain: <sub>, tcmstenantid: <tenant-uuid>
+>      body:    {"method":"startup","proofingCode":"<codetodecode>","token":"<token>"}   → sessionId
+> ```
+>
+> Verified live 2026-08-06 (comments read, posted, and deleted on a live production tenant with no cookie). This also corrects the "Two ID systems" gotcha below, which claims the RPC uses "a **different session token** than `getProofhqRestApiToken` mints" — the RPC-minted session works fine on `rest.proofhq.com`. Net: **comments, markup, decisions, and recipients are all reachable with nothing but a Workfront API key.** Only proof *creation* still needs the cookie or Fusion. Full recipe: [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md) §6.1.
 
 ### Full headless flow — PROVEN end-to-end (2026-07-04)
 
@@ -224,7 +237,7 @@ Driving the web session cookie directly (captured from DevTools), the **entire d
 | Reply | `POST …/comments/{ct}/replies` `{text}` | **sessionId** | ✅ (500 but lands) |
 | Promote to approver | `PUT …/recipients/{rt}` `{"role":5}` | **sessionId** | ✅ (`roleReviewerApprover`) |
 | Set decision | `PUT …/recipients/{rt}` `{"decision":{"token":<opt>}}` | **sessionId** | ✅ (500 but lands) |
-| Resolve thread | viewer RPC `resolve_comment` | **separate RPC session** | ⚠️ not sourced |
+| Resolve thread | viewer RPC `resolve_comment` | RPC-minted `sessionId` (same system — see correction above) | ⚠️ not sourced |
 
 **Load-bearing gotchas (each cost real time):**
 - **The document version MUST be `isProofable: true`** before the create fires, or it returns `200` but generates nothing. **The gate is file-type recognition, and Workfront derives the type from the document `name`'s extension — NOT the file bytes.** Root cause found 2026-07-04: an API `POST /document` with `name` lacking an extension (e.g. `name=My Proof`) is tagged `ext:""`, `fileType:unk`, `documentTypeLabel:"Undefined File Type"` → `isProofable:false` → create no-ops. **Fix: name the document with a real extension** (`name=My Proof.jpg`) — `ext` then resolves, `documentTypeLabel` becomes e.g. "JPEG Image", and `isProofable` flips `true`. So API-uploaded docs proof fine; the earlier "must upload via UI" belief was wrong — the UI just always includes the extension. (`isProofable` also reads `false` on already-*proofed* versions — it's a pre-proof "eligible" flag, not a general capability flag; check `ext`/`documentTypeLabel` when debugging a non-proofable API upload.)
@@ -241,7 +254,10 @@ Driving the web session cookie directly (captured from DevTools), the **entire d
 - `POST /proofs` — **create a proof** (this is the working creation path, unlike main-API `createProof`)
 - `POST /proofs/{token}/comments` — create a comment. Required body: `text` (non-empty). Optional: `drawings[]`, `pins`, `page`, `pages`, `timestampBegin/End`, `metadata`, `actionToken`, `isLocked`, `layout`, `textDirection`
 - `GET /proofs/{token}/comments` — list; `PUT`/`DELETE /proofs/{token}/comments/{id}` — edit/remove
-- `GET /proofs/{token}/decisions` — read decisions; `PUT /proofs/{token}` — edit
+- `GET /proofs/{token}/decision` — proof-level decision. **The path is singular** (the operationId is `getProofDecisions`, but there is no `/decisions` route). Verified `200` → `{token, decision, name, displayName, decisionAt}`
+- `GET /proofs/{token}/stages/{st}/decision` (per-stage) and `GET /proofs/{token}/recipients/{rt}/decision` (per-recipient; adds `isSignedDecision`, `hasReasons`, `reasons[]`) — both verified `200`
+- `GET /accounts/{token}/settings/decisions` — the account's decision catalog: `{token, decision (int), name, displayName, isEnabled, hasReasons, hasPostMessage}`. Submit that `token` on a decision write rather than guessing a label. Observed ints: `3`=Approved, `2`=Approved with changes, `4`=Not relevant, `0`=Pending
+- Writes (catalogued, not exercised): `PUT /proofs/{token}/recipients/{rt}/decision`; `PUT`/`PATCH /proofs/{token}` edits the proof. The decision write verified in this repo is the alternative shape `PUT …/recipients/{rt}` with `{"decision":{"token":…}}` (500 but lands)
 
 ### Legacy SOAP API — the most accessible raw path (verified reachable 2026-07-03)
 
@@ -266,7 +282,8 @@ Driving the web session cookie directly (captured from DevTools), the **entire d
 - **`doLogin` returns** (verified): `<session>`, `user_id`, `organisation_id`, `organisation_name`, plus account limits (`limit_storage`, `limit_proofs`, `max_file_size` — ~4.5 MB on the test org). The `<session>` value is the `SessionID` for all later calls.
 - **Reads that work today (verified):** `getAllProofs(SessionID, StartFrom, SearchQuery, ItemsPerPage)`, `getProofDetails(SessionID, FileID)`, `getProofStatus`, `getProofReviewers`, `getProofComments(SessionID, FileID)`, `getProofURL`.
 - **Decisions (verified path):** there is **no `updateDecision`/`getDecisions`** on this endpoint. A reviewer's decision is set via **`updateProofReviewer(SessionID, RecipientID, RecipientDecision, …)`** — you add a reviewer with `addProofReviewer(SessionID, FileID, RecipientEmail, …, PrimaryDecisionMaker)`, then update that reviewer's `RecipientDecision`.
-- **Comments (verified limitation):** this endpoint's WSDL has **no standalone `addComment`** (the api.proofhq.com index lists one, but the live SOAP service exposes only `getProofComments`, `addCommentReply(SessionID, FileID, ReviewerID, CommentID, Reply)`, `setCommentAction(SessionID, CommentID, ActionID)`, `getCommentAction`). So SOAP can read comments, reply to existing ones, and set action labels — original top-level comments need the REST API (`POST /proofs/{token}/comments`, requires the `authtoken`).
+- **Comments (verified limitation):** this endpoint's WSDL has **no standalone `addComment`** (the api.proofhq.com index lists one, but the live SOAP service exposes only `getProofComments`, `addCommentReply(SessionID, FileID, ReviewerID, CommentID, Reply)`, `setCommentAction(SessionID, CommentID, ActionID)`, `getCommentAction`). So SOAP can read comments, reply to existing ones, and set action labels — original top-level comments need the REST API (`POST /proofs/{token}/comments`).
+- **Full surface now catalogued.** All **90** SOAP operations are enumerated in [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md), which also proves via an unauthenticated fault oracle that **no hidden methods exist** beyond the WSDL — including no markup verb of any kind. Notable capabilities that file surfaces and this one never mentioned: **webhooks** (`setProofCallback` / `setAccountCallback`), a per-proof **activity/audit feed** (`getActivity`), **`decodeProofID`** (converts a proof token to the numeric `FileID` — solves the two-ID-systems footgun below), embed codes, batches, and full user/workspace administration.
 
 > ⛔ **The file-upload step is the wall for hand-rolled clients (verified 2026-07-03).** `createProof` **requires a non-empty `Hash`** (`faultcode 400 "Required string parameter 'Hash' is not present."`) — and `Hash` comes *only* from `doUpload`. There is **no** URL-capture / create-from-URL / hash-from-URL method (the web-URL proofs in the account were made via the UI's web capture, not an exposed API method). `doUpload` takes only `SessionID` and expects the file as a **SOAP attachment**, but the WSDL declares **no `mime:`/`xop:` binding**, and a standard multipart/related (SwA) POST returns `faultcode SOAP-ENV:Client "Bad Request"`. Matching the exact encoding requires ProofHQ's own SOAP client SDK (PHP/Java) — or a SOAP library with attachment support (e.g. Python `zeep` + MTOM). **Do not attempt raw-curl `doUpload`.** For a working file→proof pipeline, use **Fusion's Create Proof module** (handles upload+hash+create internally) or a real SOAP SDK.
 
@@ -292,7 +309,7 @@ There is no dedicated "Add Comment" or "Make Decision" module — those go throu
 - **`workfront-proof:customApiCall`** — mapper is just **`method`** + **`bodyXML`**. `method` is the **ProofHQ SOAP operation name**; `bodyXML` is the **inner XML params only** (the connector wraps the envelope and injects `SessionID`). Output is under `body.data`.
 - **Verified SOAP operations via Custom API Call** (against `soap.proofhq.com`, 2026-07-03):
   - Set a decision: `method=updateProofReviewer`, `bodyXML=<RecipientID>{{id}}</RecipientID><RecipientDecision>Approved</RecipientDecision>` (param names confirmed — a bad ID returns "Invalid Recipient ID", not a param error). Get the `RecipientID` from `method=getProofReviewers`, `bodyXML=<FileID>{{proofId}}</FileID>` (returns reviewers with `id`, `email`, `role`, `decision`, `primary_decision_maker`).
-  - ⛔ **`addComment` is NOT available** on this SOAP endpoint (`Procedure 'addComment' not present`) — only `addCommentReply` (needs an existing `CommentID`). So a *top-level* comment on a fresh proof cannot be created via Fusion Custom API Call; it needs the REST API (`POST /proofs/{token}/comments`, requires the Proof Public API `authtoken`). For demo data, **create + reviewer + decision** is the fully-automatable set; comments are a manual/REST-gated add-on.
+  - ⛔ **`addComment` is NOT available** on this SOAP endpoint (`Procedure 'addComment' not present`) — only `addCommentReply` (needs an existing `CommentID`). So a *top-level* comment on a fresh proof cannot be created via Fusion Custom API Call; it needs the REST API (`POST /proofs/{token}/comments`) — reachable with just a Workfront API key via the correction in §3, no `authtoken` required. For demo data, **create + reviewer + decision** is the fully-automatable set; comments are a manual/REST-gated add-on.
 
 **Verified working flow (2026-07-03, live Fusion run):**
 1. `http:ActionGetFile` → `data` (IMTBuffer) + `fileName`.
@@ -301,7 +318,7 @@ There is no dedicated "Add Comment" or "Make Decision" module — those go throu
 4. `customApiCall` `getProofReviewers`, `bodyXML=<FileID>{{createProof proof id}}</FileID>` → output `body.data.item[]` array with `id` (the RecipientID), `file_id`, `email`, `role`, `decision`, `stage_id`.
 5. `customApiCall` `updateProofReviewer`, `bodyXML=<RecipientID>{{4.body.data.item[].id}}</RecipientID><RecipientDecision>Approved</RecipientDecision>` → flips the reviewer's `decision` empty → `Approved`.
 
-Net: create + reviewer + decision are fully automatable via Fusion; only original top-level comments are not (no SOAP `addComment`; needs REST `authtoken`). See `examples/fusion/06-demo-proof-generator.json`.
+Net: create + reviewer + decision are fully automatable via Fusion; only original top-level comments are not (no SOAP `addComment`) — post those via ProofHQ REST with an API-key-minted session (§3). See `examples/fusion/06-demo-proof-generator.json`.
 
 ---
 
@@ -309,7 +326,7 @@ Net: create + reviewer + decision are fully automatable via Fusion; only origina
 
 - **Standalone Workfront Proof** licenses stopped renewing ~Jan 2024. That is the separate standalone product — the **embedded proofing engine inside Workfront still runs**, and every API above still functions.
 - Workfront is mid-migration to **Unified Approvals** (a.k.a. New Document Approvals, phased rollout from July 2025), plus an **AI Reviewer** and **Adobe Express** markup integration. Adobe has published a "Fusion remediation for unified approvals" guide — existing Fusion proof scenarios may need updates as this lands.
-- **Net for automation:** `setDocumentReviewerDecision` (decisions) is core Workfront API and worth leaning on. **Proof *creation*, however, does not work via the main REST API** (verified no-op, §1) — route creation through the ProofHQ API or Fusion's Create Proof module regardless of the unified-approvals migration.
+- **Net for automation:** `setDocumentReviewerDecision` (decisions) is core Workfront API and worth *trying* first — but it is unverified and `403`'d on the one live attempt (§3), so keep the ProofHQ REST / Fusion decision path as the fallback. **Proof *creation*, however, does not work via the main REST API** (verified no-op, §1) — route creation through the ProofHQ API or Fusion's Create Proof module regardless of the unified-approvals migration.
 
 ---
 
@@ -318,7 +335,7 @@ Net: create + reviewer + decision are fully automatable via Fusion; only origina
 1. Upload a valid file (real image/PDF) → get `DOCU` + `DOCV` IDs. (Verified: `POST /upload` → `POST /document`.)
 2. **Create the proof via ProofHQ (`POST rest.proofhq.com/api/v1/proofs`) or Fusion's Create Proof module — NOT `document/createProof`, which no-ops (§1).** Poll `docv.proofStatus` until `success`.
 3. For each fake reviewer, `docv/<id>/setDocumentReviewerDecision` with a decision + optional `comment` → decision history in `PRFAPL` and proof-decision reports. _(setter not yet round-trip-verified — see §2.)_
-4. Only if you need visible markup/threaded comments: bridge to ProofHQ (`getProofingTokens` / proof session) → `POST /proofs/{token}/comments` (or Fusion Custom API Call → SOAP `addComment`).
+4. Only if you need visible markup or threaded comments: bridge to ProofHQ — `getProofingTokens` → viewer RPC `startup` → `sessionId` (cookie-free, Workfront API key only; [`16-proofhq-soap-catalog.md`](16-proofhq-soap-catalog.md) §6.1) → `POST /proofs/{token}/comments`, attaching a `drawings[]` array for visible markup (§6.2 — verified `201` create / `204` delete). **There is no SOAP `addComment`** (`Procedure 'addComment' not present`); Fusion's Custom API Call is only a SOAP envelope wrapper, so it can create neither a top-level comment nor any markup.
 5. Verify: `prfapl/search` rows (`approverDecision`, `decisionDate`, `approverID`) and `docv.proofDecision`.
 
 Two hard prerequisites bear repeating: proofing must be **licensed/enabled** on the demo tenant, and each proof needs a **real, valid source file**. And the creation step is the crux — budget time to get ProofHQ or Fusion auth working, since the one-call REST path is a dead end.

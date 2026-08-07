@@ -135,6 +135,22 @@ Common status codes (the underlying values, not display names):
 
 **Pending approval suffix:** append `:A` to a status to mean "pending approval to enter this status." Example: `status=CPL:A` means "Pending Approval to Complete."
 
+### `statusEquatesWith` — match custom statuses by the system status they map to
+
+`status` matches a literal status key, so a filter built on it has to enumerate every group-level custom status by hand and be re-edited each time someone adds one. `statusEquatesWith` matches on the **system status the custom status is mapped to**, so it stays correct as custom statuses come and go:
+
+```
+statusEquatesWith=CUR
+statusEquatesWith_Mod=in
+```
+
+Substitute any system status key from the table above (`CUR`, `PLN`, `CPL`, …). This is the same field the API and UIFT filter layers use — see `knowledge/reports/06-filter-patterns.md` § 1 for the JSON form and `knowledge/reports/05-gotchas.md` for why it is a query-time pseudo-field rather than a real object field (it does not appear in `/<obj>/metadata`).
+
+<!-- UNVERIFIED -->
+**Reported to have gone missing from the filter-builder UI.** A consultant reported on 2026-07-29 that "Status Equates With" vanished from the field picker on existing prompt-based project reports, with no release note. Adobe Support's reply, quoted in the thread, attributed it to the rolling reporting/filter-builder UI updates ("certain filter fields like Status Equates With can become hidden in the updated filter builder UI"), called it a known internal concern, and gave the two Text Mode lines above as the supported workaround — the filter still evaluates server-side even when the builder won't offer it. Support also suggested checking that group-level custom statuses are correctly mapped, since unmapped statuses can affect filter visibility.
+
+This is a support-desk account of a UI regression, not a reproduction: neither the disappearance nor its scope (tenant-specific? all prompt reports? all objects?) has been confirmed here. The Text Mode syntax itself is independently corroborated by the reports bucket. Provenance: best answer by ConnorO2, 2026-08-03 (Sources below).
+
 ## Wildcards in filter values
 
 ```
@@ -191,3 +207,9 @@ fieldName_Prompt=Choose a value
 ## Where to find field names
 
 The API Explorer at `experienceleague.adobe.com` lists every field on every object with its exact name and data type. When in doubt, look it up there — don't guess.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/project-status-equates-with-filter-gone-252039` | `statusEquatesWith=CUR` + `_Mod=in` as the Text Mode fallback when "Status Equates With" is missing from the filter-builder UI; Adobe Support's attribution to the reporting-UI rollout — best answer by ConnorO2, 2026-08-03 |

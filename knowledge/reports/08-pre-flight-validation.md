@@ -281,17 +281,20 @@ The blast radius of a wrong pre-flight result is limited. A false positive (vali
 ## § 7. CLI
 
 ```bash
+# WF_HOST / WF_API_KEY exported first, e.g. via
+# `set -a; source ~/wf-clients/<slug>/.env; set +a`
 python3 skills/workfront-reports/scripts/pre_flight_validator.py \
     --from-stdin \
-    --host <host> \
     < bundle.json
 ```
+
+Credentials come from the environment: the validator reads `WF_HOST` and `WF_API_KEY` when the corresponding flags are omitted, keeping the API key out of the process argv (argv is visible in `ps` — the toolkit's no-key-in-argv rule).
 
 Flags:
 
 - `--from-stdin` (required): read the JSON bundle from stdin. The bundle is the in-memory document the recipe composed at Phase C — a single JSON object with top-level keys `uift` (optional — empty `definition:{}` when no filter), `uigb` (optional — omitted when no grouping), `uivw`, `report` matching the pieces the recipe will POST. (Keys are lowercase, matching both recipes' compose phase and the `pre_flight_validator.py` `bundle.get("uift")` lookup.)
-- `--host` (required): destination tenant host (e.g., `acme.my.workfront.com`). Used to look up the right schema-cache file.
-- `--api-key <key>` (optional): only required if the validator needs to fetch metadata or run the DE: parity probe and the schema cache is cold. The recipe normally pre-populates the cache before calling the validator, so this flag is usually unused.
+- `--host` (optional when `WF_HOST` is exported): destination tenant host (e.g., `acme.my.workfront.com`); falls back to the `WF_HOST` env var. Used to look up the right schema-cache file. Usage error (exit 2) when neither the flag nor the env var is set.
+- `--api-key <key>` (optional, backward compat only): prefer exporting `WF_API_KEY` — a key passed as a flag lands in the process argv, visible in `ps`. The key is only consulted at all when the validator needs to run the DE: parity probe (or fetch metadata on a cold cache); the recipe normally pre-populates the cache first, so it's usually unused either way.
 - `--force` (optional): set `valid:true` in the output regardless of errors; errors are downgraded to warnings with `forced:true`. The recipe surfaces this as a consultant override after a clarifying conversation. Use sparingly — `--force` exists for the edge case where the consultant knows something the validator doesn't (e.g., a tenant with a non-standard custom form not visible to `/customform/search`).
 - `--learn` (optional): take `uiObjCode:fieldname[:slot]` plus `--host` and record the field into the per-tenant whitelist at `~/.cache/wf-claude-toolkit/reports-pseudo-fields-<host-hash>.json`. The next pre-flight run on the same host accepts the field without `--force`. Used for one-off consultant-confirmed pseudo-fields the global PSEUDO_FIELDS table doesn't know about.
 - `--learn-from-blocked` (optional): convenience form of `--learn` that reads the most recent blocked references from the prior session's pre-flight report and prompts the consultant to confirm each one for whitelist capture. Avoids re-typing the `uiObjCode:fieldname` tuple.

@@ -101,6 +101,23 @@ That single call nulls `assignedToID`, nulls `roleID`, and empties the `assignme
 
 Verified v17.0 on a live production tenant, 2026-05-21: PUT `updates={"assignedToID":null,"assignments":[]}` left `roleID="<consultant role>"` and a ghost ASSGN row. Re-running with PUT `/optask/<id>/assignMultiple {"userIDs":[],"roleIDs":[],"teamIDs":[]}` cleared all three fields cleanly.
 
+### Clearing a user's teams: `teams: []` alone leaves the Home Team
+
+The replace-not-merge rule does half the job on USER: PUT `updates={"teams": []}` empties the **Other Teams** collection, but the Home Team is a separate scalar (`homeTeamID`) on USER — not a member row of `teams` — so it survives untouched. Same failure shape as the issue-unassignment gotcha above (empty the collection, a scalar lingers), with the resolution inverted: USER has no `assignMultiple`-style action endpoint, and none is needed — the scalar is directly writable in the same PUT:
+
+```
+PUT /attask/api/v17.0/user/<id>
+updates={"homeTeamID": "", "teams": []}
+```
+
+<!-- UNVERIFIED -->
+The collection-replace half follows from the rule documented above. The rest is the community answerer's tested report, not independently confirmed here — specifically that `homeTeamID` clears with `""` where `null` errors (the thread's `null` error could equally describe an attempt at `teams: null`). Provenance: best answer by Tracy_Parmeter, 2026-07-16 (Sources below).
+
+Two cautions:
+
+- **Fusion blueprint trap.** Do not put a literal `""` for `homeTeamID` in blueprint JSON — literal `""` becomes `null` on import (the Fusion record § Null vs empty), which is exactly the value reported to error. Use `{{emptystring}}`. Hand-configured modules are unaffected.
+- **Destructive by design.** The same `"teams": []` on an *active* user wipes every team membership, no merge, no undo. Gate the scenario on `isActive=false` and capture pre-state (`GET /user/<id>?fields=homeTeamID,teams:ID,teams:name`) before running in bulk.
+
 ## Some child objects can't be POSTed directly — write through the parent
 
 A collection field on a parent (e.g. `nonWorkDays` on `SCHED`) exposes child rows that carry their own `objCode`. It is tempting to create a new row by POSTing to that child's endpoint — for some object codes that fails with:
@@ -445,6 +462,18 @@ Turning a project into a request queue touches three objects — Project, `QUED`
 
 Verified on a sandbox tenant v15.0, 2026-07-02.
 
+## Adjacent surface: Workfront Data Connect staleness is self-reporting
+
+Not the REST API — Data Connect is the separate Snowflake data-share surface — but it lands in the same consultant question ("how do I get Workfront data out, and how fresh is it?"), so the pointer belongs here.
+
+Adobe documents the refresh interval as every 4 hours but publishes no wall-clock schedule, and it is not a value to guess at: a report built on Data Connect is up to one full interval stale, and the interval's phase determines whether a morning report includes yesterday evening's work. Do not infer the schedule from the documented interval — read it out of the share, which reports its own freshness two ways:
+
+- `MONITORING_DATA_REFRESHES` — a view giving the last refresh time per object type.
+- `DL_LOAD_TIMESTAMP` — a column present on the object rows themselves, giving when that individual row was last loaded.
+
+<!-- UNVERIFIED -->
+One tenant's reported observation: refreshes land at 4:20 / 8:20 / 12:20 and so on, which the answerer read as the *completion* of a run started on the hour, with the timestamps rendered in **UTC** rather than the instance timezone. Treat the specific times as that tenant's phase, not a platform constant — the answerer explicitly hedged ("I'm not sure if it's the same for everyone"), and no second tenant confirmed it in the thread. The two artifact names are the durable part: query them per tenant instead of assuming a schedule. Provenance: best answer by BrookeSt5, 2026-07-28 (Sources below).
+
 ## Sources
 
 | URL | What it provided |
@@ -454,3 +483,5 @@ Verified on a sandbox tenant v15.0, 2026-07-02.
 | `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/api-notes/api-version-support-schedule` | Version removal timeline, api-internal guidance |
 | `https://experienceleague.adobe.com/en/docs/workfront/using/administration-and-setup/manage-wf/security/manage-api-keys` | API key copy behavior on Preview refresh |
 | `https://experienceleaguecommunities.adobe.com/t5/workfront-questions/is-anyone-else-getting-429-too-many-concurrent-api-requests/td-p/485050` | 429 concurrent limit behavior |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/fusion-module-to-clear-other-teams-251712` | one-PUT `{"homeTeamID": "", "teams": []}` to fully clear a user's teams — best answer by Tracy_Parmeter, 2026-07-16 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/data-connect-refresh-251986` | Data Connect freshness is readable from the share itself — `MONITORING_DATA_REFRESHES` view and the `DL_LOAD_TIMESTAMP` row column; one tenant's observed :20-past phase, read as UTC — best answer by BrookeSt5, 2026-07-28 |

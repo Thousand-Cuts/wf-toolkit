@@ -189,3 +189,22 @@ Applies red+bold when over budget, orange when close to budget, default otherwis
 ```
 IF(!ISBLANK({project}.{DE:Client Name}),{project}.{DE:Client Name},"No client set")
 ```
+
+---
+
+## Per-Option 0/1 Indicator for a Multi-Select (Countable)
+
+**Format:** Number
+
+```
+IF(CONTAINS("TW",{DE:Country})="true",1,0)
+```
+
+<!-- UNVERIFIED -->
+A multi-select stores one concatenated string of the selected options' values, and a calc field emits one scalar — so there is no native "count per selection." One Number-format indicator field per option, SUMmed in a report grouping, yields per-option counts. Test against `ParameterOption.value`, never the display label — see `07-limitations-and-gotchas.md` § "CONTAINS on a Multi-Select Tests Option Values, Not Labels" for the silent-zero trap, the substring-collision caution, and why Format must be Number at creation. With many options, house the indicator fields on an admin-only reporting form rather than the user-facing one. Community-reported (see Sources); the `="true"` string compare is the form the source reports working — not lab-verified here.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/best-way-to-report-the-counts-of-selections-from-a-multi-select-field-251655` | the per-option 0/1 indicator pattern for multi-select counts — best answer by Lyndsy-Denk, 2026-07-10 |

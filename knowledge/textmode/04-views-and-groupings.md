@@ -45,6 +45,34 @@ column.0.valuefield=project:portfolio:program:name
 column.0.valueexpression={project}.{portfolio}.{program}.{name}
 ```
 
+### Walking a task's own parent chain
+
+<!-- UNVERIFIED -->
+`{parent}` chains against the task hierarchy the same way — `{parent}.{name}`, `{parent}.{parent}.{name}`, and so on — and a community answer walks it **five levels deep** in a single `valueexpression`, past the 3-hop ceiling stated above. Two readings, unresolved here: either the 3-hop limit applies only to cross-object `valuefield` joins and a self-referential parent chain is not counted the same way, or the limit is looser in practice than documented. Do not rely on depth > 3 without testing it on the target tenant. Provenance: best answer by RandyRoberts, 2026-07-28 (Sources below).
+
+The shape it appeared in — a project-report column that reports each active task's phase by finding whichever ancestor is named for a phase:
+
+```
+listmethod=nested(tasks).lists
+type=iterate
+listdelimiter=<br>
+displayname=Phase of Active Tasks
+valueformat=HTML
+valueexpression=IF({numberOfChildren}=0,IF({canStart},IF({status}="CPL","",
+  IF({parent}.{name}="Intake"||{parent}.{name}="Strategy",CONCAT("Phase: ",{parent}.{name}),
+  IF({parent}.{parent}.{name}="Intake"||{parent}.{parent}.{name}="Strategy",CONCAT("Phase: ",{parent}.{parent}.{name}),
+  "")))),"")
+```
+
+(Abbreviated to two phase names and three levels; the thread's version tests five phase names across five levels. It is a hand-expanded cross-product — there is no loop construct in text mode, so each additional level multiplies the expression, which is the real practical ceiling long before any hop limit.)
+
+Two reusable pieces independent of the depth question:
+
+- `{numberOfChildren}=0` is how you restrict a nested-task iteration to leaf tasks only.
+- `{canStart}` is the field behind the UI's "Ready to Execute" indicator — see `03-filters-and-modifiers.md` for filtering on it.
+
+See `08-collections.md` for the `listmethod` / `type=iterate` collection mechanics this rides on.
+
 ## Less common column attributes
 
 - `column.N.width=0` (or omitting `width=` entirely) **hides the column.** Useful when a column's value is needed for sorting or conditional formatting but should not display. Source: Adobe `text-mode/edit-text-mode-in-view`.
@@ -112,6 +140,18 @@ group.1.linkedname=direct
 **Groupings can't be sorted directly.** The UI offers no "sort by this grouping" control. To order grouped buckets, mirror the grouping field in a view column and set that column's `querysort=<field>` — the report's row-level sort then determines bucket order. The sort-index prefix pattern in `knowledge/reports/07-view-patterns.md` § 12 ("01: 0% to 10%", "02: 11% to 20%") is the workaround for calculated-grouping range buckets where direct field mirroring isn't an option. Source: Adobe `report-elements/groupings-overview`.
 
 **Cannot group by multi-select custom fields or multi-value built-in fields (e.g., Resource Manager).** The grouping engine requires a scalar bucket key; multi-value fields don't have one. Workaround: derive a scalar key with a calculated custom field (concatenate the values, or pick a representative) and group on the calculated field. Source: Adobe `report-elements/groupings-overview`.
+
+<!-- UNVERIFIED -->
+> **Contradicted by a community report — unresolved.** A consultant asked why converting an Internal Lookup field to multi-select removed it from the grouping picker, and the accepted answer was that Text Mode groups on it fine, no calculated field needed:
+>
+> ```
+> textmode=true
+> group.0.displayname=Project Name
+> group.0.valueexpression={DE:Project Name}
+> group.0.valueformat=HTML
+> ```
+>
+> The answerer posted a screenshot of the resulting grouped output over a multi-select Internal Lookup (`MULTINTRNL`) sitting on a custom form. That does not necessarily overturn the Adobe-sourced rule above — the plausible reconciliation is that the *builder UI* excludes multi-value fields from the picker while the render path still buckets on the stringified value, which would mean a row with N selections lands in one combined "A, B" bucket rather than in N buckets. Nobody in the thread checked which of those two behaviors the screenshot shows, and that distinction is the whole question. Treat the calculated-field workaround as the reliable path until this is tested. Provenance: best answer by ninoskuflic, 2026-07-27 (Sources below).
 
 **Parent/child aggregation rules.** When a task report includes a column with an aggregator AND the report contains both parent and child tasks, different field types aggregate differently:
 
@@ -196,3 +236,10 @@ The Workfront enumeration may contain additional locale-specific or experimental
 - **Calculated views vs custom fields:** values in a `valueexpression` column are recalculated every time the report runs (dynamic but slower). Calculated custom fields are stored in the database (faster, persistent, can be filtered/conditionally formatted).
 - **Use Assignment reports, not Task reports, when you need one row per assignee.** A task with three assignees shows up as one row in a task report but three rows in an assignment report.
 - **Alternating row colors are not supported in text mode views.** Don't waste time trying.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/internal-look-up-multi-select-251973` | claim that `group.0.valueexpression={DE:<field>}` groups a multi-select Internal Lookup that the builder UI won't offer — best answer by ninoskuflic, 2026-07-27 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/multiple-parent-hierarchies-in-a-workfront-report-251984` | `{parent}.{parent}.{name}` ancestor chaining inside a `nested(tasks).lists` iterate column; `{numberOfChildren}=0` leaf test; `canStart` as the "Ready to Execute" field — best answer by RandyRoberts, 2026-07-28 |

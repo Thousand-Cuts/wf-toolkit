@@ -24,7 +24,7 @@ Run:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-client-resolve.sh --dest
 ```
 
-- Exit 0: prints the active slug (the destination tenant). Read `~/wf-clients/<slug>/.env` for `WF_HOST`, `WF_CLIENT_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
+- Exit 0: prints the active slug (the destination tenant). Extract `WF_HOST`, `WF_CLIENT_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`, and `WF_READ_ONLY` with `grep -E '^(WF_HOST|WF_CLIENT_LABEL|WF_ENV_TYPE|WF_SCOPE_PORTFOLIO_ID|WF_READ_ONLY)=' ~/wf-clients/<slug>/.env` — never read the full `.env`; it holds `WF_API_KEY`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
 - Exit 2: no active client. Tell the consultant to register one via `/wf-client-add <slug>`, set the key with `wf-client-setkey.sh <slug>` in their terminal, then `/wf-client-use <slug>`, and re-invoke.
 
 The wrapper handles auth; you never see the API key. Auth specifics (sessionID vs API key vs OAuth2 vs JWT) live in `workfront-api`; this recipe uses the `wf-client-curl.sh` wrapper which puts `apiKey=` in the URL query string.
@@ -270,7 +270,7 @@ The skill prints all 2-4 payloads to terminal before Phase D, named with their t
 
 Run the pre-flight validator against the composed bundle. This is the v0.9.0 gate that catches the "field does not exist on the target object" class of error — the PROJ-vs-TMPL trap from `05-gotchas.md` #9 — before any bytes write.
 
-Source the active client's .env to make `WF_HOST` and `WF_API_KEY` available to the validator. The script's CLI is unchanged.
+Source the active client's `.env` with `set -a` to export `WF_HOST` and `WF_API_KEY`; the validator reads both from the environment, so the key never appears in the process argv (it would be visible in `ps`).
 
 ```bash
 set -a; source ~/wf-clients/<active-slug>/.env; set +a
@@ -281,7 +281,7 @@ jq -n \
    --arg report "$(cat /tmp/report-payload.json)" \
    '{uift: ($uift|fromjson), uigb: ($uigb|fromjson), uivw: ($uivw|fromjson), report: ($report|fromjson)}' \
   | python3 ${CLAUDE_PLUGIN_ROOT}/skills/workfront-reports/scripts/pre_flight_validator.py \
-    --from-stdin --host "$WF_HOST" --api-key "$WF_API_KEY" \
+    --from-stdin \
   > /tmp/preflight.json
 ```
 

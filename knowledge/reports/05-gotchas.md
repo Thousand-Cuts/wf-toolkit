@@ -381,6 +381,21 @@ The grouping now references a stored field (the form field's pre-computed value)
 
 **Skill behaviour.** When the consultant requests a grouped report AND specifies "with a chart" or "with the summary view enabled," and the grouping logic is non-trivial (range buckets, conditional categories, etc.), the interview offers two paths: (a) text-mode-grouped report WITHOUT a working chart/summary, or (b) custom-form-field-backed grouping WITH a working chart/summary. The consultant picks; the skill does not silently choose. Cross-link to `workfront-calc-fields` for the field setup.
 
+## 20. "In status X for more than N days": no task field holds it — report on JRNLE, with the right field names
+
+**Surprise:** "Flag tasks that have been In Progress for more than 5 days" cannot be filtered on the task: entering a status is an *event*, not an attribute. The task row carries only the current `status` scalar — there is nothing to compare against `$$TODAY-5d`. And the obvious JRNLE filter keys do not exist: `objCode=TASK` errors with `Invalid Parameter: Search Parameter value "objCode"`, and asking for `oldValue`/`newValue` errors with `APIModel V17_0 does not support field oldValue (JournalEntry)`.
+
+**Mechanic:** the transition lives in the field-change journal (`JRNLE`). The journaled object's type is filtered as **`objObjCode`** (not `objCode`), and the before/after values are split by type — **`oldTextVal`/`newTextVal`** for text/reference fields (not `oldValue`/`newValue`), `oldNumberVal`/`newNumberVal` for numeric, `oldDateVal`/`newDateVal` for dates. The working filter — tasks that entered In Progress more than 5 days ago:
+
+```
+GET /attask/api/v17.0/JRNLE/search?objObjCode=TASK&fieldName=status&newTextVal=INP
+    &entryDate=$$TODAY-5d&entryDate_Mod=lte&fields=ID,entryDate,oldTextVal,newTextVal
+```
+
+**Mitigation:** pick the route by the question being asked. (1) **JRNLE — retroactive.** Works immediately for transitions that already happened; no configuration, no form rollout. Trade-off: the rows are journal entries, not tasks — the task name/link is a join away (via `taskID` on the row), so warn the requester the drill-through is not what a Task report gives. (2) **Transition-timestamp custom field — forward-only.** A custom field written at transition time gives task-shaped, analytics-friendly rows, but cannot exist for transitions that predate it, must be attached to every task in scope, and the pre-existing backlog is never represented unless backfilled from a journal export. Same family as gotcha #18 (no native historical timestamp → capture it yourself). Field shape and the `JRNLE`-not-`JOURNENT` code trap: `knowledge/api/03-object-codes.md` § JRNLE.
+
+Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /JRNLE/search?objObjCode=TASK&fieldName=status` returned real transition rows (`NEW → INP` with `entryDate` and `taskID`); the 5-day filter above returned 3 rows, all `newTextVal=INP` with `entryDate` older than 5 days; both wrong-field-name errors reproduced verbatim.
+
 ---
 
 ## Cross-references
@@ -390,3 +405,10 @@ The grouping now references a stored field (the form field's pre-computed value)
 - The `/metadata` burst and cache that powers gotcha #1's column-coherence check: `04-runtime-schema-discovery.md`.
 - The text-mode language the gotchas reference (`DE:<name>`, `$$TODAY`, `EXISTS:N:`, etc.): `workfront-textmode`.
 - Auth, `$$HOST`, version pinning: `workfront-api`.
+- The JRNLE audit-log field shape gotcha #20 relies on: `knowledge/api/03-object-codes.md` § "A note on JRNLE".
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/report-help-capturing-specific-tasks-that-have-been-in-progress-for-more-than-5-days-251454` | the JRNLE vs transition-timestamp two-route pattern behind gotcha #20 (field names corrected against live v17.0 schema) — best answer by skyehansen, 2026-06-30 |
