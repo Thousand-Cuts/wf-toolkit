@@ -1,6 +1,8 @@
 """Tests for skills/workfront-reports/scripts/pre_flight_validator.py."""
 
+import io
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -705,6 +707,58 @@ class PerTenantWhitelistTest(unittest.TestCase):
         }))
         forget_all("host", cache_dir=self.tmpdir)
         self.assertFalse(Path(wl_path).exists())
+
+
+class CLIEnvCredentialsTest(unittest.TestCase):
+    """--host / --api-key fall back to WF_HOST / WF_API_KEY env vars, so the
+    key never has to appear in the process argv (toolkit credential rule)."""
+
+    def _run_cli(self, argv, env):
+        captured = {}
+
+        def spy_validate(bundle, host, cache=None, force=False, api_key=None,
+                         de_fetch=None, whitelist_dir=None):
+            captured.update(host=host, api_key=api_key)
+            return {"valid": True, "errors": [], "warnings": [], "de_refs": []}
+
+        clean_env = {k: v for k, v in os.environ.items()
+                     if k not in ("WF_HOST", "WF_API_KEY")}
+        clean_env.update(env)
+        with patch.object(sys, "argv", ["pre_flight_validator.py"] + argv), \
+             patch.dict(os.environ, clean_env, clear=True), \
+             patch("sys.stdin", io.StringIO('{"report": {}}')), \
+             patch.object(pre_flight_validator, "validate", spy_validate), \
+             patch("sys.stdout", io.StringIO()):
+            rc = pre_flight_validator._cli()
+        return rc, captured
+
+    def test_host_and_api_key_fall_back_to_env(self):
+        rc, captured = self._run_cli(
+            ["--from-stdin"],
+            {"WF_HOST": "env.workfront.com", "WF_API_KEY": "env-key"})
+        self.assertEqual(rc, 0)
+        self.assertEqual(captured["host"], "env.workfront.com")
+        self.assertEqual(captured["api_key"], "env-key")
+
+    def test_flags_override_env(self):
+        rc, captured = self._run_cli(
+            ["--from-stdin", "--host", "flag.workfront.com",
+             "--api-key", "flag-key"],
+            {"WF_HOST": "env.workfront.com", "WF_API_KEY": "env-key"})
+        self.assertEqual(rc, 0)
+        self.assertEqual(captured["host"], "flag.workfront.com")
+        self.assertEqual(captured["api_key"], "flag-key")
+
+    def test_no_key_anywhere_passes_none(self):
+        rc, captured = self._run_cli(
+            ["--from-stdin"], {"WF_HOST": "env.workfront.com"})
+        self.assertEqual(rc, 0)
+        self.assertIsNone(captured["api_key"])
+
+    def test_missing_host_everywhere_is_usage_error(self):
+        with patch("sys.stderr", io.StringIO()):
+            rc, _ = self._run_cli(["--from-stdin"], {})
+        self.assertEqual(rc, 2)
 
 
 if __name__ == "__main__":

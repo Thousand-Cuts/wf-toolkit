@@ -57,15 +57,17 @@ v0.10.0 audit-logs the four creates only when a follow-up PUT/DELETE happens (ma
 The full live-test loop:
 
 ```bash
-# 1. Pre-flight composes the bundle (Phase D of the recipe), then runs:
+# 1. Pre-flight composes the bundle (Phase D of the recipe), then runs.
+#    WF_HOST / WF_API_KEY come from the recipe's `set -a; source .env` step —
+#    the validator reads them from the environment, never from argv:
 python3 skills/workfront-reports/scripts/pre_flight_validator.py \
-    --from-stdin --host "$WF_HOST" --api-key "$WF_API_KEY" \
+    --from-stdin \
     < /tmp/bundle.json \
     > /tmp/preflight.json
 
 # 2. If errors[], you can either edit OR override:
 python3 skills/workfront-reports/scripts/pre_flight_validator.py \
-    --from-stdin --host "$WF_HOST" --api-key "$WF_API_KEY" --force \
+    --from-stdin --force \
     < /tmp/bundle.json \
     > /tmp/preflight-forced.json
 # /tmp/preflight-forced.json now has valid:true, errors:[], and the

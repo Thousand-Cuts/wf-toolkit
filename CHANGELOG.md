@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.5 — 2026-08-07
+
+Credential-handling hardening in the reports skill (manual port of upstream fixes).
+
+- `pre_flight_validator.py` now reads `WF_HOST` / `WF_API_KEY` from the environment when the flags are omitted, so the API key no longer has to be passed in argv (visible in `ps`). Flags still take precedence; `--api-key` is retained for backward compatibility.
+- Documented invocations in `knowledge/reports/03`, `knowledge/reports/09`, and the `workfront-reports` SKILL.md updated to the env-only form.
+- Skill steps that need non-secret values from an environment's `.env` (host, label, env type, read-only flag) now `grep` only those lines instead of reading the whole file, which would pull `WF_API_KEY` into the agent's context.
+- New `CLIEnvCredentialsTest` covers env fallback, flag precedence, key-less soft mode, and the missing-host exit-2 path.
+
 ## 1.1.4 — 2026-08-07
 
 Automated knowledge sync from the maintainers' verification pipeline (scrub gate + validation passed).

@@ -372,8 +372,9 @@ def validate(bundle: dict, host: str, cache=None, force: bool = False,
             for r in de_refs:
                 warnings.append({
                     "path": r["path"], "value": r["name"],
-                    "reason": (f"DE: parity skipped (no --api-key supplied); "
-                               f"cannot confirm '{r['name']}' exists on destination."),
+                    "reason": (f"DE: parity skipped (no API key — export "
+                               f"WF_API_KEY or pass --api-key); cannot "
+                               f"confirm '{r['name']}' exists on destination."),
                 })
 
     if force:
@@ -795,11 +796,17 @@ def _cli() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--from-stdin", action="store_true",
                    required=False, default=False)
-    p.add_argument("--host", required=True)
+    p.add_argument("--host", default=None,
+                   help="Destination tenant host; falls back to the WF_HOST "
+                        "env var when omitted.")
     p.add_argument("--force", action="store_true",
                    help="Demote errors to warnings and set valid:true.")
     p.add_argument("--api-key", default=None,
-                   help="API key for DE: parity check; if omitted, DE refs become warnings.")
+                   help="API key for DE: parity check. Prefer exporting "
+                        "WF_API_KEY instead — a key passed as a flag lands in "
+                        "the process argv (visible in `ps`). Kept for "
+                        "backward compat; if neither is set, DE refs become "
+                        "warnings.")
     p.add_argument("--whitelist-dir", default=None,
                    help="Per-tenant whitelist directory (default ~/.cache/wf-toolkit).")
     p.add_argument("--learn", metavar="OBJ:FIELD:SLOT",
@@ -813,9 +820,14 @@ def _cli() -> int:
     p.add_argument("--forget-all", action="store_true",
                    help="Wipe the entire per-tenant whitelist.")
     args = p.parse_args()
+    host = args.host or os.environ.get("WF_HOST")
+    if not host:
+        print("error: --host or the WF_HOST env var is required", file=sys.stderr)
+        return 2
+    api_key = args.api_key or os.environ.get("WF_API_KEY")
     if args.forget_all:
-        if forget_all(args.host, cache_dir=args.whitelist_dir):
-            print(json.dumps({"forgot_all": True, "host": args.host}))
+        if forget_all(host, cache_dir=args.whitelist_dir):
+            print(json.dumps({"forgot_all": True, "host": host}))
         else:
             print(json.dumps({"forgot_all": False, "reason": "no whitelist file"}))
         return 0
@@ -824,7 +836,7 @@ def _cli() -> int:
         if len(parts) != 2:
             print("error: --forget expects OBJ:FIELD", file=sys.stderr)
             return 2
-        ok = forget(args.host, parts[0], parts[1], cache_dir=args.whitelist_dir)
+        ok = forget(host, parts[0], parts[1], cache_dir=args.whitelist_dir)
         print(json.dumps({"forgot": ok, "uiObjCode": parts[0], "fieldname": parts[1]}))
         return 0
     if args.learn:
@@ -832,7 +844,7 @@ def _cli() -> int:
         if len(parts) != 3:
             print("error: --learn expects OBJ:FIELD:SLOT", file=sys.stderr)
             return 2
-        entry = learn(args.host, parts[0], parts[1], parts[2],
+        entry = learn(host, parts[0], parts[1], parts[2],
                       cache_dir=args.whitelist_dir, learned_via="manual")
         print(json.dumps({"learned": entry}))
         return 0
@@ -846,7 +858,7 @@ def _cli() -> int:
                   file=sys.stderr)
             return 2
         added = learn_from_blocked(
-            args.host, args.learn_objcode, args.learn_from_blocked,
+            host, args.learn_objcode, args.learn_from_blocked,
             cache_dir=args.whitelist_dir
         )
         print(json.dumps({"learned": added}))
@@ -860,7 +872,7 @@ def _cli() -> int:
     except (json.JSONDecodeError, ValueError) as exc:
         print(f"error: malformed JSON on stdin: {exc}", file=sys.stderr)
         return 2
-    result = validate(bundle, args.host, force=args.force, api_key=args.api_key,
+    result = validate(bundle, host, force=args.force, api_key=api_key,
                       whitelist_dir=args.whitelist_dir)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0 if result["valid"] else 1

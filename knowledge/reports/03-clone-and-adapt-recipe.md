@@ -52,7 +52,7 @@ Run:
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest
 ```
 
-- Exit 0: prints the active slug. Read `~/wf-envs/<slug>/.env` for `WF_HOST`, `WF_ENV_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
+- Exit 0: prints the active slug. Extract `WF_HOST`, `WF_ENV_LABEL`, `WF_ENV_TYPE`, `WF_SCOPE_PORTFOLIO_ID`, and `WF_READ_ONLY` with `grep -E '^(WF_HOST|WF_ENV_LABEL|WF_ENV_TYPE|WF_SCOPE_PORTFOLIO_ID|WF_READ_ONLY)=' ~/wf-envs/<slug>/.env` — never read the full `.env`; it holds `WF_API_KEY`. Echo back for confirmation. Refuse if `WF_READ_ONLY="1"` (this recipe writes).
 - Exit 2: tell the admin to register one via `/wf-env-add <slug>`, set the key, then `/wf-env-use <slug>`.
 
 > If Phase 1 activated a source slug different from the destination, run `/wf-env-use <dest-slug>` before this resolve so the active pointer names the destination. Phase 3 switches back to the source for the pull.
@@ -292,7 +292,7 @@ jq -n \
    '{uift: ($uift|fromjson), uigb: ($uigb|fromjson), uivw: ($uivw|fromjson), report: ($report|fromjson)}' \
   | (set -a; source ~/wf-envs/<dest-slug>/.env; set +a; \
      python3 ${CLAUDE_PLUGIN_ROOT}/skills/workfront-reports/scripts/pre_flight_validator.py \
-       --from-stdin --host "$WF_HOST" --api-key "$WF_API_KEY") \
+       --from-stdin) \
   > /tmp/preflight.json
 ```
 
