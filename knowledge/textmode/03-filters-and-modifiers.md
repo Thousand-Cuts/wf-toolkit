@@ -117,6 +117,8 @@ Without the slash, Workfront splits on the literal comma and looks for two separ
 
 **"Not Equal" misbehavior on multi-select custom fields.** A filter `DE:tags_Mod=ne&DE:tags=red` against a multi-select custom field only excludes records whose `tags` value is EXACTLY `"red"` and nothing else. Records with `tags=["red", "blue"]` are NOT excluded — the multi-select comparison is exact-set, not contains-set. To exclude all records containing "red", use `_Mod=notcontains` instead (and accept that it's a substring match, which carries its own edge cases). Source: Adobe `report-elements/filters-overview`.
 
+**Typeahead custom fields filter by ID, never by name.** A `TYAH` field with a `refObjCode` stores a JSON envelope (`{"objCode":…,"name":…,"ID":…}`), but the filter engine indexes it by the referenced object's **ID** only. `DE:Assigned Strategist=<32-char user ID>` with `_Mod=eq` works; filtering on the person's name matches zero rows even though the name is inside the stored value. If users need to filter by name, mirror the name into a plain-text field at save time. Verified 2026-08-06 on a live production tenant, v17.0 — full test matrix and scope limits in `custom-forms/09-gotchas` § 33.
+
 ## Status code filter values
 
 Common status codes (the underlying values, not display names):

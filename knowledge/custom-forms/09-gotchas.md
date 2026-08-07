@@ -282,6 +282,7 @@ Skill v0.26.x's External Lookup AUTHORING is out of scope — but reading + mini
 - **At write-time:** send the bare ID string. Workfront handles the envelope.
 - **At read-time:** ask for the full DE: field (`fields=DE:fieldName`), then parse the JSON envelope client-side to extract `.ID` / `.name` / `.objCode`. In Fusion `searchv3` / `custom` output, use `parseJSON(<step>.data[1].\`DE:fieldName\`).ID`.
 - **For downstream consumers** that expect a bare ID (e.g. a Workfront update setting `assignedToID` from the envelope) — never wire the envelope directly. Pipe through `parseJSON(...).ID` first.
+- **To FILTER a `/search` by one of these fields:** match the **bare** field name against the referenced object's **ID** with `_Mod=eq` — `DE:fieldName=<refID>&DE:fieldName_Mod=eq`. This works (verified on a client v18.0 `/search`, 2026-08) even though the `fields=DE:fieldName:ID` *projection* in point 4 does not — the `:ID`/`:name` sub-key fails identically on a filter key. See `api/06-filtering-queries.md` § Internal-lookup / typed-reference custom fields.
 
 The asymmetry (write-as-ID vs read-as-envelope) is the surprise. The skill's NL-create flow should propose `refObjCode` whenever the consultant describes the field as "a user picker" / "a project picker" / "a task picker"; absent that, the typeahead stores raw strings and the UI offers a free-text autocomplete instead.
 
@@ -313,6 +314,32 @@ Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds f
 Corollary (still a true collection-replace — gotcha #13 unchanged): you must still send **all** rows. A subset PUT tries to drop the omitted rows and 403s with `"<field>" Parameter doesn't exists in currernt Category` [sic] the moment a dropped row is an external-lookup field.
 
 Verified 2026-07-08 on a live production tenant + a preview sandbox tenant, v17.0: flipping 21 "Additional Info" fields to not-required on a 346-row PROJ form ("Project Details [new]") with 4 MULTEXTRNL + 1 TYAH field. With `ID` → 400 (schema); without `ID` → 200, all 346 rows and 5 external-lookup fields preserved.
+
+## 33. Typeahead `DE:` filters resolve to the referenced object's **ID** — not the stored envelope text
+
+**Surprise:** "Gotcha #30 says a TYAH field stores a JSON envelope (`{"objCode":…,"name":…,"ID":…}`), so I assumed a filter had to match that string, and that filtering by a bare ID could never work. Both assumptions are wrong. `DE:<field>=<32-char ID>` with `_Mod=eq` matches fine. Filtering on the referenced object's **name** — which is sitting right there inside the stored envelope — matches nothing at all."
+
+**Mechanic:** the read representation and the filter representation are two different surfaces. Reads return the envelope string (#30). The search/report filter engine indexes the field by the referenced object's **ID only**; string modifiers operate on that ID text, never on the envelope.
+
+Verified 2026-08-06 on a live production tenant, v17.0, against a `(TEXT, TYAH)` parameter with `refObjCode: PROJ`, populated on 7 `OPTASK` records that all reference the same project:
+
+| Filter | Result |
+|---|---|
+| `DE:<field>=<full ID>` + `_Mod=eq` | ✅ 7 rows |
+| `DE:<field>=<first 6 chars of the ID>` + `_Mod=cicontains` | ✅ 7 rows |
+| `DE:<field>=<a word from the referenced object's name>` + `_Mod=cicontains` | ❌ 0 rows |
+| `DE:<field>=objCode` + `_Mod=cicontains` | ❌ 0 rows |
+| `DE:<field>=<32 zeros>` + `_Mod=eq` (negative control) | ❌ 0 rows |
+
+The `objCode` probe is the discriminator. That literal key appears in every stored envelope, so a raw string comparison would match all 7 rows. It matches none — the comparison target is the ID, not the JSON.
+
+**Consequences:**
+
+- To filter or prompt on a typeahead, pass the **ID**. `eq` against a full ID is the correct form; partial-ID `cicontains` also works but has no practical use.
+- You **cannot** filter a typeahead by the referenced object's display name. If users need to filter by name, write the name into a separate plain-text field at save time, or filter on the native object instead.
+- `fields=DE:<field>:ID` still returns nothing (#30 item 4). That is a *read-side* selector limitation and is unrelated to the filter behaviour above — both were confirmed in the same run.
+
+**Scope of this verification — read before citing it:** tested with `refObjCode: PROJ` via `/optask/search` on the REST API. Not re-tested for `refObjCode: USER`, and **not** tested through a report **prompt**, which adds a UI resolution layer above the filter. Community reports of typeahead *prompts* returning zero rows are therefore **not** explained by this mechanic — at the API level the filter works correctly when handed an ID, so a prompt failure points at the prompt layer or at a separate companion field, not at envelope storage.
 
 ## Cross-references
 

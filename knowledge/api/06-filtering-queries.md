@@ -217,6 +217,19 @@ Returns records due at any point in the current month.
 
 (URL-encode the space in `DE:Vendor Name` as `%20` or `+` per your client's conventions.)
 
+### Internal-lookup / typed-reference custom fields (INTRNL / MULTINTRNL / TYAH + `refObjCode`)
+
+A custom field that references a Workfront object filters by the **referenced object's ID against the bare field name**, `_Mod=eq` (exact):
+
+```
+?DE:Product Instance=<referenced object ID>
+&DE:Product Instance_Mod=eq
+```
+
+Verified on a client v18.0 `/search` (2026-08) — this returns every record whose field points at that object. When the field is included in `fields=`, it comes back as a nested object `{ID, name, objCode}` (read `.ID` / `.name` / `.objCode` off it); some tenants/paths instead return the JSON-string envelope documented in `custom-forms/09-gotchas.md` §30 — parse it and use `.ID`.
+
+**Do not filter on a sub-key.** `DE:Product Instance:ID=…` / `:name=…` fails — colon traversal is native-reference-only (`project:name` works; custom `DE:` fields do not), so Workfront reads the whole string as one literal field name and silently matches nothing (same root cause as the `fields=DE:field:ID` projection failure in §30). Pass the bare **ID** as the value — not the object's name, not the JSON envelope, and not (a common slip) the ID of some *other* object.
+
 ## Status codes in filter values
 
 Use the underlying codes, not display names. See `10-status-and-enum-codes.md` for the full list.

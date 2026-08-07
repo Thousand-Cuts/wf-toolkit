@@ -84,7 +84,7 @@ Collection-replace replaces *the whole row*, not just the keys you mention — s
 
 Pattern that bites: on a form with no calc fields, calc-field preservation isn't needed, so it's tempting to drop `customExpression` and `rowShared` "since I don't see them being used." `rowShared` is the trap — it's used silently for visual layout on most non-trivial forms.
 
-Verified on a preview sandbox tenant, v17.0, 2026-05-21: a PUT that bumped displayOrders on 321 of 354 rows but omitted `rowShared` from the payload zeroed all 94 paired rows on the form. Re-syncing `rowShared` from prod (94 paired rows) and re-PUTting restored the layout.
+Verified on `client-d.preview.workfront.com`, v17.0, 2026-05-21: a PUT that bumped displayOrders on 321 of 354 rows but omitted `rowShared` from the payload zeroed all 94 paired rows on the form. Re-syncing `rowShared` from prod (94 paired rows) and re-PUTting restored the layout.
 
 ## displayOrder insertion strategies
 

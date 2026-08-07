@@ -284,7 +284,7 @@ Column without `valuefield` — value computed by an expression.
 }
 ```
 
-Citation: `client-b-sample/TASK-ready-to-work-uivw.json` first column. The HTML is rendered raw by Workfront's view — no sanitization. Use carefully on cross-tenant clones because a hard-coded host in an `<a href>` (e.g. `https://a live production tenant/...`) leaks the source tenant's name. The `sanitize_clone.py` module's `host_rewrite` bucket detects and prompts on these.
+Citation: `client-b-sample/TASK-ready-to-work-uivw.json` first column. The HTML is rendered raw by Workfront's view — no sanitization. Use carefully on cross-tenant clones because a hard-coded host in an `<a href>` (e.g. `https://client-e.my.workfront.com/...`) leaks the source tenant's name. The `sanitize_clone.py` module's `host_rewrite` bucket detects and prompts on these.
 
 **Iterate columns (one cell, many child rows).** When the column should project one value per matching child record:
 
