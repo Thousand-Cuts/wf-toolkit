@@ -41,6 +41,10 @@ Affects `knowledge/custom-forms/02-parameter-types.md`. Phase A verified v17.0 e
 - `dataType`: TEXT / NMBR / DATE / CURC / RICH / WIDGET (6)
 - `displayType`: TEXT / SLCT / CHCK / RDIO / TXTA / MULT / TYAH / RICH / CALC / WIDGET / DTXT (11)
 
+> **Live re-read 2026-08-08 returns 12 `displayType` values on v17.0, not 11 — the Phase A list above is missing `PSWD` (Password Field).** Verified on `a sandbox tenant.workfront.com` (sandbox) via `GET /attask/api/v17.0/param/metadata`: `MULT, SLCT, CALC, TEXT, RDIO, CHCK, TXTA, PSWD, DTXT, TYAH, RICH, WIDGET`. The same call returns **26** values on v20.0 (adds `ADOBEXD, IMAGE, PDF, VIDEO, EXTRNL, MULTEXTRNL, WFNATIVE, WFPLANNING, TIMEPHASED, ROLLUP, DOCUMENT, INTRNL, MULTINTRNL, UIEXTNSION`) and **27** on v22.0 (adds `SNGLROLLUP`). The version *deltas* in the table below are confirmed by that reading; only the v17.0 baseline count is off. Left uncorrected above pending review — flagged by the 2026-08-08 community sweep.
+>
+> The same re-read confirms the v17.0 `dataType` list of 6 exactly as documented.
+
 Subsequent additions:
 
 | Version | `dataType` additions | `displayType` additions | Other Parameter / Category changes |

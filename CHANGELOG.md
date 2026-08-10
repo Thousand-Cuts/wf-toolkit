@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.7 — 2026-08-10
+
+Automated knowledge sync from the maintainers' verification pipeline (scrub gate + validation passed).
+
 ## 1.1.6 — 2026-08-07
 
 Fixes credential-store naming throughout `knowledge/` — it referred to scripts and an environment variable that this plugin does not ship.

@@ -396,6 +396,17 @@ GET /attask/api/v17.0/JRNLE/search?objObjCode=TASK&fieldName=status&newTextVal=I
 
 Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /JRNLE/search?objObjCode=TASK&fieldName=status` returned real transition rows (`NEW → INP` with `entryDate` and `taskID`); the 5-day filter above returned 3 rows, all `newTextVal=INP` with `entryDate` older than 5 days; both wrong-field-name errors reproduced verbatim.
 
+## 21. Resource Planner / Workload Balancer share links render empty inside a dashboard
+
+**Surprise:** A Resource Planner view with custom column formatting (Available / Planned / % of hours) looks correct in the Resource Management area. Copy its **share link** into a dashboard as an External Page and the frame loads — but the data doesn't. Same view, same user, no error message. Opening the identical URL directly in a browser tab works.
+
+<!-- UNVERIFIED -->
+**Mechanic:** a dashboard External Page entry renders its URL in an **iframe**. On Unified Shell tenants the Resource Planner / Workload Balancer share link passes through an Adobe authentication redirect, and Adobe's auth domain refuses to be framed, so the embedded view fails the auth hop and paints without data. Nothing frames the URL when it's opened directly, which is why the two paths diverge.
+
+**Mitigation:** don't embed it — make the dashboard entry a **link out** that opens the Resource Planner view in a new tab. Less seamless for a leadership dashboard, but it sidesteps the frame-auth block entirely and is the only form that doesn't depend on session state. If an embed is genuinely required, the reported (unconfirmed) mitigations are to be already signed in to Workfront in the same browser session before opening the dashboard — so the iframe never has to perform the sign-in itself — and to regenerate the share link and swap in the new URL.
+
+**Evidence quality — read before relying on this.** This is a community report, not a reproduction: the thread's accepted answer describes the mechanic and states the issue is "being investigated" by Adobe, but nobody in the thread demonstrated the frame-level failure, and no GET can settle it (it is browser/auth behavior, not an API surface). The two session-state mitigations in particular are offered as things to try. The *shape* of the constraint — auth-redirecting URLs are generally not framable — is durable and outlives any specific fix; the specific "known issue" framing may not be. Treat the link-out workaround as the reliable path.
+
 ---
 
 ## Cross-references
@@ -412,3 +423,4 @@ Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /JR
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/report-help-capturing-specific-tasks-that-have-been-in-progress-for-more-than-5-days-251454` | the JRNLE vs transition-timestamp two-route pattern behind gotcha #20 (field names corrected against live v17.0 schema) — best answer by skyehansen, 2026-06-30 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/resource-planner-url-share-251637` | the iframe/Adobe-auth mechanic and link-out workaround behind gotcha #21 — best answer by StutiTi, 2026-07-15 |

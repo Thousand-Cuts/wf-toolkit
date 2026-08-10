@@ -142,6 +142,30 @@ EXTRNL and WIDGET-displayType source fields *can* be referenced via `{program}.{
 
 `CONCAT(...)` works; `Concat(...)` is rejected as "not a valid function." Same for `IF`, `ROUND`, `SUB`, `MUL`, `DIV`, etc. — uppercase only.
 
+## Referencing a Property of an Internal Lookup Field on the Same Object
+
+An **Internal Lookup** field (`displayType` `INTRNL` / `MULTINTRNL`) stores a *reference to a Workfront object*, not a string. A calc field on the same object can reach into that reference and pull one property off it — using the same dotted-brace form as parent traversal, with the `DE:` field itself as the traversal root:
+
+<!-- UNVERIFIED -->
+```
+{DE:Project}.{ID}
+{DE:Project}.{name}
+```
+
+Community report (thread in `## Sources`, best answer by ninoskuflic, 2026-07-26): this **replaces the legacy Typeahead child-reference form** `{DE:<typeahead field>:ID}` — the colon-inside-the-`DE:`-reference syntax. Consultants migrating a Typeahead picker to an Internal Lookup field must rewrite every calc field that reached a child property. Unverified because confirming that an expression resolves requires creating or validating a Parameter, which is a write; this routine is read-only. Also unconfirmed: the thread asserts the new form but nobody in it posted the rejection message for the old one, so "the legacy form stops working" is the asker's account, not a reproduced result.
+
+**Why a dot works here — the stored value is an envelope.** Verified 2026-08-08 on `a sandbox tenant.workfront.com` (sandbox), v20.0: reading an `INTRNL` field with `refObjCode=USER` off seven portfolios via `GET /port/search?fields=ID,name,DE:spark451_primary_ae` returns a three-key envelope per record —
+
+```json
+{"ID": "69b2fc2a001cd2235ccccf3381accc9a", "name": "Julie Pretko", "objCode": "USER"}
+```
+
+The dotted suffix selects a key from that envelope, which is why `{ID}`, `{name}`, and `{objCode}` are the properties on offer. Same envelope documented for typed Typeahead fields in `../custom-forms/09-gotchas.md` § 30 — which is the reason the two field families ever shared a child-reference idiom.
+
+**Version floor — `INTRNL` does not exist on v17.0.** Verified 2026-08-08 on the same tenant: `GET /param/metadata` returns a `displayType` enum of **12** values on **v17.0**, with no `INTRNL`/`MULTINTRNL`; **v20.0** returns 26 including both; **v22.0** returns 27 (adds `SNGLROLLUP`). A tenant pinned to the toolkit's default v17.0 has no Internal Lookup field at all, so this syntax has nothing to reference — see `../api/14-api-version-drift.md`.
+
+**Consistent with the colon-traversal ban above.** The 28 real calc expressions on that sandbox use dotted-brace traversal exclusively — 9 cross-object, e.g. `{program}.{DE:spark451_planned_segments}`, `{portfolio}.{name}`, `{queueTopic}.{name}` — and **zero** use any colon form. Verified 2026-08-08 via `GET /category/search?fields=categoryParameters:customExpression,categoryParameters:parameter:name,categoryParameters:parameter:displayType`. That same scan found zero in-the-wild uses of `{DE:x}.{y}`, so the sandbox corroborates the *shape* of the claim without exercising it.
+
 ## Multi-Object Forms and $$OBJCODE
 
 When a custom form is attached to multiple object types (e.g., Projects AND Tasks), a single calculated field can contain different logic per object type using `$$OBJCODE`:
@@ -181,3 +205,14 @@ The referenced calc field must be on a form that is currently attached to the sa
 ## Calculated Field Reuse Across Forms
 
 You can add the same calculated field to multiple custom forms (for different object types). However, the **calculation expression must be re-entered on each form** — the formula does not transfer automatically. If the same named field appears on two forms attached to the same object, the formulas on both forms must be identical, or Workfront will display a configuration error.
+
+## Cross-references
+
+- Internal Lookup / Typeahead field authoring, `refObjCode`, and the stored envelope: `../custom-forms/02-parameter-types.md`, `../custom-forms/09-gotchas.md` §§ 30, 33, 34.
+- Which API version each `displayType` first appears in: `../api/14-api-version-drift.md`.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/using-internal-lookup-field-in-calculated-field-251910` | the `{DE:<internal lookup>}.{ID}` child-property syntax and its legacy-Typeahead `{DE:field:ID}` predecessor — best answer by ninoskuflic, 2026-07-26 |
