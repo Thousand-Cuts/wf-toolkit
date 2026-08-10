@@ -225,6 +225,54 @@ The `tags` collection notifies the tagged user but does NOT auto-insert a clicka
 
 Verified on a live production tenant, 2026-05-21: identical payload returned `200 OK` on both `/attask/api/v17.0/note` and `/attask/api/v19.0/note`; sending the old shape (`refObjID`, `topNoteObjID`) returned `APIModel V<n>_0 does not support field refObjID (Note)` on v15.0, v17.0, v18.0, and v19.0.
 
+### Adding tags to an EXISTING note (PUT) — the tag persists, the note body does not change
+
+You can add `tags` to a note that already exists. `PUT /attask/api/v17.0/note/<id>` with
+`updates={"tags":[{"objObjCode":"USER","objID":"<user ID>","userID":"<user ID>"}]}`
+creates the NOTETAG row — the same shape the create-time payload above uses.
+
+What it does **not** do is change `noteText`. That is the whole explanation for the
+common report of "I added the tag via the API, the person got notified, but the tag
+isn't visible when I refresh the note": the NOTETAG row is the notification channel,
+and the rendered body is `noteText`, which the `PUT` never touched. Per the create-time
+note above, the visible `@First Last` mention comes from literal text in `noteText` —
+so adding a tag to an existing note gives you the notification without the visible
+mention, and rewriting `noteText` after the fact is a separate `PUT`.
+
+Two related facts from the same run:
+
+- **`tags` is a replace-collection.** `updates={"tags":[]}` clears every NOTETAG row on
+  the note. This is the only way to remove one — **NOTETAG has no DELETE endpoint**:
+  `DELETE /attask/api/v17.0/NTAG/<id>` returns `unable to find method for service
+  endpoint type: DELETE (class com.attask.biz.NoteTagMethods...)`.
+- **NOTETAG's `startIdx` / `length` are inert.** Both read `0` on every NOTETAG row
+  sampled — including a UI-authored note whose body contains the literal
+  `@First Last` text and whose mentions render correctly. They are not character
+  offsets driving the rendered chip; do not try to set them to make a mention render.
+
+**Tags never inherit to replies.** A reply is its own NOTE record with its own `tags`
+collection, so tagging a parent note does not tag anyone on the replies beneath it.
+That is structural, not a bug — tag the reply itself if the reply is what should notify.
+
+Verified 2026-08-10 on a sandbox tenant, API v17.0. Method: read a note whose
+`tags` collection was `[]` (negative control), `PUT` the `tags` collection onto it, and
+re-read — one NOTETAG row present, `noteText` unchanged at `null`. Offsets checked
+across 200 sampled notes (4 NOTETAG rows total, all `startIdx=0 length=0`). The note
+was restored with `updates={"tags":[]}` and re-read to confirm `tags: []`.
+
+**Not tested:** whether the notification email actually sends on a `PUT`-added tag
+(sandbox email delivery was not exercised — a community report says it does); whether
+the Workfront UI renders a mention after `noteText` is rewritten post-hoc; `objObjCode`
+values other than `USER` on the `PUT` path (`TEAMOB` was only observed read-only); and
+anything outside v17.0 on this one tenant. The mutated note was a system-generated
+"Combined Entry" (`auditType: CM`) record, not a user-authored update.
+
+> **Wrapper gap found in the same run:** `wf-curl.sh` Guard 2 requires
+> `name=[wf-api-verify] …` on every create, but **NOTE has no `name` field** —
+> `POST /note` with one returns `field 'name' is not available on
+> com.attask.model.RKNote`. So the wrapper structurally cannot create notes, and
+> note verification has to work against pre-existing records plus a revertible `PUT`.
+
 ## Authentication failure modes
 
 | Symptom | Cause |
