@@ -8,19 +8,24 @@ Flows 4a + 4b — the most-asked audit question in real assessments.
 
 ```bash
 # 1. Resolve form name to ID + objCode
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/category/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/category/search \
   --data-urlencode "name=Vendor Tracking" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,objCode"
 # Returns: ID=cat-abc, objCode=PROJ
 
 # 2. Count
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/count \
-  --data-urlencode "categoryID=cat-abc" --data-urlencode "categoryID_Mod=eq"
+#    objectCategories:categoryID matches the form in ANY slot on the record.
+#    Plain categoryID matches only records where it is the PRIMARY form, which
+#    silently under-reports every secondary attachment. Do not use it here.
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/project/count \
+  --data-urlencode "objectCategories:categoryID=cat-abc" \
+  --data-urlencode "objectCategories:categoryID_Mod=eq"
 # Returns: {"count": 47}
 
 # 3. First page
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/search \
-  --data-urlencode "categoryID=cat-abc" --data-urlencode "categoryID_Mod=eq" \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/project/search \
+  --data-urlencode "objectCategories:categoryID=cat-abc" \
+  --data-urlencode "objectCategories:categoryID_Mod=eq" \
   --data-urlencode "fields=ID,name,status" \
   --data-urlencode '$$LIMIT=200' --data-urlencode '$$FIRST=0'
 ```
@@ -48,7 +53,7 @@ Attached to 47 projects:
 
 ```bash
 # 1. Resolve parameter
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/parameter/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/parameter/search \
   --data-urlencode "name=Spend Approved" --data-urlencode "name_Mod=cieq" \
   --data-urlencode "fields=ID,name,displayName,parameterType"
 # Or, if the consultant gave the DE: form, search by Parameter.name
@@ -57,14 +62,14 @@ Attached to 47 projects:
 # Returns: parameterID = param-spend-123
 
 # 2. Find CategoryParameter rows referencing this parameter
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/categoryParameter/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/categoryParameter/search \
   --data-urlencode "parameterID=param-spend-123" \
   --data-urlencode "fields=categoryID"
 # Returns: [{categoryID: cat-abc}, {categoryID: cat-def}, {categoryID: cat-ghi}]
 
 # 3. Resolve each Category
 for catID in cat-abc cat-def cat-ghi; do
-  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/category/$catID \
+  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/category/$catID \
     --data-urlencode "fields=ID,name,objCode"
 done
 ```

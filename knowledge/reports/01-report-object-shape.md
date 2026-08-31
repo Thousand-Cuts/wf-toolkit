@@ -22,9 +22,9 @@ Empirical grounding: every field-map table below is sourced from an anonymized s
 
 ## 1. The REPORT row (objCode `PTLSEC`)
 
-Endpoint: `$$HOST/attask/api/v17.0/report`
+Endpoint: `$$HOST/attask/api/v22.0/report`
 
-The REPORT row's own `objCode` is **`PTLSEC`** (PortalSection). The legacy three-letter code that one would expect by pattern-matching on `PROJ`/`TASK` does not exist on the v17.0 surface — `/attask/api/v17.0/<that-code>/metadata` returns 404. PTLSEC is the underlying object type for both reports and dashboard sections; `isReport=true` is the discriminator.
+The REPORT row's own `objCode` is **`PTLSEC`** (PortalSection). The legacy three-letter code that one would expect by pattern-matching on `PROJ`/`TASK` does not exist on the v17.0 surface — `/attask/api/v22.0/<that-code>/metadata` returns 404. PTLSEC is the underlying object type for both reports and dashboard sections; `isReport=true` is the discriminator.
 
 The field this row uses to name the object it reports on is **`uiObjCode`**. The intuitive guess "report-prefixed objCode field name" is wrong — there is no such field; `objCode` always equals `"PTLSEC"` (it names the REPORT row's own type, not its target). `uiObjCode` is canonical across every tenant in the survey (33/33).
 
@@ -83,7 +83,7 @@ The v0.8.0 file described REPORT.definition as a serialized text-mode payload. T
 
 ## 2. The UIFT row (filter)
 
-Endpoint: `$$HOST/attask/api/v17.0/uift`
+Endpoint: `$$HOST/attask/api/v22.0/uift`
 
 Created in Phase F.1 of the create flow. The skill captures the returned `ID` and writes it into the REPORT row's `filterID` in Phase F.4.
 
@@ -111,7 +111,7 @@ The skill's convention in v0.9.0: write an empty UIFT (consistent with survey pr
 
 ## 3. The UIGB row (groupBy)
 
-Endpoint: `$$HOST/attask/api/v17.0/uigb`
+Endpoint: `$$HOST/attask/api/v22.0/uigb`
 
 Created in Phase F.2 of the create flow when the consultant has specified grouping. Skipped entirely when they have not (in which case `groupByID:null` on the REPORT row and `reportType:"L"`).
 
@@ -135,7 +135,7 @@ Same shape as UIFT (`ID`, `appGlobalID`, `customerID`, `enteredByID`, audit time
 
 ## 4. The UIVW row (view)
 
-Endpoint: `$$HOST/attask/api/v17.0/uivw`
+Endpoint: `$$HOST/attask/api/v22.0/uivw`
 
 Created in Phase F.3. Always written — a report cannot have `viewID:null`.
 
@@ -178,7 +178,7 @@ The fixture set under `skills/workfront-reports/tests/fixtures/metadata/` captur
 
 ## 6. The AccessRule object (sharing — stubbed in v0.9.0)
 
-ObjCode: `ACSRUL`. Endpoint: `$$HOST/attask/api/v17.0/acsrul`.
+ObjCode: `ACSRUL`. Endpoint: `$$HOST/attask/api/v22.0/acsrul`.
 
 Fields (per `python-workfront` v40 and Adobe's API explorer):
 
@@ -232,7 +232,7 @@ Report created.
 
 The minimal valid payload set for an analytical report grouped by one dimension with N columns:
 
-**UIFT** (`POST $$HOST/attask/api/v17.0/uift`):
+**UIFT** (`POST $$HOST/attask/api/v22.0/uift`):
 ```json
 {
   "name": "My Report",
@@ -245,7 +245,7 @@ The minimal valid payload set for an analytical report grouped by one dimension 
 }
 ```
 
-**UIGB** (`POST $$HOST/attask/api/v17.0/uigb`):
+**UIGB** (`POST $$HOST/attask/api/v22.0/uigb`):
 ```json
 {
   "name": "My Report",
@@ -266,7 +266,7 @@ The minimal valid payload set for an analytical report grouped by one dimension 
 }
 ```
 
-**UIVW** (`POST $$HOST/attask/api/v17.0/uivw`):
+**UIVW** (`POST $$HOST/attask/api/v22.0/uivw`):
 ```json
 {
   "name": "My Report",
@@ -280,7 +280,7 @@ The minimal valid payload set for an analytical report grouped by one dimension 
 }
 ```
 
-**REPORT** (`POST $$HOST/attask/api/v17.0/report`):
+**REPORT** (`POST $$HOST/attask/api/v22.0/report`):
 ```json
 {
   "name": "My Report",

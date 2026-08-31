@@ -4,7 +4,7 @@
     {
       "step": 1,
       "method": "POST",
-      "url": "$$HOST/attask/api/v17.0/uift",
+      "url": "$$HOST/attask/api/v22.0/uift",
       "body": {
         "name": "User Activity 30d — filter",
         "uiObjCode": "USER",
@@ -24,7 +24,7 @@
     {
       "step": 2,
       "method": "POST",
-      "url": "$$HOST/attask/api/v17.0/uivw",
+      "url": "$$HOST/attask/api/v22.0/uivw",
       "body": {
         "name": "User Activity 30d — view",
         "uiObjCode": "USER",
@@ -71,7 +71,7 @@
     {
       "step": 3,
       "method": "POST",
-      "url": "$$HOST/attask/api/v17.0/report",
+      "url": "$$HOST/attask/api/v22.0/report",
       "body": {
         "name": "User Activity (Last 30 Days)",
         "uiObjCode": "USER",

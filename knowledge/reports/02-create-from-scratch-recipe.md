@@ -34,7 +34,7 @@ The wrapper handles auth; you never see the API key. Auth specifics (sessionID v
 Before any work, verify the active environment folder's host + key combination points at the customer the consultant thinks it does:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/user/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/user/search \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID,customer:name'
 ```
@@ -91,7 +91,7 @@ This is an analytical report — `reportType: "A"`, with a UIGB.
 
 ### C.1 UIFT payload (filter)
 
-`POST $$HOST/attask/api/v17.0/uift`
+`POST $$HOST/attask/api/v22.0/uift`
 
 ```json
 {
@@ -114,7 +114,7 @@ The skill consults `06-filter-patterns.md` § 1-2 for the operator catalogue and
 
 ### C.2 UIGB payload (groupBy)
 
-`POST $$HOST/attask/api/v17.0/uigb` — **OMIT this entire call if the consultant declined grouping.**
+`POST $$HOST/attask/api/v22.0/uigb` — **OMIT this entire call if the consultant declined grouping.**
 
 ```json
 {
@@ -142,7 +142,7 @@ The skill consults `07-view-patterns.md` § 12 for the group-entry field shape.
 
 ### C.3 UIVW payload (view)
 
-`POST $$HOST/attask/api/v17.0/uivw`
+`POST $$HOST/attask/api/v22.0/uivw`
 
 ```json
 {
@@ -235,7 +235,7 @@ Each column carries the canonical field set documented in `07-view-patterns.md` 
 
 ### C.4 REPORT payload
 
-`POST $$HOST/attask/api/v17.0/report` — fired LAST, after UIFT/UIGB/UIVW have returned IDs.
+`POST $$HOST/attask/api/v22.0/report` — fired LAST, after UIFT/UIGB/UIVW have returned IDs.
 
 ```json
 {
@@ -314,21 +314,21 @@ If the destination is prod, prepend `WF_ENV_WRITE_ACK=1` after the consultant ty
 ```bash
 # 1. UIFT (filter)
 FILTER_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/uift \
+  -X POST /attask/api/v22.0/uift \
   --data-urlencode "updates=$(cat /tmp/uift-payload.json)" \
   | jq -r '.data.ID')
 echo "[1/4] UIFT created: $FILTER_ID"
 
 # 2. UIGB (groupBy) — SKIP this entire block if the consultant declined grouping.
 GROUP_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/uigb \
+  -X POST /attask/api/v22.0/uigb \
   --data-urlencode "updates=$(cat /tmp/uigb-payload.json)" \
   | jq -r '.data.ID')
 echo "[2/4] UIGB created: $GROUP_ID"
 
 # 3. UIVW (view)
 VIEW_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/uivw \
+  -X POST /attask/api/v22.0/uivw \
   --data-urlencode "updates=$(cat /tmp/uivw-payload.json)" \
   | jq -r '.data.ID')
 echo "[3/4] UIVW created: $VIEW_ID"
@@ -339,7 +339,7 @@ jq --arg fid "$FILTER_ID" --arg gid "$GROUP_ID" --arg vid "$VIEW_ID" \
    /tmp/report-payload.json \
    > /tmp/report-payload-resolved.json
 REPORT_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/report \
+  -X POST /attask/api/v22.0/report \
   --data-urlencode "updates=$(cat /tmp/report-payload-resolved.json)" \
   | jq -r '.data.ID')
 echo "[4/4] REPORT created: $REPORT_ID"
@@ -362,7 +362,7 @@ DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh 
 SMOKE_OUT=~/wf-envs/${DEST_SLUG}/deliverables/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
 mkdir -p ~/wf-envs/${DEST_SLUG}/deliverables
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  /attask/api/v17.0/report/$REPORT_ID \
+  /attask/api/v22.0/report/$REPORT_ID \
   --data-urlencode 'fields=*,definition,filterID,groupByID,viewID' \
   | tee "$SMOKE_OUT" | python3 -m json.tool
 echo "Smoke-test saved to $SMOKE_OUT"
@@ -372,7 +372,7 @@ Compare the response's `filterID` / `groupByID` / `viewID` against the IDs captu
 
 Print the diff so the consultant knows which sub-objects they actually own:
 
-> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<our-uift-id>`."
+> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v22.0/uift/<our-uift-id>`."
 
 This is the #1 silent-failure mode for reports authored via API. The smoke-test catches it; without the smoke-test, the consultant has no signal.
 
@@ -396,7 +396,7 @@ Inline only — no auto-rollback, no retry beyond what's listed here. The skill 
 |---|---|
 | Pre-flight (Phase D) returns `valid:false` | Print errors + per-entry suggestions. Consultant types `edit` to revise. No bytes write. |
 | UIFT POST fails (Phase F.1) | No UI-objects created yet. Print the API error verbatim. Stop. |
-| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v17.0/uift/<filterID>`. Print the API error. Stop. |
+| UIGB POST fails (Phase F.2) | Print: `UIFT created, ID=<filterID>. DELETE curl: WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v22.0/uift/<filterID>`. Print the API error. Stop. |
 | UIVW POST fails (Phase F.3) | Print DELETE curls for both UIFT and UIGB. Print the API error. Stop. |
 | REPORT POST fails (Phase F.4) | Print DELETE curls for all three UI-objects. Print the API error. If the error names a specific field, surface the field name and the cached metadata's enum (if applicable). Stop. |
 | `uiObjCode` value rejected (Phase F.4) | Print the valid enum from the cached `/report/metadata`. Ask the consultant for a new value and retry F.4 with the three UI-objects still in place. The UI-objects' `uiObjCode` does NOT have to match the REPORT row's `uiObjCode` on POST — but the report won't render correctly until it does, so the skill warns. |
@@ -410,7 +410,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 1. **GET the report** with everything that might change:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-     /attask/api/v17.0/report/<reportID> \
+     /attask/api/v22.0/report/<reportID> \
      --data-urlencode 'fields=*,definition,filterID,groupByID,viewID,uiObjCode' \
      | python3 -m json.tool
    ```
@@ -419,7 +419,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 2. **GET each referenced UI-object** with `fields=*,definition`:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-     /attask/api/v17.0/uift/<filterID> \
+     /attask/api/v22.0/uift/<filterID> \
      --data-urlencode 'fields=*,definition'
    # Repeat for /uigb/<groupByID> and /uivw/<viewID>. Skip a GET if its ID is null.
    ```
@@ -429,7 +429,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 4. **UI-object re-use check.** Before any PUT, search for other reports that reference the same UI-object IDs:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-     /attask/api/v17.0/report/search \
+     /attask/api/v22.0/report/search \
      --data-urlencode 'filterID=<filterID>' \
      --data-urlencode 'fields=ID,name' \
      --data-urlencode '$$LIMIT=20'
@@ -453,7 +453,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
 
    ```bash
    WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-     -X PUT /attask/api/v17.0/uift/<filterID> \
+     -X PUT /attask/api/v22.0/uift/<filterID> \
      --data-urlencode 'updates={"definition":{"status":"CUR","status_Mod":"in","plannedCompletionDate":"$$TODAY+30d","plannedCompletionDate_Mod":"lte"}}'
    ```
    PUT only the fields that need to change — the server merges the patch on top of the existing record. PUT against `/report/<reportID>` when REPORT-level fields change (name, description, sort, maxResults). Repeat the PUT pattern for whichever sub-objects changed; skip the ones that didn't.

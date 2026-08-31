@@ -12,18 +12,18 @@ Grab-bag of API hard-won knowledge. Light on day one; grow this file as you hit 
 
 ## Soft delete vs hard delete
 
-`DELETE /attask/api/v17.0/task/<id>` performs a **soft delete** by default. The object moves to the Workfront Recycle Bin and can be restored by an admin for up to 30 days.
+`DELETE /attask/api/v22.0/task/<id>` performs a **soft delete** by default. The object moves to the Workfront Recycle Bin and can be restored by an admin for up to 30 days.
 
 Add `force=true` for a **hard delete**:
 ```
-DELETE /attask/api/v17.0/task/<id>?force=true
+DELETE /attask/api/v22.0/task/<id>?force=true
 ```
 
 Hard delete removes the object and all its dependents permanently. There is no undo.
 
 **Practical implication:** If you're calling DELETE in a cleanup script and expecting the records to be gone, confirm whether the objects ended up in the Recycle Bin instead of being actually removed. A subsequent search returning 0 results doesn't mean a hard delete happened — it means the soft-deleted record isn't surfaced in normal search results.
 
-**Template tasks (TTSK) MUST use `force=true`:** TTSK does not support a soft-delete path. A plain `DELETE /attask/api/v17.0/ttsk/<id>` returns:
+**Template tasks (TTSK) MUST use `force=true`:** TTSK does not support a soft-delete path. A plain `DELETE /attask/api/v22.0/ttsk/<id>` returns:
 
 ```
 {"error":{"message":"This Template Task cannot be deleted since it is referenced by other objects. Please use force delete."}}
@@ -36,8 +36,8 @@ Hard delete removes the object and all its dependents permanently. There is no u
 Both `TASSGN` (template-task assignments) and `TPRED` (template-task predecessors) refuse direct top-level POSTs:
 
 ```
-POST /attask/api/v17.0/tassgn  →  {"error":{"message":"invalid objCode: null"}}
-POST /attask/api/v17.0/tpred   →  {"error":{"message":"TPRED is not a top level object and can't be requested directly in internal"}}
+POST /attask/api/v22.0/tassgn  →  {"error":{"message":"invalid objCode: null"}}
+POST /attask/api/v22.0/tpred   →  {"error":{"message":"TPRED is not a top level object and can't be requested directly in internal"}}
 ```
 
 Write them by PUTting the parent TTSK with an `updates={"assignments":[...]}` or `updates={"predecessors":[...]}` collection. The collection is replaced, not merged — fetch + append + put back if you need to preserve existing entries. (Empirically verified on v17.0, 2026-06.)
@@ -49,7 +49,7 @@ On v17.0, every form of direct write to `workRequired` / `work` / `originalWorkR
 **The working path is `TTSK.bulkCopy` from a donor task that already has the desired `workRequired`.** Action signature:
 
 ```
-PUT /attask/api/v17.0/ttsk?action=bulkCopy
+PUT /attask/api/v22.0/ttsk?action=bulkCopy
   updates={"templateTaskIDs":["<donor-id>"], "templateID":"<dest-template-id>"}
 
 # Response: {"data":{"result":["<new-ttsk-id>"]}}
@@ -64,7 +64,7 @@ The copy inherits the donor's `workRequired`, `work`, `roleID`, `categoryID`, an
 When you PUT an object with a nested collection in `updates`, the collection is **completely replaced**, not merged with the existing value.
 
 ```
-PUT /attask/api/v17.0/task/4c7...
+PUT /attask/api/v22.0/task/4c7...
 updates={"assignments":[{"assignedToID":"user-A"}]}
 ```
 
@@ -92,7 +92,7 @@ The inverse of the auto-attach gotcha bites just as hard. PUT with `updates={"as
 Use the action endpoint instead:
 
 ```bash
-curl -X PUT "$$HOST/attask/api/v17.0/optask/<id>/assignMultiple?apiKey=<key>" \
+curl -X PUT "$$HOST/attask/api/v22.0/optask/<id>/assignMultiple?apiKey=<key>" \
   -H "Content-Type: application/json" \
   -d '{"userIDs": [], "roleIDs": [], "teamIDs": []}'
 ```
@@ -106,7 +106,7 @@ Verified v17.0 on a live production tenant, 2026-05-21: PUT `updates={"assignedT
 The replace-not-merge rule does half the job on USER: PUT `updates={"teams": []}` empties the **Other Teams** collection, but the Home Team is a separate scalar (`homeTeamID`) on USER — not a member row of `teams` — so it survives untouched. Same failure shape as the issue-unassignment gotcha above (empty the collection, a scalar lingers), with the resolution inverted: USER has no `assignMultiple`-style action endpoint, and none is needed — the scalar is directly writable in the same PUT:
 
 ```
-PUT /attask/api/v17.0/user/<id>
+PUT /attask/api/v22.0/user/<id>
 updates={"homeTeamID": "", "teams": []}
 ```
 
@@ -130,7 +130,7 @@ HTTP 422
 These children only exist as nested rows of the parent. They have no `/search`, no `/{id}` GET, and no direct POST. To add or modify them, PUT the parent with the full collection in `updates`:
 
 ```
-PUT /attask/api/v17.0/sched/<schedule-id>
+PUT /attask/api/v22.0/sched/<schedule-id>
 updates={"nonWorkDays":[{"nonWorkDate":"2026-01-01"},{"nonWorkDate":"2026-01-19"}]}
 ```
 
@@ -153,7 +153,7 @@ The `fields=` expansion (e.g., `fields=tasks:name,tasks:status`) returns a full 
 Use the inverted shape instead — query the folder endpoint directly with `projectID` as a filter:
 
 ```
-GET /attask/api/v17.0/docfdr/search?projectID=<projectID>&fields=ID,name,parentID
+GET /attask/api/v22.0/docfdr/search?projectID=<projectID>&fields=ID,name,parentID
 ```
 
 `DOCFDR` (Document Folder) is a first-class object code, so it accepts `/search` with the normal filter and field syntax. This is the reliable shape for "list the folder tree on a project." Same pattern works for tasks (`taskID=<taskID>`) and issues (`opTaskID=<id>`).
@@ -168,8 +168,8 @@ Confirmed for `status` on OPTASK / TASK / PROJ:
 
 ```bash
 # These two calls return identical responses (empty data array):
-curl -sS "https://<host>/attask/api/v17.0/optask/search?status=ZZZ&apiKey=<KEY>"
-curl -sS "https://<host>/attask/api/v17.0/optask/search?status=LAP&apiKey=<KEY>"
+curl -sS "https://<host>/attask/api/v22.0/optask/search?status=ZZZ&apiKey=<KEY>"
+curl -sS "https://<host>/attask/api/v22.0/optask/search?status=LAP&apiKey=<KEY>"
 ```
 
 `ZZZ` is bogus. `LAP` is a real custom status on the tenant (with zero records currently in that state). Same empty response, no way to tell them apart from this call alone.
@@ -205,7 +205,7 @@ The misleading `"objCode cannot be null"` error refers to the **NOTETAG sub-obje
 Working payload for "post an update on an issue and @-tag a user" (works on v17.0, v18.0, v19.0 identically):
 
 ```json
-POST /attask/api/v17.0/note
+POST /attask/api/v22.0/note
 {
   "objCode": "OPTASK",
   "noteObjCode": "OPTASK",
@@ -227,7 +227,7 @@ Verified on a live production tenant, 2026-05-21: identical payload returned `20
 
 ### Adding tags to an EXISTING note (PUT) — the tag persists, the note body does not change
 
-You can add `tags` to a note that already exists. `PUT /attask/api/v17.0/note/<id>` with
+You can add `tags` to a note that already exists. `PUT /attask/api/v22.0/note/<id>` with
 `updates={"tags":[{"objObjCode":"USER","objID":"<user ID>","userID":"<user ID>"}]}`
 creates the NOTETAG row — the same shape the create-time payload above uses.
 
@@ -243,7 +243,7 @@ Two related facts from the same run:
 
 - **`tags` is a replace-collection.** `updates={"tags":[]}` clears every NOTETAG row on
   the note. This is the only way to remove one — **NOTETAG has no DELETE endpoint**:
-  `DELETE /attask/api/v17.0/NTAG/<id>` returns `unable to find method for service
+  `DELETE /attask/api/v22.0/NTAG/<id>` returns `unable to find method for service
   endpoint type: DELETE (class com.attask.biz.NoteTagMethods...)`.
 - **NOTETAG's `startIdx` / `length` are inert.** Both read `0` on every NOTETAG row
   sampled — including a UI-authored note whose body contains the literal
@@ -332,7 +332,7 @@ If this matters at scale (e.g., a project-management workflow that reopens compl
 Workfront's CDN enforces an **8,892-byte maximum URI length** for production, Preview, and test-drive environments. Complex EXISTS filters with many conditions can exceed this limit. When you hit it, move the filter parameters to a POST body:
 
 ```
-POST /attask/api/v17.0/task/search
+POST /attask/api/v22.0/task/search
 Content-Type: application/x-www-form-urlencoded
 
 status=CUR&status_Mod=eq&EXISTS:1:$$OBJCODE=ASSGN&...
@@ -345,7 +345,7 @@ Custom fields are accessed via `DE:FieldName` on the object. The metadata (what 
 `parameterValues` is a wildcard that returns all custom field values on an object in one call — useful when you don't know field names ahead of time:
 
 ```
-GET /attask/api/v17.0/project/<id>?fields=parameterValues
+GET /attask/api/v22.0/project/<id>?fields=parameterValues
 ```
 
 `fields=parameterValues` is the working wildcard for custom fields (verified on v17.0, 2026-05). The alternative `fields=DE:*` does **NOT** work — the API returns `"no such field: '*'"`. Stick with `parameterValues` for "give me all custom field values," or list specific `DE:` fields by name. See `04-fields-and-naming.md` for the response shape.
@@ -377,7 +377,7 @@ Workfront sometimes returns `Content-Encoding: gzip` even when the request did n
 Fix: always pass `--compressed` to curl (or send `Accept-Encoding: identity` if you need to force uncompressed for log capture):
 
 ```
-curl --compressed -G "https://<host>/attask/api/v17.0/project/search" ...
+curl --compressed -G "https://<host>/attask/api/v22.0/project/search" ...
 ```
 
 ## When stuck
@@ -429,7 +429,7 @@ POST /categoryParameter updates={...}
 To link parameters to a category, **PUT the category with the full `categoryParameters` collection** (this is a collection-replace — the array you send replaces the existing set):
 
 ```bash
-PUT /attask/api/v17.0/category/<categoryID>
+PUT /attask/api/v22.0/category/<categoryID>
 updates={
   "categoryParameters": [
     {"parameterID": "...", "displayOrder": 1, "isRequired": false},
@@ -475,7 +475,7 @@ Directly setting `plannedStartDate` + `plannedCompletionDate` on a task via POST
 To pin a task to an explicit window over REST, use a **Must-Start-On** constraint plus a duration:
 
 ```
-POST /attask/api/v17.0/task
+POST /attask/api/v22.0/task
   updates={"projectID":"<pid>","name":"…",
            "taskConstraint":"MSO","constraintDate":"2026-07-01T08:00:00",
            "duration":"3","durationUnit":"D"}
@@ -494,7 +494,7 @@ Turning a project into a request queue touches three objects — Project, `QUED`
 
 1. **`QUED` has no `ADD`/`EDIT` REST method.** `POST /QUED` → `unable to find method for service endpoint type: ADD`; `PUT /QUED/<id>` → same for `EDIT`. Create/modify the QueueDef **nested under the project** instead — the project's `queueDefID` links automatically, and arrays serialize correctly through this nested PUT:
    ```
-   PUT /attask/api/v17.0/project/<id>
+   PUT /attask/api/v22.0/project/<id>
      updates={"queueDef":{"isPublic":1,"hasQueueTopics":true,
                           "defaultCategoryID":"<request-form categoryID>",
                           "allowedOpTaskTypes":["ISU","REQ","CHO","BUG"]}}
@@ -502,7 +502,7 @@ Turning a project into a request queue touches three objects — Project, `QUED`
 2. **QueueTopics are NOT created via the nested `queueDef.queueTopics` array** — a nested `queueTopics:[…]` in the project PUT is silently dropped (`hasQueueTopics` stays false, collection stays empty).
 3. **Create topics with `POST /QUET`, but only AFTER the parent QueueDef's `allowedOpTaskTypes` is set.** Each topic's `allowedOpTaskTypes` (from `ISU`/`BUG`/`CHO`/`REQ` — the `OpTaskTypeEnum`) must be a **subset** of the QueueDef's. If the QueueDef doesn't yet allow the type, `POST /QUET` rejects even a single valid value with `Invalid Parameter: allowedOpTaskTypes value "REQ"` — a misleading error whose real cause is the un-set parent.
    ```
-   POST /attask/api/v17.0/QUET
+   POST /attask/api/v22.0/QUET
      updates={"queueDefID":"<qd>","name":"New RFP Response",
               "defaultCategoryID":"<OPTASK form>","allowedOpTaskTypes":["REQ"]}
    ```
@@ -522,6 +522,45 @@ Adobe documents the refresh interval as every 4 hours but publishes no wall-cloc
 <!-- UNVERIFIED -->
 One tenant's reported observation: refreshes land at 4:20 / 8:20 / 12:20 and so on, which the answerer read as the *completion* of a run started on the hour, with the timestamps rendered in **UTC** rather than the instance timezone. Treat the specific times as that tenant's phase, not a platform constant — the answerer explicitly hedged ("I'm not sure if it's the same for everyone"), and no second tenant confirmed it in the thread. The two artifact names are the durable part: query them per tenant instead of assuming a schedule. Provenance: best answer by BrookeSt5, 2026-07-28 (Sources below).
 
+## Daily work distribution: `workPerDate` and `workPerDayList`
+
+The Workload Balancer's per-day hour boxes are not a UI-only rendering — they are a real field, `workPerDate`, readable over REST. It is absent from the report/field-selector UI, so it is routinely assumed to be unavailable and rebuilt (badly) from `workRequired` divided by duration.
+
+**Where it exists.** `TASK`, `OPTASK`, and `ASSGN` carry `workPerDate`. `TASK` and `ASSGN` additionally carry `workPerDayList`. Neither exists on `PROJ` or `HOUR` — a project-level daily curve has to be aggregated from its tasks or assignments.
+
+| objCode | `workPerDate` | `workPerDayList` |
+|---|---|---|
+| `TASK` | yes | yes |
+| `ASSGN` | yes | yes |
+| `OPTASK` | yes | — |
+| `PROJ` | — | — |
+| `HOUR` | — | — |
+
+**Shape.** `workPerDate` is `fieldType: map` — over REST it deserializes to a real JSON object keyed by calendar date, valued in **minutes**:
+
+```json
+"workPerDate": { "2026-07-07": 180.0, "2026-07-08": 60.0 }
+```
+
+The values sum to the row's `workRequired` (also minutes): the sample above is a 240-minute task. `workPerDayList` is the same distribution as a positional `string[]` with no dates attached — use `workPerDate` unless you specifically want the bare sequence.
+
+Community write-ups of this field show it as `{2023-12-04=240.0, ...}`. That is the Java map `toString()` you get when the value is rendered into a **report cell** via `valuefield=workPerDate`; it is not the wire format. The REST API returns proper JSON, so parse it as JSON and do not write a regex against the `=`-delimited form.
+
+**Three constraints that bite.**
+
+1. `LAZY_READ` — it is never in the default payload. Omit it from `fields=` and it is silently absent, with no error. Ask for it by name.
+2. `NOT_GROUPABLE` / `DYNAMIC` — it cannot be filtered or grouped on. `workPerDate_Mod=isnull` fails with `Invalid Parameter: Search Parameter value "workPerDate"`. Fetch the rows, then bucket them client-side.
+3. `READ_ONLY` — computed from schedule, assignments, and calendar. Never writable.
+
+An empty map (`{}`) is normal and does not mean zero effort: a task can carry `workRequired: 255` and `workPerDate: {}` when it has no assignment or date range to distribute across.
+
+```bash
+# All three constraints in one call: request it explicitly, filter on something else.
+GET /attask/api/v22.0/task/search?fields=ID,name,workRequired,workPerDate&workRequired_Mod=gt&workRequired=0&$$LIMIT=100
+```
+
+Verified 2026-08-24 on a sandbox tenant (sandbox), v17.0: `GET /task/metadata`, `/assignment/metadata`, `/optask/metadata`, `/project/metadata`, `/hour/metadata` for field presence and flags; a live `/task/search` returning `{"2026-07-06":11.0,"2026-07-07":4.0}` against `workRequired: 15` and `{"2026-07-07":180.0,"2026-07-08":60.0}` against `workRequired: 240` (both sum exactly). Negative controls: `fields=ID,workPerDateXYZ` → `APIModel V17_0 does not support field workPerDateXYZ (Task)`, so field acceptance is meaningful rather than silently ignored; the same query without `workPerDate` in `fields=` omits it entirely, confirming `LAZY_READ`; `workPerDate_Mod=isnull` → `Invalid Parameter: Search Parameter value "workPerDate"`, confirming it is unfilterable.
+
 ## Sources
 
 | URL | What it provided |
@@ -533,3 +572,4 @@ One tenant's reported observation: refreshes land at 4:20 / 8:20 / 12:20 and so 
 | `https://experienceleaguecommunities.adobe.com/t5/workfront-questions/is-anyone-else-getting-429-too-many-concurrent-api-requests/td-p/485050` | 429 concurrent limit behavior |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/fusion-module-to-clear-other-teams-251712` | one-PUT `{"homeTeamID": "", "teams": []}` to fully clear a user's teams — best answer by Tracy_Parmeter, 2026-07-16 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/data-connect-refresh-251986` | Data Connect freshness is readable from the share itself — `MONITORING_DATA_REFRESHES` view and the `DL_LOAD_TIMESTAMP` row column; one tenant's observed :20-past phase, read as UTC — best answer by BrookeSt5, 2026-07-28 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/extract-planned-hours-from-the-workload-balancer-using-an-api-128510` | `workPerDate` as the Workload Balancer's per-day hours, absent from the field selector, returning a date→minutes map — best answer by Rafal_Bainie, 2023-12-04 (object coverage, flags, JSON-vs-toString shape, and the three constraints verified live and corrected here) |

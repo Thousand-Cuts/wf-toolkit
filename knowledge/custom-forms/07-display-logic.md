@@ -13,7 +13,7 @@ Two non-top-level objCodes that live as nested collections on Category:
 | `CTCSRL` (CategoryCascadeRule) | The "what happens" half — which Parameter to show/hide when the rule fires | Category, via `categoryCascadeRules` |
 | `CTCSRM` (CategoryCascadeRuleMatch) | The "when does it fire" half — which trigger Parameter and value to match against | CTCSRL, via `categoryCascadeRuleMatches` |
 
-Neither is reachable via `GET /attask/api/v17.0/<objCode>/<id>` (they're not top-level). Read via parent: `GET /attask/api/v17.0/category/<id>?fields=categoryCascadeRules:*,categoryCascadeRules:categoryCascadeRuleMatches:*`.
+Neither is reachable via `GET /attask/api/v22.0/<objCode>/<id>` (they're not top-level). Read via parent: `GET /attask/api/v22.0/category/<id>?fields=categoryCascadeRules:*,categoryCascadeRules:categoryCascadeRuleMatches:*`.
 
 ## CTCSRL fields
 
@@ -73,7 +73,7 @@ Create cascade rules via PUT-on-Category with the nested collection in the body:
 
 ```bash
 WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X PUT /attask/api/v17.0/category/<cat_id> \
+  -X PUT /attask/api/v22.0/category/<cat_id> \
   --data-urlencode 'updates={
     "categoryCascadeRules": [
       {

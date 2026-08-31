@@ -50,7 +50,7 @@ CK="$(tr -d '\n' < "$COOKIE_FILE")"
 XSRF="$(printf '%s' "$CK" | sed -n 's/.*XSRF-TOKEN=\([^;]*\).*/\1/p')"
 [ -n "$XSRF" ] || { echo "ERROR: XSRF-TOKEN not found in cookie file" >&2; exit 1; }
 
-api()  { curl -s --compressed "https://$H/attask/api/v17.0/$1" "${@:2}"; }
+api()  { curl -s --compressed "https://$H/attask/api/v22.0/$1" "${@:2}"; }
 intl() { curl -s --compressed "https://$H/internal/$1" -b "$CK" -H "x-xsrf-token: $XSRF" -H "x-requested-with: XMLHttpRequest" "${@:2}"; }
 jget() { python3 -c 'import sys,json;d=json.load(sys.stdin);print(eval("d"+sys.argv[1]))' "$1"; }
 
@@ -63,7 +63,7 @@ echo "==> 1. upload the file + create the document (API key)"
 # CRITICAL: the document NAME must keep the file extension, or Workfront tags it
 # "Undefined File Type" (ext:'', fileType:unk) and isProofable stays false.
 BASENAME="$(basename "$FILE")"
-HANDLE="$(curl -s --compressed -X POST "https://$H/attask/api/v17.0/upload?apiKey=$K" -F "uploadedFile=@$FILE" | jget "['data']['handle']")"
+HANDLE="$(curl -s --compressed -X POST "https://$H/attask/api/v22.0/upload?apiKey=$K" -F "uploadedFile=@$FILE" | jget "['data']['handle']")"
 DOC="$(api "document?apiKey=$K" -X POST --data-urlencode "name=$BASENAME" --data-urlencode "handle=$HANDLE" --data-urlencode "docObjCode=PROJ" --data-urlencode "objID=$PROJID" --data-urlencode "fields=ID,currentVersionID")"
 DVID="$(echo "$DOC" | jget "['data']['currentVersionID']")"
 PROOFABLE="$(api "docv/$DVID?apiKey=$K&fields=isProofable,documentTypeLabel" | jget "['data']['isProofable']")"

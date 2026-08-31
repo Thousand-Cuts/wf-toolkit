@@ -30,7 +30,7 @@ The `access_token` value is the `sessionID`. Use it as a header on every subsequ
 ## Step 2 — Call the API with the sessionID
 
 ```
-GET https://<domain>.my.workfront.com/attask/api/v17.0/project/search?status=CUR&fields=name,status,plannedCompletionDate
+GET https://<domain>.my.workfront.com/attask/api/v22.0/project/search?status=CUR&fields=name,status,plannedCompletionDate
 sessionID: abc123...sessiontoken...
 ```
 

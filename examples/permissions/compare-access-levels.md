@@ -11,26 +11,26 @@ Flow 5 — diff "Standard" between two tenants. Updated 2026-05-18 with the ALVP
 ```bash
 # Pull from SOURCE (firm's tenant)
 ./skills/workfront-api/scripts/wf-use.sh firm-reference
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/accessLevel/search \
   --data-urlencode "name=Standard" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,fieldAccessPrivileges,accessRestrictions,accessLevelPermissions:*" \
   > /tmp/firm-standard.json
 
 # Pull from DEST (client tenant)
 ./skills/workfront-api/scripts/wf-use.sh acme-tenant
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/accessLevel/search \
   --data-urlencode "name=Standard" --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,fieldAccessPrivileges,accessRestrictions,accessLevelPermissions:*" \
   > /tmp/acme-standard.json
 
 # User counts on each side (informs blast radius)
 ./skills/workfront-api/scripts/wf-use.sh firm-reference
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/count \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/count \
   --data-urlencode "accessLevelID=<firmStandardID>" \
   --data-urlencode "accessLevelID_Mod=eq"
 
 ./skills/workfront-api/scripts/wf-use.sh acme-tenant
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/count \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/count \
   --data-urlencode "accessLevelID=<acmeStandardID>" \
   --data-urlencode "accessLevelID_Mod=eq"
 ```

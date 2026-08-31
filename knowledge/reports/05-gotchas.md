@@ -40,12 +40,12 @@ If the consultant modifies a report that has subscriptions (`SCHREP` — schedul
 **What the skill does:** before any modify-flow PUT, run one extra GET to count consumers:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/schrep/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/schrep/search \
   --data-urlencode 'reportID=<reportID>' \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID'
 # And:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/ptlsec/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/ptlsec/search \
   --data-urlencode 'reportID=<reportID>' \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID'
@@ -87,7 +87,7 @@ Workfront sometimes returns a different `filterID` / `groupByID` / `viewID` than
 **What the skill does:** after every REPORT POST, run the smoke-test GET:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/report/<reportID> \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/report/<reportID> \
   --data-urlencode 'fields=*,filterID,groupByID,viewID'
 ```
 
@@ -124,7 +124,7 @@ A consequence of gotcha #5 plus the modify-flow design: a single UIFT/UIGB/UIVW 
 **What the skill does:** before any modify-flow PUT against a UIFT/UIGB/UIVW row, search for other consumers:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/report/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/report/search \
   --data-urlencode 'filterID=<filterID>' \
   --data-urlencode 'fields=ID,name' \
   --data-urlencode '$$LIMIT=20'
@@ -147,7 +147,7 @@ A `DE:<name>` reference inside any source `definition` string works on the desti
 The clone flow runs parity checks at Phase 5 per `03-clone-and-adapt-recipe.md`:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/parameter/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/parameter/search \
   --data-urlencode 'name=<name>' \
   --data-urlencode 'name_Mod=eq' \
   --data-urlencode 'fields=ID,name,parameterGroup:name' \
@@ -319,7 +319,7 @@ A formula change in a custom-form Calculated field (e.g., changing `Project.Actu
 
 - The record is saved through the in-product UI (any save — including the user editing an unrelated field — recomputes all calculated fields on that record).
 - A bulk "Recalculate Custom Expressions" action is run from the record list (Project / Task / Issue / etc. list view → "Edit" → bulk-edit dialog → "Recalculate Custom Expressions" checkbox → Save).
-- The record is touched via the `POST /attask/api/v17.0/<objcode>/<id>` endpoint with `updates={...}` (any update body — even empty `updates={}` — triggers recalc on save).
+- The record is touched via the `POST /attask/api/v22.0/<objcode>/<id>` endpoint with `updates={...}` (any update body — even empty `updates={}` — triggers recalc on save).
 
 **Why it matters for reports.** A report column that references a calculated field via `valuefield: "DE:My Calc Field"` shows STALE values for records that haven't been touched since the formula changed. Symptoms: a fresh report after a formula bugfix shows half the rows with the old wrong values and half with the new right ones, depending on which records have been saved recently. The fix is operational (run the bulk recalc), not in the report itself.
 
@@ -388,7 +388,7 @@ The grouping now references a stored field (the form field's pre-computed value)
 **Mechanic:** the transition lives in the field-change journal (`JRNLE`). The journaled object's type is filtered as **`objObjCode`** (not `objCode`), and the before/after values are split by type — **`oldTextVal`/`newTextVal`** for text/reference fields (not `oldValue`/`newValue`), `oldNumberVal`/`newNumberVal` for numeric, `oldDateVal`/`newDateVal` for dates. The working filter — tasks that entered In Progress more than 5 days ago:
 
 ```
-GET /attask/api/v17.0/JRNLE/search?objObjCode=TASK&fieldName=status&newTextVal=INP
+GET /attask/api/v22.0/JRNLE/search?objObjCode=TASK&fieldName=status&newTextVal=INP
     &entryDate=$$TODAY-5d&entryDate_Mod=lte&fields=ID,entryDate,oldTextVal,newTextVal
 ```
 
@@ -409,6 +409,33 @@ Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /JR
 
 ---
 
+## 22. Field impact analysis: `PARAM` has no back-reference, and `report.definition` alone finds almost nothing
+
+**Surprise:** the natural question before retiring a custom field — *which of my 700 reports reference it?* — has no direct answer object. `PARAM` (the custom field) exposes no reports collection, so there is nothing to query from the field's side. And the obvious substitute, scanning each report's own `definition`, finds a tiny fraction of real references: across 200 reports on the verification tenant it surfaced **3** distinct `DE:` names, against **116** actually present.
+
+**Mechanic:** a report's field references do not live on the REPORT row. They live on the three referenced UI objects — `UIVW` (columns), `UIFT` (filters), `UIGB` (groupings) — which is exactly the split `01-report-object-shape.md` documents. The REPORT row's own `definition` holds chart, matrix, and prompt configuration, not the view/filter/group content. Scanning it therefore only ever catches fields referenced from a chart aggregator, which is why the count collapses by ~97%.
+
+`PARAM` confirms the same asymmetry from the other direction — its full surface is 15 fields, 3 references (`customer`, `lastUpdatedBy`, `parameterDescriptiveText`), and 2 collections (`accessRules`, `parameterOptions`). No report, view, filter, or usage linkage of any kind. Impact analysis is necessarily a scan from the report side, not a lookup from the field side.
+
+**Mitigation:** pull all four definition surfaces in one call using nested field syntax, then scan the serialized JSON for `DE:` references:
+
+```bash
+GET /attask/api/v22.0/report/search?fields=ID,name,definition,view:definition,filter:definition,groupBy:definition&$$LIMIT=500
+```
+
+Then, per report, `json.dumps()` each of the four blocks and regex for `DE:([^"\,}\)|]+)`. Two things to handle while scanning:
+
+- **Filter keys carry modifier suffixes.** `UIFT.definition` contributes both `DE:Issue Category` and `DE:Issue Category_Mod` as separate keys. Strip a trailing `_Mod` before deduplicating or one field counts twice.
+- **The `DE:` prefix is not applied uniformly** — `UIVW.column[].valuefield` and `UIGB.group[].valuefield` drop it while filter keys and `querysort` keep it. Gotcha #10 has the full asymmetry table. A regex anchored on `DE:` therefore finds the *prefixed* locations only; to catch a field referenced solely by a bare `valuefield`, match the field's plain name across the same blobs as a second pass.
+
+The UI objects are effectively 1:1 with reports (267 distinct `viewID` across 279 reports, 4 reused; `groupByID` 228/228, none reused), so the nested fetch does not need dedup and one pass covers the tenant.
+
+**Coverage limit — say this out loud when reporting results.** Prompts are only partly reachable. `REPORT.definition.prompt` does exist and is scannable (24 of 200 reports carried one), but gotcha #12 still stands for the rest of the prompt configuration behind `preferenceID`. On the verification tenant every prompt block referenced standard fields (`"valuefield": "portfolio:name"`) and contributed zero `DE:` names, so this surface is untested against a custom-field prompt. Report the scan as "views, filters, groupings, charts, and prompt blocks" rather than as exhaustive.
+
+Verified 2026-08-24 on a sandbox tenant (sandbox), v17.0: `GET /param/metadata` for the absent back-reference; `GET /report/search?fields=ID,name,definition&$$LIMIT=200` → 3 distinct `DE:` names; the four-surface call above over 279 reports → **116** distinct `DE:` names (view 278 / filter 216 / groupBy 228 populated); `fields=ID,viewID,filterID,groupByID` over the same set for the reuse counts.
+
+---
+
 ## Cross-references
 
 - The REPORT / UIFT / UIGB / UIVW field map: `01-report-object-shape.md`.
@@ -424,3 +451,4 @@ Verified 2026-08-07 on a sandbox tenant.workfront.com (sandbox), v17.0: `GET /JR
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/report-help-capturing-specific-tasks-that-have-been-in-progress-for-more-than-5-days-251454` | the JRNLE vs transition-timestamp two-route pattern behind gotcha #20 (field names corrected against live v17.0 schema) — best answer by skyehansen, 2026-06-30 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/resource-planner-url-share-251637` | the iframe/Adobe-auth mechanic and link-out workaround behind gotcha #21 — best answer by StutiTi, 2026-07-15 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/finding-reports-that-reference-a-specific-custom-field-252297` | the field-retirement impact-analysis question behind gotcha #22 — best answer by skyehansen, 2026-08-13. The thread's "the field report has a column for reports" suggestion was checked against `PARAM` and does not hold at the API level; the four-surface scan documented here was derived and verified in its place |

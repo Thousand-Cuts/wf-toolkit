@@ -144,7 +144,7 @@ A single Workfront record (`OPTASK`, `PROJ`, `TASK`, etc.) can have **multiple c
 **Discovery query — "what forms are attached to record R?":**
 
 ```bash
-GET /attask/api/v17.0/objectcategory/search?objID=<recordID>&fields=ID,objObjCode,categoryID,category:name
+GET /attask/api/v22.0/objectcategory/search?objID=<recordID>&fields=ID,objObjCode,categoryID,category:name
 ```
 
 Returns one row per attached form. Example response from a real request-queue issue:
@@ -159,7 +159,15 @@ Returns one row per attached form. Example response from a real request-queue is
 
 **Endpoint name:** `/objectcategory` is the canonical path. The shorter `/objcat` alias also works in v17.0. Other plausible-sounding aliases (`/objectctgy`, `/objctg`, `/objctgy`, `/oc`) all return *"Unknown object type."*
 
-**Cannot be POSTed/PUT directly via the top-level endpoint** — OBJCAT is a secondary object. To attach a new form to a queue topic or to manage per-record form attachments, the supported path is the in-product UI (Setup → Queues → Edit Queue Topic → "Add custom form") or, for records, the form-attach API on the parent (no v17 REST path verified). Reads via `/objectcategory/search` work fine.
+**Cannot be POSTed/PUT directly via the top-level endpoint.** OBJCAT is a secondary object, so `/objectcategory` is read-only (`operations: count, get, report, search`). Writes go through the CTGY-hosted assignment actions instead: `assignCategory` / `assignCategories` to attach, `unassignCategory` / `unassignCategories` to detach, `reorderCategories` to change per-record order, or a full `objectCategories` collection replace on the parent record. All five are verified and documented with their dispatch shape in `05-http-methods-and-actions` § "Assigning custom forms". For queue topics specifically, the in-product UI (Setup → Queues → Edit Queue Topic → "Add custom form") remains the practical path.
+
+**Per-record form order lives here too,** as `OBJCAT.categoryOrder` (0-indexed). It expands off the record directly, which beats a second `/objectcategory/search` when you already have the record:
+
+```bash
+GET /attask/api/v22.0/optask/<recordID>?fields=categoryID,objectCategories:categoryID,objectCategories:categoryOrder
+```
+
+`OBJCAT.categoryOrder` is not `CTGY.categoryOrder`. The latter is the form's tenant-wide default position in Setup and has no bearing on any record. The form at `categoryOrder` 0 is always the record's primary `categoryID`; see `05-http-methods-and-actions` for how tightly those two are coupled.
 
 **Symptoms of having missed OBJCAT in an audit:**
 - "The field exists tenant-wide but isn't attached to <form>" — true at the `CategoryParameter` level, but the field may still be reachable on the record via a sibling form attached via OBJCAT.

@@ -5,7 +5,7 @@
 ## Request (first page)
 
 ```
-GET https://<domain>.my.workfront.com/attask/api/v17.0/task/search?status=INP&status_Mod=eq&fields=name,status,plannedCompletionDate,project:name&$$FIRST=0&$$LIMIT=200&$$ORDER=plannedCompletionDate:asc
+GET https://<domain>.my.workfront.com/attask/api/v22.0/task/search?status=INP&status_Mod=eq&fields=name,status,plannedCompletionDate,project:name&$$FIRST=0&$$LIMIT=200&$$ORDER=plannedCompletionDate:asc
 sessionID: <your_session_token>
 ```
 

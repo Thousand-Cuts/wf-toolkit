@@ -225,7 +225,7 @@ New rules use `objCode: "CTCSRL"`, omit `ID` (Workfront assigns); nested matches
 
 **Mitigation:** Always POST/PUT a Category with the array form:
 ```bash
-POST /attask/api/v17.0/category
+POST /attask/api/v22.0/category
   updates={"name":"Campaign Details","objTypes":["PRGM"]}
 ```
 For single-objCode forms it's a one-element array; for multi-objCode forms it's `["PROJ","TASK"]` etc. See `03-create-form-recipe` step 7.
@@ -352,9 +352,63 @@ The `objCode` probe is the discriminator. That literal key appears in every stor
 <!-- UNVERIFIED -->
 UI behavior — no read-only API call can observe it. Reported 2026-07: the OP's accepted self-answer relays an unconfirmed Adobe-rep statement; the underlying name-only-match behavior was independently corroborated by two other posters in the thread. Confirm by typing a known reference number into an INTRNL field on the target tenant. Provenance in Sources below.
 
+## 35. Display logic hides fields but never clears their stored values — and visibility is not readable from a calculated field
+
+Two closely-related limits that bite request-intake forms, both structural rather than configuration mistakes.
+
+**(a) Hiding is render-time only; the stored value survives.** A cascade rule's entire vocabulary is the five writable fields on `CTCSRL` — `ruleType` (`DISPLAY`/`SKIP`), `nextParameterID`, `nextParameterGroupID`, `otherwiseParameterID`, `toEndOfForm` — plus `matchType`/`parameterID`/`value` on `CTCSRM`. None of them touches the target parameter's value. So when a user fills a field, then changes the trigger (or copies a previous request), the now-hidden field keeps whatever was in it, and any calc field reading that parameter silently consumes a stale value. There is no native "clear on hide" and no clear-on-submit option.
+
+**(b) A calculated field cannot ask whether a field is visible.** There is no `.visible` accessor, and nothing in the object model stores runtime visibility to read: `PARAM` exposes exactly 15 fields, and the only two matching any visibility-ish keyword are `displaySize` and `displayType`, which describe widget geometry and widget kind, not render state. Visibility is derived at render time from the Category's cascade rules and is never persisted per-record.
+
+**Mitigation — guard the calculation on the trigger, not on the target.** Because `matchType` is binary (`EXIST`/`NOTEXIST`) against a concrete `ParameterOption.value`, every display condition is by construction expressible as an equality on the trigger parameter. Restate it inside the formula so the stale value becomes unreachable:
+
+```
+IF({DE:Field 1}="A", {DE:Field 2}, 0)
+```
+
+rather than consuming `{DE:Field 2}` directly. This keeps the guard and the display rule in sync by construction, and it is the only fix that does not require a background job. To actually blank the stored data (for reporting or export cleanliness) a scheduled write is required — the form layer cannot do it.
+
+**Verified 2026-08-24** on the surveyed sandbox tenant (`WF_ENV_TYPE=sandbox`), read-only metadata:
+
+```bash
+# Negative control — enumerate the whole cascade-rule vocabulary
+GET /attask/api/v22.0/CTCSRL/metadata?fields=fields
+#   -> 8 fields: ID, categoryID, customerID, nextParameterGroupID,
+#      nextParameterID, otherwiseParameterID, ruleType, toEndOfForm
+GET /attask/api/v22.0/CTCSRM/metadata?fields=fields
+#   -> 6 fields: ID, categoryCascadeRuleID, customerID, matchType, parameterID, value
+# Neither object carries any value-clearing attribute.
+
+# Discriminator — scan PARAM for any persisted visibility state
+GET /attask/api/v22.0/PARAM/metadata?fields=fields
+#   -> 15 fields; keyword scan (visib|hidden|clear|reset|display|cascade)
+#      matches only displaySize, displayType. No visibility state is stored.
+```
+
+**Scope limits.** Metadata enumeration proves the fields do not exist, which is what rules out both a clear-on-hide attribute and a readable visibility flag. Not tested: whether the Workfront UI's form editor offers a clear-on-hide toggle backed by some non-REST internal surface (the `/internal/customForms/saveForm` payload was not re-captured for this), and no calc-field formula was executed against a hidden field to observe evaluation. The mitigation formula is the standard guard pattern and was not run end-to-end on a live form in this pass.
+
+## 36. Reordering the forms on a record silently changes its primary `categoryID`
+
+**Surprise:** "A consultant reordered the three forms on a request so the triage form showed first. Nothing about the data changed. The next day a report filtered on `categoryID` stopped returning those requests."
+
+**Mechanic:** Per-record form order is `categoryOrder` on the `ObjectCategory` (OBJCAT) join row, 0-indexed, and the form at position 0 *is* the record's primary `categoryID`. They are one fact with two accessors, and every write to either updates the other. Verified on `a sandbox tenant.workfront.com` v17.0, 2026-08-27:
+
+- `PUT /ctgy/reorderCategories` with `categoryIDs:[C,A,B]` on a record whose primary was A → `categoryID` becomes C.
+- `PUT /optask/<id>` with `categoryID=<B>` → B moves to `categoryOrder` 0, the others shift down keeping their relative order.
+
+There is no way to promote a form to primary without moving it to the front of the form list, and no way to reorder without re-pointing `categoryID`.
+
+**Mitigation:** Before reordering, check what keys on the primary form: report and Fusion filters on `categoryID`, and any `/search?categoryID=` in a scenario or script. The durable fix is to filter on the OBJCAT collection instead, which is order-independent: `/<obj>/search?objectCategories:categoryID=<id>`. Reordering is a display-layer change everywhere except `categoryID`, which is exactly where nobody looks for it.
+
+**Also note the namesake trap.** `CTGY.categoryOrder` is a *different field*, the form's tenant-wide default position in Setup. Setting it changes nothing on any existing record. Reaching for it to fix a per-record ordering complaint is the natural first mistake.
+
+Full dispatch shapes, the exact-set constraint on `reorderCategories`, and the three-way comparison table live in `api/05-http-methods-and-actions` § "Assigning custom forms".
+
 ## Cross-references
 
 - `01-object-model` — value-vs-label distinction, composite CategoryParameter ID
+- `api/05-http-methods-and-actions`: CTGY-hosted attach / detach / reorder actions and their dispatch shape
+- `api/08-related-objects-and-collections`: OBJCAT join table, multi-form attachment reads
 - `02-parameter-types` — empirical enums for `dataType` / `displayType`
 - `03-create-form-recipe` — corrected POST sequence
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)

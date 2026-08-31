@@ -75,7 +75,7 @@ The link between a Category and a Parameter, plus per-attachment configuration (
 **Critical: CategoryParameter is NOT a top-level object.** Direct POST to `/categoryParameter` returns `"CTGYPA is not a top level object and can't be requested directly"`. CategoryParameter rows are created via **PUT on the parent Category** with a nested `categoryParameters` collection:
 
 ```http
-PUT /attask/api/v17.0/category/<categoryID>
+PUT /attask/api/v22.0/category/<categoryID>
 Content-Type: application/x-www-form-urlencoded
 
 updates={"categoryParameters":[

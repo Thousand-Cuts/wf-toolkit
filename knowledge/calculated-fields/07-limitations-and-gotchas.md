@@ -20,7 +20,7 @@ Practical consequence: never display cross-object calculated field values to sta
 1. Edit and save the child object (any edit triggers recalc).
 2. **Recalculate Custom Expressions** from the object's More (⋯) menu.
 3. Bulk edit via a report: select all relevant records → Edit → make a trivial change → Save.
-4. API: `PUT /attask/api/v17.0/PROJ/recalculateCustomFields` (or equivalent for the object type).
+4. API: `PUT /attask/api/v22.0/PROJ/recalculateCustomFields` (or equivalent for the object type).
 
 ## $$TODAY and $$NOW Go Stale
 

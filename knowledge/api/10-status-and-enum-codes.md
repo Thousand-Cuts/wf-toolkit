@@ -57,7 +57,7 @@ To discover what status values are actually in use for any object type, scan exi
 
 ```bash
 curl -sS --compressed \
-  "https://<host>/attask/api/v17.0/assignment/search?fields=status&\$\$LIMIT=2000" \
+  "https://<host>/attask/api/v22.0/assignment/search?fields=status&\$\$LIMIT=2000" \
   -H "apiKey: <KEY>" \
   | jq '[.data[].status] | unique | sort'
 ```
@@ -78,19 +78,19 @@ The canonical existence check is a write round-trip on a throwaway record:
 
 ```bash
 # 1. Create a throwaway issue (any hidden project works)
-CREATE_RESPONSE=$(./wf-curl.sh '/attask/api/v17.0/optask' -X POST \
+CREATE_RESPONSE=$(./wf-curl.sh '/attask/api/v22.0/optask' -X POST \
   --data-urlencode 'updates={"name":"[wf-api-verify] status round-trip","projectID":"<some_project_id>"}')
 TEST_ID=$(echo "$CREATE_RESPONSE" | jq -r '.data.ID')
 
 # 2. PUT the status. If accepted, the response echoes status: "<CODE>".
-./wf-curl.sh "/attask/api/v17.0/optask/$TEST_ID" -X PUT \
+./wf-curl.sh "/attask/api/v22.0/optask/$TEST_ID" -X PUT \
   --data-urlencode 'updates={"status":"<CODE>"}'
 
 # 3. GET to confirm persistence
-./wf-curl.sh "/attask/api/v17.0/optask/$TEST_ID?fields=ID,status"
+./wf-curl.sh "/attask/api/v22.0/optask/$TEST_ID?fields=ID,status"
 
 # 4. Clean up
-./wf-curl.sh "/attask/api/v17.0/optask/$TEST_ID?force=true" -X DELETE
+./wf-curl.sh "/attask/api/v22.0/optask/$TEST_ID?force=true" -X DELETE
 ```
 
 If the code exists, step 2 returns the OPTASK with `"status": "<CODE>"`. If it doesn't, step 2 errors with an "invalid status" message.
@@ -178,7 +178,7 @@ GET /attask/api-unsupported/PROJ/search?fields=ID,name,status,statusLabel&$$LIMI
 The same request on the versioned path fails — negative control:
 
 ```
-GET /attask/api/v17.0/PROJ/search?fields=ID,name,status,statusLabel&$$LIMIT=2
+GET /attask/api/v22.0/PROJ/search?fields=ID,name,status,statusLabel&$$LIMIT=2
 → {"error":{"message":"APIModel V17_0 does not support field statusLabel (Project)"}}
 ```
 

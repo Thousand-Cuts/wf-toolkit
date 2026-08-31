@@ -88,7 +88,7 @@ Use named field lists in production code. Wildcards are useful while exploring.
 To pull every custom-form field value on an object in one call, use **`fields=parameterValues`** (or equivalently `fields=parameterValues:*`). Both return the full set of `DE:` field values on that object as a single object keyed by `DE:<field name>`:
 
 ```
-GET /attask/api/v17.0/project/<id>?fields=name,parameterValues
+GET /attask/api/v22.0/project/<id>?fields=name,parameterValues
 ```
 
 Example response shape (truncated):

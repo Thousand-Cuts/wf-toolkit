@@ -10,7 +10,7 @@ Use case: you're authoring a new dropdown and want to seed its options from an e
 # Suppose Primary Region's parameterID is param-abc-123 in this tenant.
 
 # Resolve the source options:
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/parameterOption/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/parameterOption/search \
   --data-urlencode "parameterID=param-abc-123" \
   --data-urlencode "fields=label,value,displayOrder,isHidden" \
   --data-urlencode '$$LIMIT=100'
@@ -24,7 +24,7 @@ Use case: you're authoring a new dropdown and want to seed its options from an e
 ]
 
 # Skill creates the new parameter + clones options:
-./skills/workfront-api/scripts/wf-curl.sh -X POST /attask/api/v17.0/parameter \
+./skills/workfront-api/scripts/wf-curl.sh -X POST /attask/api/v22.0/parameter \
   --data-urlencode "name=[wf-api-verify] backup_region" \
   --data-urlencode "displayName=Backup Region" \
   --data-urlencode "parameterType=DROP"
@@ -32,7 +32,7 @@ Use case: you're authoring a new dropdown and want to seed its options from an e
 
 # Bulk-POST the cloned options:
 ./skills/workfront-api/scripts/wf-curl.sh -X PUT \
-  "/attask/api/v17.0/parameterOption?method=POST" \
+  "/attask/api/v22.0/parameterOption?method=POST" \
   --data-urlencode 'updates=[
     {"parameterID":"param-xyz-456","label":"us-east-1","value":"us_east_1","displayOrder":1},
     {"parameterID":"param-xyz-456","label":"us-west-2","value":"us_west_2","displayOrder":2},
@@ -52,7 +52,7 @@ Same procedure but the GET runs against the source tenant; sanitiser strips the 
 ./skills/workfront-api/scripts/wf-use.sh firm-reference
 
 # 2. Pull options
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/parameterOption/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/parameterOption/search \
   --data-urlencode "parameterID=<src-paramID>" \
   --data-urlencode "fields=label,value,displayOrder,isHidden" \
   --data-urlencode '$$LIMIT=200' \

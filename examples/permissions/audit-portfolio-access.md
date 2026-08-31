@@ -10,19 +10,19 @@ Flow 3 — object audit. Phase A simplified this: a single GET on the target wit
 
 ```bash
 # 1. Direct + inherited rules in one GET
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/portfolio/<portID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/portfolio/<portID> \
   --data-urlencode "fields=ID,name,ownerID,accessRules:*"
 
 # 2. Accessor expansion: for each rule with accessor=GROUP, expand to user list:
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/group/<groupID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/group/<groupID> \
   --data-urlencode "fields=ID,name,users:ID,users:name,users:emailAddr"
 
 # 3. For each rule with accessor=TEAMOB:
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/teamMembership/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/teamMembership/search \
   --data-urlencode "teamID=<teamID>" --data-urlencode "fields=userID,user:name,user:emailAddr"
 
 # 4. For each rule with accessor=ROLE:
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/search \
   --data-urlencode "roleID=<roleID>" --data-urlencode "fields=ID,name,emailAddr"
 ```
 

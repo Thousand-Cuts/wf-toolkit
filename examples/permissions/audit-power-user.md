@@ -10,12 +10,12 @@ Flow 2 — "What can user X actually do?" for a power user. Updated 2026-05-18 w
 
 ```bash
 # 1. User context
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/<janeID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/<janeID> \
   --data-urlencode "fields=ID,name,isActive,accessLevelID,accessLevel:name,
 groups:ID,groups:name,teams:ID,teams:name,roles:ID,roles:name"
 
 # 2. Access level (capability matrix via ALVPER collection)
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/<janeAccessLevelID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/accessLevel/<janeAccessLevelID> \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,fieldAccessPrivileges,
 accessLevelPermissions:objObjCode,
 accessLevelPermissions:coreAction,
@@ -24,7 +24,7 @@ accessLevelPermissions:forbiddenActions"
 # 3. INVERTED parent queries — Phase A: /accessRule/search doesn't work
 # Iterate over parent objCodes the user might have rules on:
 for OBJ in project portfolio program task optask report dashboard document template; do
-  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/$OBJ/search \
+  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/$OBJ/search \
     --data-urlencode "accessRules:accessorID=<janeID>" \
     --data-urlencode "accessRules:accessorID_Mod=eq" \
     --data-urlencode "fields=ID,name,accessRules:*" \
@@ -34,7 +34,7 @@ done
 
 # 4. Owned objects:
 for OBJ in project portfolio program report dashboard template document; do
-  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/$OBJ/count \
+  ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/$OBJ/count \
     --data-urlencode "ownerID=<janeID>" --data-urlencode "ownerID_Mod=eq"
 done
 ```

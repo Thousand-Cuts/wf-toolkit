@@ -55,7 +55,7 @@ Proofing spans three objCodes. Proof *creation* hangs off the document; proof *s
 `createProof` (and the newer `createProofRest`) are actions on the **document**. Both take the same two args: `documentVersionID` (optional — defaults to current version) and `advancedProofingOptions` (a **string containing JSON**, not a nested object). Return type is void.
 
 ```
-PUT $$HOST/attask/api/v17.0/document/<DOCUMENT_ID>/createProof?apiKey=<KEY>
+PUT $$HOST/attask/api/v22.0/document/<DOCUMENT_ID>/createProof?apiKey=<KEY>
 Content-Type: application/x-www-form-urlencoded
 
 documentVersionID=<DOCV_ID>&advancedProofingOptions={}
@@ -123,8 +123,8 @@ Adobe under-documents this shape and explicitly suggests reverse-engineering it 
 
 **Verified upload → document flow (works):**
 ```
-POST $$HOST/attask/api/v17.0/upload?apiKey=<KEY>      (multipart: uploadedFile=@file)  → {"data":{"handle":"<h>"}}
-POST $$HOST/attask/api/v17.0/document?apiKey=<KEY>     name=[prefix] ...&handle=<h>&docObjCode=PROJ&objID=<projectID>&fields=ID,currentVersionID
+POST $$HOST/attask/api/v22.0/upload?apiKey=<KEY>      (multipart: uploadedFile=@file)  → {"data":{"handle":"<h>"}}
+POST $$HOST/attask/api/v22.0/document?apiKey=<KEY>     name=[prefix] ...&handle=<h>&docObjCode=PROJ&objID=<projectID>&fields=ID,currentVersionID
 ```
 Gotcha: `lastVersionID` is not a valid Document field in v17.0 (`APIModel V17_0 does not support field lastVersionID`) — request `currentVersionID` instead.
 
@@ -137,7 +137,7 @@ Gotcha: `lastVersionID` is not a valid Document field in v17.0 (`APIModel V17_0 
 `setDocumentReviewerDecision` is a **document-version** action. It writes a decision **and** an optional comment in one call, returns `Boolean`, and needs no ProofHQ hop.
 
 ```
-PUT $$HOST/attask/api/v17.0/docv/<DOCV_ID>/setDocumentReviewerDecision?apiKey=<KEY>
+PUT $$HOST/attask/api/v22.0/docv/<DOCV_ID>/setDocumentReviewerDecision?apiKey=<KEY>
 Content-Type: application/x-www-form-urlencoded
 
 documentVersionID=<DOCV_ID>&reviewerDecision=<DECISION>&comment=Looks+good+to+me
@@ -154,7 +154,7 @@ For `setDocumentReviewerDecision`'s `reviewerDecision` arg, pass the label as co
 Read the current decision back with `getDocumentReviewerDecision` (arg `documentVersionID`, returns a map), or verify via a `PRFAPL` query:
 
 ```
-GET $$HOST/attask/api/v17.0/prfapl/search?documentVersionID=<DOCV_ID>&fields=approverID,approverDecision,decisionDate,approverStage,isAwaitingDecision&apiKey=<KEY>
+GET $$HOST/attask/api/v22.0/prfapl/search?documentVersionID=<DOCV_ID>&fields=approverID,approverDecision,decisionDate,approverStage,isAwaitingDecision&apiKey=<KEY>
 ```
 
 To simulate *multiple reviewers*, each reviewer must be a recipient on the proof; each decision surfaces as its own `PRFAPL` row. A single admin/service identity can drive the calls.
@@ -174,7 +174,7 @@ There are **two distinct token systems** — do not confuse them:
 **(a) Per-proof viewer token — from Workfront, scoped to one existing proof.** Invoke `getProofingTokens` as a proper **PUT action** (a plain GET just echoes docv metadata — that was the earlier dead end):
 
 ```
-PUT $$HOST/attask/api/v17.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>   (body: versionID=<DOCV_ID>)
+PUT $$HOST/attask/api/v22.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>   (body: versionID=<DOCV_ID>)
 → {"data":{"result":{
      "token":"8HXYLmqiABa12TxTWfGJ8zZbLjNF4Lkh",
      "codetodecode":"<hex>-8HXYLmqiABa12TxTWfGJ8zZbLjNF4Lkh-pdf<hex>",
@@ -217,7 +217,7 @@ This is the definitive explanation of why the public REST `createProof` no-ops �
 > ✅ **CORRECTION (2026-08-06): minting a ProofHQ REST session does NOT require a cookie.** This section originally said there was no API-key path to *either* creating a proof or minting the session. The first half stands; **the second half is wrong.** The proof *viewer's* JSON-RPC exposes a `startup` method that accepts the `token` + `codetodecode` from `getProofingTokens` (an ordinary API-key call) and returns a `sessionId` that authenticates `rest.proofhq.com` directly:
 >
 > ```
-> PUT  $$HOST/attask/api/v17.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>   → token, codetodecode
+> PUT  $$HOST/attask/api/v22.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>   → token, codetodecode
 > POST https://us.my.workfront.com/proof/rpc/index.php
 >      headers: tcmssubdomain: <sub>, tcmstenantid: <tenant-uuid>
 >      body:    {"method":"startup","proofingCode":"<codetodecode>","token":"<token>"}   → sessionId

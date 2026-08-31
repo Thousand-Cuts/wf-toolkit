@@ -66,12 +66,12 @@ Fields used via `{…}` tokens must be declared in the **Dependencies** list so 
 
 ### Same-instance URL pattern (consulting standard)
 
-When the External Lookup queries the **same Workfront instance**, the Base API URL must start with `$$HOST/attask/api/v17.0/`. `$$HOST` is the only correct way to reference the org's domain — hardcoding a domain (e.g. `https://company.my.workfront.com/...`) breaks any time the form is copied to another instance or the domain changes. Default to **v17.0** unless the user confirms their instance supports a newer version.
+When the External Lookup queries the **same Workfront instance**, the Base API URL must start with `$$HOST/attask/api/v22.0/`. `$$HOST` is the only correct way to reference the org's domain — hardcoding a domain (e.g. `https://company.my.workfront.com/...`) breaks any time the form is copied to another instance or the domain changes. Default to **v17.0** unless the user confirms their instance supports a newer version.
 
 **Standard filter pattern inside the URL:**
 
 ```
-$$HOST/attask/api/v17.0/proj/search?DE:Field Name={DE:Source Field}&DE:Field Name_Mod=eq
+$$HOST/attask/api/v22.0/proj/search?DE:Field Name={DE:Source Field}&DE:Field Name_Mod=eq
 ```
 
 Note: `DE:` field names in the URL must not be URL-encoded (no `%3A` for `:`, no `%20` for space). Pass them as literal strings. See `04-fields-and-naming.md` for the full rule.
@@ -79,7 +79,7 @@ Note: `DE:` field names in the URL must not be URL-encoded (no `%3A` for `:`, no
 **To retrieve custom form values from another Workfront object,** add `&fields=parameterValues` to the URL:
 
 ```
-$$HOST/attask/api/v17.0/proj/search?status=CUR&ownerID={ownerID}&fields=parameterValues
+$$HOST/attask/api/v22.0/proj/search?status=CUR&ownerID={ownerID}&fields=parameterValues
 ```
 
 This causes each object in the response to include a `parameterValues` map with all its custom field values.
@@ -99,12 +99,12 @@ Do not use dot notation for the `DE:` key (e.g. `$.data[*].parameterValues.DE:Cu
 When one External Lookup depends on the selected value of another External Lookup field on the same form, reference it directly with the `{DE:Field Name}` token pattern:
 
 ```
-$$HOST/attask/api/v17.0/task/search?DE:Client Name={DE:Client Lookup Field}&DE:Client Name_Mod=eq&fields=parameterValues
+$$HOST/attask/api/v22.0/task/search?DE:Client Name={DE:Client Lookup Field}&DE:Client Name_Mod=eq&fields=parameterValues
 ```
 
 Declare the upstream External Lookup field in the **Dependencies** list. No special syntax beyond the standard `{DE:FieldLabel}` token is needed.
 
-> **Cascade limitation — important gotcha:** External Lookup fields that cascade off other External Lookup fields work correctly in the browser UI. However, **the data-extension API returns empty results when called from Adobe Workfront Fusion** for chained lookups. If you need to read a cascaded External Lookup value via Fusion, use the Workfront API directly via the `workfront-workfront:custom` Fusion module to call the same `$$HOST/attask/api/v17.0/...` endpoint, then write the result back to the record using `updateARecord`. This is a non-obvious consulting gotcha — it only surfaces when a Fusion scenario tries to read or validate cascaded lookup values programmatically.
+> **Cascade limitation — important gotcha:** External Lookup fields that cascade off other External Lookup fields work correctly in the browser UI. However, **the data-extension API returns empty results when called from Adobe Workfront Fusion** for chained lookups. If you need to read a cascaded External Lookup value via Fusion, use the Workfront API directly via the `workfront-workfront:custom` Fusion module to call the same `$$HOST/attask/api/v22.0/...` endpoint, then write the result back to the record using `updateARecord`. This is a non-obvious consulting gotcha — it only surfaces when a Fusion scenario tries to read or validate cascaded lookup values programmatically.
 
 ## Expected response format
 

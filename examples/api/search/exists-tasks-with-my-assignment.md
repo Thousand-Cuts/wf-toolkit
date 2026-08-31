@@ -5,7 +5,7 @@
 ## Request
 
 ```
-POST https://<domain>.my.workfront.com/attask/api/v17.0/task/search
+POST https://<domain>.my.workfront.com/attask/api/v22.0/task/search
 Content-Type: application/x-www-form-urlencoded
 sessionID: <your_session_token>
 

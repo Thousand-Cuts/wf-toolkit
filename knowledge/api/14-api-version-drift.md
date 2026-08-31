@@ -4,10 +4,26 @@ The toolkit pins examples to `v17.0` per the consulting rule in `SKILL.md`. v17.
 
 This file consolidates what changed across v20, v21, v22 — especially the items that materially affect existing skills.
 
-**Release dates (per Adobe Experience League release notes):**
+**Release dates (per Adobe Experience League release notes; v22 corrected 2026-08-29 — this file previously said "late 2025", but Adobe's support schedule and the 26-Q3 release overview both date it 2026-05-08):**
 - v20 — 2025-05-04
 - v21 — 2025-10-23
-- v22 — late 2025 (post-v21)
+- v22 — 2026-05-08
+
+**Support schedule (Adobe's three-year window, read 2026-08-29):**
+
+| Version | Released | Unsupported |
+|---|---|---|
+| v22 | 2026-05-08 | during 2029 (29.4) |
+| v21 | 2025-10-23 | during 2028 (28.10) |
+| v20 | 2025-05-04 | during 2028 (28.4) |
+| v19 | 2024-10-10 | during 2027 (27.10) |
+| v18 | 2024-04-08 | during 2027 (27.4) |
+| **v17** | 2023-10-12 | **during 2026 (26.10 — October 2026)** |
+| v16 | 2023-04 | during 2026 (26.4 — **already past**) |
+
+**v17 is weeks from end of support** as of this writing — the driver for re-pinning the toolkit's default to v22 (see § How to apply for current guidance).
+
+**v23 exists but is unreleased.** Verified 2026-08-29 on `a sandbox tenant.workfront.com` (sandbox): `GET /attask/api/v23.0/user/search` answers normally, while `v99.0` and `v18.5` are rejected with `Invalid API version` — so the acceptance is real, not a permissive parser. There are no public "What's new in version 23" notes and the support schedule stops at v22. Do not pin anything to v23; treat surfaces first seen on it as pre-release.
 
 ## Layout Templates — unchanged across all three releases
 
@@ -107,6 +123,10 @@ v22 added `ReportShareableFolder (RPSHFD)` with full CRUD (`add/count/delete/edi
 
 `esmID`, `isCscProject`, `isEsmDocStorageEnabled` propagated across `PROJ`, `PRGM`, `PORT`, `TMPL`, `CMPY`, `DOCU`, `DOCFDR`, `APPROVAL`, `DOCV`. Only relevant to ESM-enabled tenants. `Document` also gained `getTemporaryCloudURL` action (v21) and `sendToAEMDetails` action (v22) — useful for any skill that needs a short-lived document URL or AEM hand-off.
 
+## Event Subscriptions v2 — multi-select fields always deliver as arrays (v21-era breaking change)
+
+Called out in both the 26-Q1 and 26-Q2 release overviews as a breaking change accompanying v21: Event Subscriptions **version 2** always sends multi-select custom-field values as **arrays**, where version 1 sent a bare string when only one value was selected. Any consumer parsing event-subscription payloads — Fusion Watch Event scenarios included — must tolerate the array shape for single selections. Not GET-checkable (event delivery only); provenance: the release overviews in `../release-notes/01-workfront-releases.md` § Sources.
+
 ## Other notable additions
 
 - **v20:** `Avatar.attachedObjectCode` + COPY operation on Avatar; `DOMAIN_EXTENDABLE` flag on Assignment / OpTask / Portfolio / Program / Task / Role / User; `SHARABLE` on Company; new `CustomerPreferences` project-settings values (worth surfacing in platform assessments).
@@ -115,11 +135,12 @@ v22 added `ReportShareableFolder (RPSHFD)` with full CRUD (`add/count/delete/edi
 
 ## How to apply
 
-- **Default to `v17.0` in examples.** Still the right call per `01-api-fundamentals.md` — broadest tenant compatibility, and the toolkit's empirical verification is all v17.0-based.
-- **When debugging a client API issue and the surface doesn't match a documented enum,** suspect the tenant is on a newer API version before asking for a HAR. Check this file's enum tables first.
-- **When a client is on v20+ and the work touches financials,** use BigDecimal coercion paths and the Rate primitive — not the deprecated `role.overrideX` fields, which return null on v21+ tenants.
-- **When permission-audit output contains a `coreAction` value not in the v17.0 5-tuple,** look it up here, not in `02-access-level-reference.md`.
-- **When building a custom-form audit against a v21+ tenant,** account for `Parameter.isActive` — the field exists from v21 and silently excludes inactive parameters from the user's perspective.
+- **Default to `v22.0` in examples** (changed at v0.41.0; previously v17.0). Rationale in `01-api-fundamentals.md` § Choosing a version: v17 goes unsupported October 2026, and every supported version is live on every tenant. This flips this file's reading direction — it used to explain what a *newer* tenant would show a v17-pinned caller; it now equally explains why a recipe's v22 output differs from an older verification line recorded on v17.
+- **The toolkit's empirical verification is largely v17.0-recorded.** Those lines stay accurate as history. Where a claim is version-sensitive, this file is the bridge; a v17-recorded claim that this file lists as changed should be re-verified on v22 before being quoted to a client, and re-verification lines land beside the old ones, not over them.
+- **Financials now surface the v20+ shape by default:** BigDecimal-as-string on money fields, Rate primitive, no `role.overrideX` (silently null since v21). Bulk-update flows touching rates must use the Rate primitive.
+- **Removed-on-v22 surfaces now 404/error by default:** `USRLOC` and the `User.userLocations` collection are gone; a recipe that queried them on v17 fails on v22 by design.
+- **When debugging a client API issue and the surface doesn't match a documented enum,** check this file's enum tables before asking for a HAR — enums documented from v17 (permission `coreAction` 5-tuple, 12-value `displayType`) are larger on v22, and audits on the new default will see the larger sets (e.g. `displayType` returns 27 values on v22).
+- **When building a custom-form audit,** account for `Parameter.isActive` — it exists from v21, so on the v22 default it is always present and silently shapes what users see.
 
 ## Source
 

@@ -26,17 +26,17 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
 
 7. Write in order (CORRECTED — see Phase A findings):
 
-     POST /attask/api/v17.0/category               → categoryID
+     POST /attask/api/v22.0/category               → categoryID
        body: name="<form-name>"
              objTypes=["PROJ"]   (multi-objCode requires updates= JSON)
              description="..."
 
-     POST /attask/api/v17.0/parameterGroup × M (if grouping used)
+     POST /attask/api/v22.0/parameterGroup × M (if grouping used)
        body per group: name, description, displayOrder
        → parameterGroupID[]
 
      For each field:
-       POST /attask/api/v17.0/parameter
+       POST /attask/api/v22.0/parameter
          body: name="wf_verify_<...>"   (snake_case ASCII; NO [ allowed)
                label="<UI label>"        (NO [ allowed)
                dataType=<TEXT|NMBR|DATE|CURC|RICH|WIDGET>
@@ -52,11 +52,11 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
          → parameterID
 
        [for displayType=SLCT/CHCK/RDIO only]
-       Bulk PUT /attask/api/v17.0/parameterOption?method=POST&updates=[...]
+       Bulk PUT /attask/api/v22.0/parameterOption?method=POST&updates=[...]
          (up to 100 entries per call; chunk if >100)
          → parameterOptionID[]
 
-     PUT /attask/api/v17.0/category/<categoryID>   ← LINK STEP (corrected)
+     PUT /attask/api/v22.0/category/<categoryID>   ← LINK STEP (corrected)
        updates={"categoryParameters":[
          {"parameterID":"<p1>","displayOrder":1,"isRequired":false},
          {"parameterID":"<p2>","displayOrder":2,"isRequired":true,
@@ -96,7 +96,7 @@ When option count ≥10, the skill switches from N sequential POSTs to a single 
 
 ```bash
 WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X PUT \
-  "/attask/api/v17.0/parameterOption?method=POST" \
+  "/attask/api/v22.0/parameterOption?method=POST" \
   --data-urlencode 'updates=[{"parameterID":"<id>","label":"o1","value":"o1","displayOrder":1},...up to 100 entries...]'
 ```
 

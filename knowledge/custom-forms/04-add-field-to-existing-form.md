@@ -41,7 +41,7 @@ Shorter than Flow 1. Input is `categoryID` + field spec. Output is one new Param
 
 6. Write:
 
-     POST /attask/api/v17.0/parameter
+     POST /attask/api/v22.0/parameter
        body: name=<wf_verify_...>
              label=<UI label>
              dataType, displayType, formatConstraint, isRequired
@@ -51,7 +51,7 @@ Shorter than Flow 1. Input is `categoryID` + field spec. Output is one new Param
      Bulk PUT /parameterOption?method=POST × ceil(N_options / 100)
        → parameterOptionID[]
 
-     PUT /attask/api/v17.0/category/<categoryID>
+     PUT /attask/api/v22.0/category/<categoryID>
        updates={"categoryParameters":[
          ...EXISTING categoryParameter rows (preserved verbatim from step 2)...
          {"parameterID":"<new-parameterID>","displayOrder":<new-order>,...}
@@ -119,7 +119,7 @@ Implications:
 Workfront rejects duplicate `name` values tenant-wide. Pre-flight check:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v17.0/parameter/search \
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/parameter/search \
   --data-urlencode "name=<proposed-name>" \
   --data-urlencode "name_Mod=eq" \
   --data-urlencode "fields=ID,name"

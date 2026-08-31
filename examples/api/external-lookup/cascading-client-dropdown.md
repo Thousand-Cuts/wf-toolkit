@@ -1,6 +1,6 @@
 # External Lookup: Cascading Client Dropdown (Same-Instance)
 
-**What this shows:** An External Lookup field that pulls project records from the same Workfront instance, filtered by a value selected in an upstream External Lookup field. Demonstrates the correct `$$HOST/attask/api/v17.0/...` URL pattern, `&fields=parameterValues`, the exact JSONPath for custom field values, and the Fusion cascade workaround.
+**What this shows:** An External Lookup field that pulls project records from the same Workfront instance, filtered by a value selected in an upstream External Lookup field. Demonstrates the correct `$$HOST/attask/api/v22.0/...` URL pattern, `&fields=parameterValues`, the exact JSONPath for custom field values, and the Fusion cascade workaround.
 
 ## Scenario
 
@@ -21,12 +21,12 @@ A custom form has two External Lookup fields:
 ## Base API URL
 
 ```
-$$HOST/attask/api/v17.0/proj/search?status=CUR&status_Mod=eq&DE:Client Name={DE:Account Name}&DE:Client Name_Mod=eq&fields=parameterValues
+$$HOST/attask/api/v22.0/proj/search?status=CUR&status_Mod=eq&DE:Client Name={DE:Account Name}&DE:Client Name_Mod=eq&fields=parameterValues
 ```
 
 Key rules applied here:
 - `$$HOST` — resolves to the current org's Workfront domain. Never hardcode a domain.
-- `v17.0` — default consulting version.
+- `v22.0` — default consulting version.
 - `DE:Client Name` — un-encoded, no quotes. The colon and space are passed as-is.
 - `{DE:Account Name}` — references the value selected in the upstream field.
 - `&fields=parameterValues` — causes each project in the response to include all its custom field values.
@@ -50,7 +50,7 @@ This field works correctly in the browser UI — selecting an Account Name immed
 **Workaround for Fusion:** call the Workfront API directly using the `workfront-workfront:custom` Fusion module with the same URL pattern:
 
 ```
-$$HOST/attask/api/v17.0/proj/search?status=CUR&DE:Client Name={DE:Account Name}&DE:Client Name_Mod=eq&fields=parameterValues
+$$HOST/attask/api/v22.0/proj/search?status=CUR&DE:Client Name={DE:Account Name}&DE:Client Name_Mod=eq&fields=parameterValues
 ```
 
 Then write the resolved value back to the record using an `updateARecord` operation. This bypasses the cascade issue by replicating the lookup logic directly in the Fusion scenario instead of reading the pre-stored lookup value.

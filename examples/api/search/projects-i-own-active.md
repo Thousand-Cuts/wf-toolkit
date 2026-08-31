@@ -5,7 +5,7 @@
 ## Request
 
 ```
-GET https://<domain>.my.workfront.com/attask/api/v17.0/project/search?ownerID=$$USER.ID&status=CUR&status_Mod=eq&fields=name,status,plannedCompletionDate,percentComplete,DE:Region
+GET https://<domain>.my.workfront.com/attask/api/v22.0/project/search?ownerID=$$USER.ID&status=CUR&status_Mod=eq&fields=name,status,plannedCompletionDate,percentComplete,DE:Region
 sessionID: <your_session_token>
 ```
 

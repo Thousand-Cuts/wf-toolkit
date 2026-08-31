@@ -49,7 +49,7 @@ class Proof:
     def __init__(self, host, key, tenant, dvid):
         self.sub = host.split(".")[0]
         self.tenant = tenant
-        api = f"https://{host}/attask/api/v17.0"
+        api = f"https://{host}/attask/api/v22.0"
         st, b = http(f"{api}/docv/{dvid}/getProofingTokens?apiKey={key}",
                      data=urllib.parse.urlencode({"versionID": dvid}).encode(),
                      headers={"Content-Type": "application/x-www-form-urlencoded"},

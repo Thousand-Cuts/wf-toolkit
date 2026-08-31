@@ -10,7 +10,7 @@ The Workfront API caps how many records it returns per request. To process more,
 | `$$FIRST` | Zero-indexed offset (skip this many records) | 0 | No documented cap |
 
 ```
-GET /attask/api/v17.0/project/search
+GET /attask/api/v22.0/project/search
   ?status=CUR
   &status_Mod=eq
   &fields=name,status
@@ -44,7 +44,7 @@ There is no explicit "total count" field in a paginated response. To get a total
 Get the total number of matching records without retrieving the rows:
 
 ```
-GET /attask/api/v17.0/project/count?status=CUR&status_Mod=eq
+GET /attask/api/v22.0/project/count?status=CUR&status_Mod=eq
 ```
 
 Returns:
@@ -60,7 +60,7 @@ Without an explicit sort, the order of results is not guaranteed to be stable ac
 
 **Always sort by a stable field:**
 ```
-GET /attask/api/v17.0/project/search
+GET /attask/api/v22.0/project/search
   ?$$FIRST=0
   &$$LIMIT=2000
   &ID_Sort=asc
@@ -115,7 +115,7 @@ If you're building via Fusion rather than direct API calls, Fusion has its own a
 A paginated search typically looks like:
 
 ```
-GET /attask/api/v17.0/task/search
+GET /attask/api/v22.0/task/search
   ?status=CUR
   &status_Mod=eq
   &fields=name,status

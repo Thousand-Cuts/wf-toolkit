@@ -33,7 +33,9 @@ Input: `categoryID` or display name.
        &fields=ID,label,value,displayOrder,isHidden,isDefault
 
 4. Attachment count (per target objCode in Category.objTypes):
-   GET /<objCode>/count?categoryID=<id>&categoryID_Mod=eq
+   GET /<objCode>/count?objectCategories:categoryID=<id>&objectCategories:categoryID_Mod=eq
+   (NOT categoryID, which counts only records where this is the PRIMARY form.
+    See Flow 4a.)
 
 5. Print structured summary:
    Form: <name>  (targets: <objTypes>)
@@ -78,10 +80,12 @@ Input: `categoryID` (or name).
 1. Resolve to ID + objTypes (Category.objTypes tells us where to look — may be multi)
 
 2. Total count:
-   GET /<objCode>/count?categoryID=<id>&categoryID_Mod=eq
+   GET /<objCode>/count?objectCategories:categoryID=<id>
+       &objectCategories:categoryID_Mod=eq
 
 3. First page (paginated; offer CSV export when total > 200):
-   GET /<objCode>/search?categoryID=<id>&categoryID_Mod=eq
+   GET /<objCode>/search?objectCategories:categoryID=<id>
+       &objectCategories:categoryID_Mod=eq
        &fields=ID,name&$$LIMIT=200&$$FIRST=0
 
 4. Print:
@@ -91,6 +95,12 @@ Input: `categoryID` (or name).
      ...
    (showing first 200 of <total>; pass --export-csv for the full list)
 ```
+
+**Filter on `objectCategories:categoryID`, never on `categoryID`.** A record can carry several forms; `categoryID` is only the *primary* one, so filtering on it answers "where is form X the primary form?" and quietly under-reports the question actually asked. Measured on the surveyed sandbox tenant (`v17.0`, 2026-08-27) for one triage form: `categoryID` → **2** records, `objectCategories:categoryID` → **20**. Both queries return 200 OK, which is what makes the wrong one dangerous.
+
+This also makes the answer stable under reordering. The primary form is whatever sits at `categoryOrder` 0, so a consultant rearranging forms in the UI changes which records a `categoryID` filter matches, without touching any attachment. See `09-gotchas` § 36.
+
+`categories:ID` is not a valid filter on any objCode. It returns `APIModel V17_0 does not support field categories (<Object>)`. The collection is named `objectCategories`.
 
 ## Flow 4b — Which forms have field Y?
 
@@ -105,7 +115,7 @@ v0.26.0 rewrite — replaces the 2-step `/parameter/search → /category/search`
    Default to "project" if unspecified — most common case for retire-this-field
    questions.
 
-2. GET /attask/api/v17.0/<objcode>/metadata
+2. GET /attask/api/v22.0/<objcode>/metadata
    The response's data.custom is a map keyed by Parameter.name:
      {
        "Vendor Name": {

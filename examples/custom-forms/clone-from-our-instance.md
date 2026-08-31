@@ -13,7 +13,7 @@ Flow 5 end-to-end. Lift the "Project Vendor Tracking" form from the firm's refer
 ./skills/workfront-api/scripts/wf-use.sh firm-reference
 
 # 2. Pull the source form with full expansion
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/category/<srcCategoryID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/category/<srcCategoryID> \
   --data-urlencode "fields=ID,name,objCode,description,categoryOrder,\
 parameters:ID,parameters:name,parameters:displayName,parameters:parameterType,\
 parameters:dataFormat,parameters:isRequired,parameters:displayLogic,parameters:calculation,\

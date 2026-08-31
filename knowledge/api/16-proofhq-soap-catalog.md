@@ -304,7 +304,7 @@ Arrows, boxes, lines, freehand, and highlights are all postable through `POST /p
 > ✅ **This corrects `15-proofing.md`.** That file states there is "no public-API-key path" to a ProofHQ session and that the viewer RPC uses "a different session token" than `rest.proofhq.com`. **Both are wrong.** The viewer RPC's `startup` method mints a `sessionId` that authenticates `rest.proofhq.com` directly, using nothing but a Workfront API key. No web-session cookie, no Adobe OAuth, no Public-API toggle, no ProofHQ password.
 
 ```
-1. PUT  $$HOST/attask/api/v17.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>
+1. PUT  $$HOST/attask/api/v22.0/docv/<DOCV_ID>/getProofingTokens?apiKey=<KEY>
         body: versionID=<DOCV_ID>
         → { token, codetodecode, mediaViewerApi }
 

@@ -46,11 +46,16 @@ Each version is supported for 3 years, then enters a 1-year deprecated state (st
 
 ## Choosing a version (consulting default)
 
-When you don't know which version a client's instance supports, default to **v17.0**. It has been stable across virtually every modern Workfront deployment and avoids breaking against older instances. Use a newer version only when the user explicitly confirms — or you can verify — that their instance supports it.
+Default to **v22.0**. Every currently-supported version (v17 through v22) is live on every modern tenant — Workfront is SaaS and versions are server-side, so "does the client's instance support v22" is not a real question the way it is for on-prem software. The old lowest-common-denominator argument for v17.0 died with its support window: **v17 goes unsupported with the 26.10 release (October 2026)**, and v16 already went unsupported with 26.4.
 
-Newer API versions introduce new behaviors and fields, but consulting work usually targets the lowest common denominator. v17.0 is the safe floor: it predates several breaking changes introduced in v18+ while still supporting all common authentication flows, filter patterns, External Lookup fields, and `parameterValues` access.
+The changelog history: the toolkit defaulted to v17.0 from inception through v0.40.0, and the bulk of its empirical verification lines record v17.0 — those remain accurate records of what was tested, and `14-api-version-drift.md` bridges every known v17→v22 behavioral difference (BigDecimal financials, removed `Role.override*` fields, removed `USRLOC`, grown enums). When following a recipe against surfaces the drift file lists, read its entry first.
 
-**In practice:** if a user says "our instance is on 22.3," switch to the version they need. If they don't know or don't say, write all examples with `v17.0` and note the assumption.
+**When to pin something other than v22.0:**
+- Maintaining an existing client integration already written against an older pin — keep its version, and note the EOL date if it is v17 or older.
+- Deliberately reproducing v17-era behavior (e.g. confirming a field does NOT exist pre-v20) — the negative-control pattern used throughout this toolkit's verification.
+- Never pin v23.0: it answers on tenants but is unreleased with no public notes (`14-api-version-drift.md`).
+
+**In practice:** if a user names a version, use theirs. Otherwise write all examples with `v22.0` and note the assumption.
 
 ## JSON Response Envelope
 
@@ -119,7 +124,7 @@ HTTP `429` is the rate-limit signal. See `09-pagination-and-limits.md` for more 
 - **JSON via `updates` parameter:** pass a JSON string as the value of the `updates` form parameter on PUT/POST calls
 
 ```
-PUT /attask/api/v17.0/project/4c7...
+PUT /attask/api/v22.0/project/4c7...
 Content-Type: application/x-www-form-urlencoded
 
 updates={"name":"New Name","status":"CUR"}

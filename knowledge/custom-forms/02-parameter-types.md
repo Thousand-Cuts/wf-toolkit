@@ -98,7 +98,7 @@ Minimum POST body to create an External Lookup parameter:
 
 ```bash
 WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/parameter \
+  -X POST /attask/api/v22.0/parameter \
   --data-urlencode 'updates={
     "name": "Choose Vendor",
     "label": "Choose Vendor",
@@ -131,7 +131,7 @@ Minimum POST body:
 
 ```bash
 WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
-  -X POST /attask/api/v17.0/parameter \
+  -X POST /attask/api/v22.0/parameter \
   --data-urlencode 'updates={
     "name": "Choose User",
     "label": "Choose User",
@@ -156,7 +156,7 @@ Workfront's server error message when `refObjCode` is missing says `"required ke
 ### Single-line text
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v22.0/parameter \
   --data-urlencode "name=wf_verify_vendor_name_<ts>" \
   --data-urlencode "label=Vendor Name" \
   --data-urlencode "dataType=TEXT" \
@@ -168,7 +168,7 @@ WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl
 ### Dropdown (needs ParameterOption rows after)
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v22.0/parameter \
   --data-urlencode "name=wf_verify_department_<ts>" \
   --data-urlencode "label=Department" \
   --data-urlencode "dataType=TEXT" \
@@ -180,7 +180,7 @@ WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl
 ### Currency
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v22.0/parameter \
   --data-urlencode "name=wf_verify_spend_approved_<ts>" \
   --data-urlencode "label=Spend Approved" \
   --data-urlencode "dataType=CURC" \
@@ -190,7 +190,7 @@ WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl
 ### Calculated number (formula set later via CategoryParameter PUT)
 
 ```bash
-WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v17.0/parameter \
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X POST /attask/api/v22.0/parameter \
   --data-urlencode "name=wf_verify_over_budget_<ts>" \
   --data-urlencode "label=Over Budget Flag" \
   --data-urlencode "dataType=NMBR" \

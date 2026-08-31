@@ -10,7 +10,7 @@ Composite audit. Builds on Flow 2 to find AccessRules where the accessor is a de
 
 ```bash
 # Step 1 — all inactive users
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/search \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/search \
   --data-urlencode "isActive=false" --data-urlencode "isActive_Mod=eq" \
   --data-urlencode "fields=ID,name,emailAddr,deactivatedAt" \
   --data-urlencode '$$LIMIT=500'
@@ -20,7 +20,7 @@ Composite audit. Builds on Flow 2 to find AccessRules where the accessor is a de
 # object. Iterate over parents and use accessRules:accessorID filter.)
 for userID in <list-of-inactive-userIDs>; do
   for OBJ in project portfolio program task optask report dashboard document template; do
-    ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/$OBJ/search \
+    ./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/$OBJ/search \
       --data-urlencode "accessRules:accessorID=$userID" \
       --data-urlencode "accessRules:accessorID_Mod=eq" \
       --data-urlencode "fields=ID,name,accessRules:accessorID,accessRules:coreAction,accessRules:isInherited" \

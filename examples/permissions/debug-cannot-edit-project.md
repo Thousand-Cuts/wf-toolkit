@@ -18,16 +18,16 @@ action:  "edit" → EDIT
 
 ```bash
 # User context
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/user/64f91a53... \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/user/64f91a53... \
   --data-urlencode "fields=ID,name,isActive,accessLevelID,accessLevel:name,
 groups:ID,groups:name,teams:ID,roles:ID"
 
 # Access level WITH its ALVPER collection (the capability matrix)
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/accessLevel/<accessLevelID> \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/accessLevel/<accessLevelID> \
   --data-urlencode "fields=ID,name,isAdmin,licenseType,accessLevelPermissions:*"
 
 # Project with accessRules (inline includes inherited)
-./skills/workfront-api/scripts/wf-curl.sh /attask/api/v17.0/project/6a04ae7f... \
+./skills/workfront-api/scripts/wf-curl.sh /attask/api/v22.0/project/6a04ae7f... \
   --data-urlencode "fields=ID,name,ownerID,accessRules:*"
 ```
 

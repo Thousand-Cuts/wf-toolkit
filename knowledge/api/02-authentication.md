@@ -114,12 +114,12 @@ Pass the key one of two ways:
 
 **As a query parameter:**
 ```
-GET /attask/api/v17.0/project/search?apiKey=<API_KEY>&status=CUR&status_Mod=eq
+GET /attask/api/v22.0/project/search?apiKey=<API_KEY>&status=CUR&status_Mod=eq
 ```
 
 **As a header (`apiKey:`, not `sessionID:`):**
 ```
-GET /attask/api/v17.0/project/search?status=CUR&status_Mod=eq
+GET /attask/api/v22.0/project/search?status=CUR&status_Mod=eq
 apiKey: <API_KEY>
 ```
 
@@ -129,11 +129,11 @@ apiKey: <API_KEY>
 
 ```
 # ❌ Fails with AuthenticationException
-curl -X POST "https://<host>/attask/api/v17.0/optask" \
+curl -X POST "https://<host>/attask/api/v22.0/optask" \
   --data-urlencode "apiKey=<key>" --data-urlencode "name=Test"
 
 # ✅ Works
-curl -X POST "https://<host>/attask/api/v17.0/optask?apiKey=<key>" \
+curl -X POST "https://<host>/attask/api/v22.0/optask?apiKey=<key>" \
   --data-urlencode "name=Test"
 ```
 
@@ -277,7 +277,7 @@ Tokens are valid for approximately **24 hours**. Cache and reuse them until they
 Pass the IMS access token as a Bearer header — **not** as a `sessionID` header:
 
 ```
-GET https://<domain>.my.workfront.com/attask/api/v17.0/project/search?status=CUR&status_Mod=eq
+GET https://<domain>.my.workfront.com/attask/api/v22.0/project/search?status=CUR&status_Mod=eq
 Authorization: Bearer <access_token>
 ```
 

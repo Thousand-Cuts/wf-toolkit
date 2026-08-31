@@ -7,8 +7,8 @@ The permissions skill discovers Workfront's per-tenant schema for three objects 
 Three parallel `/metadata` GETs on the first write of a session:
 
 ```
-GET $$HOST/attask/api/v17.0/accessLevel/metadata
-GET $$HOST/attask/api/v17.0/accessRule/metadata
+GET $$HOST/attask/api/v22.0/accessLevel/metadata
+GET $$HOST/attask/api/v22.0/accessRule/metadata
 ```
 
 (Phase A 2026-05-18 confirmed `/customerInformation/metadata` returns empty; system-wide preferences aren't freely browsable via REST. See `07-system-wide-overrides`.)

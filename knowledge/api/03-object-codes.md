@@ -68,8 +68,8 @@ Endpoints that can return more than one kind of object (e.g., search-across-obje
 
 Workfront Layout Templates are split across **two separate REST objCodes** depending on which experience the template targets — this is the single biggest landmine in layout-template API work and the one that wastes the most time:
 
-- **`UITMPL`** — Layout Template for the **new Workfront experience**. The customer-built templates surfaced in the modern "Interface → Layout Templates" admin screen live here. Endpoint: `/attask/api/v17.0/UITMPL/search`. Fields: `ID, name, description, customerID, groupID, entryDate, enteredByID, lastUpdateDate, extRefID` — **no collections** (no `linkedUsers`/`linkedRoles`/`linkedTeams`).
-- **`LYTMPL`** — Layout Template for **Workfront Classic** (legacy). Endpoint: `/attask/api/v17.0/layoutTemplate/search`. On a modern tenant this typically returns only the 6 Adobe stock per-license-type defaults (`objObjCode: APGLOB`, names like "Default Layout Template - Plan License"). Has `linkedUsers/linkedRoles/linkedTeams` collections, but they're usually empty.
+- **`UITMPL`** — Layout Template for the **new Workfront experience**. The customer-built templates surfaced in the modern "Interface → Layout Templates" admin screen live here. Endpoint: `/attask/api/v22.0/UITMPL/search`. Fields: `ID, name, description, customerID, groupID, entryDate, enteredByID, lastUpdateDate, extRefID` — **no collections** (no `linkedUsers`/`linkedRoles`/`linkedTeams`).
+- **`LYTMPL`** — Layout Template for **Workfront Classic** (legacy). Endpoint: `/attask/api/v22.0/layoutTemplate/search`. On a modern tenant this typically returns only the 6 Adobe stock per-license-type defaults (`objObjCode: APGLOB`, names like "Default Layout Template - Plan License"). Has `linkedUsers/linkedRoles/linkedTeams` collections, but they're usually empty.
 
 **Assignment fields on user / role / team / group:**
 - `uiTemplateID` → assignment for new-experience UITMPL
@@ -82,7 +82,7 @@ For the full coverage-audit pattern (priority-chain walk, license-type breakdown
 
 ## A note on JRNLE (field-change history / audit log)
 
-The field-level audit trail is the **`JRNLE`** object (`JournalEntry`), endpoint `/attask/api/v17.0/JRNLE/search`. This is the authoritative record of *who changed which field, from what, to what, and when* — and it captures changes the in-app **Updates feed does not surface**. For example, `ownerID` changes are not a default Update Type, so they never appear in the project's Updates tab, but every owner change is recorded in `JRNLE`. Reach for this whenever a user asks "was field X ever set to Y?" or "what changed the owner/status/group and who did it?"
+The field-level audit trail is the **`JRNLE`** object (`JournalEntry`), endpoint `/attask/api/v22.0/JRNLE/search`. This is the authoritative record of *who changed which field, from what, to what, and when* — and it captures changes the in-app **Updates feed does not surface**. For example, `ownerID` changes are not a default Update Type, so they never appear in the project's Updates tab, but every owner change is recorded in `JRNLE`. Reach for this whenever a user asks "was field X ever set to Y?" or "what changed the owner/status/group and who did it?"
 
 - **Object code is `JRNLE`, not `JOURNENT`.** `JOURNENT` is a legacy/guessed code and returns `Unknown object type` on modern versions (verified failing on v19.0, two production tenants, 2026-07-06).
 - **Query by parent:** filter on `projectID` (or `taskID`, `opTaskID`), or on `objObjCode` + `objID` for any object. Add `$$LIMIT` — a busy object accumulates many rows.
@@ -95,7 +95,7 @@ The field-level audit trail is the **`JRNLE`** object (`JournalEntry`), endpoint
 Example — owner-change history for a project:
 
 ```bash
-curl -s --compressed -G "https://<host>/attask/api/v17.0/JRNLE/search" \
+curl -s --compressed -G "https://<host>/attask/api/v22.0/JRNLE/search" \
   --data-urlencode "projectID=<projectID>" \
   --data-urlencode "fieldName=ownerID" \
   --data-urlencode "fields=changeType,oldTextVal,newTextVal,editedBy:name,entryDate" \
@@ -104,7 +104,7 @@ curl -s --compressed -G "https://<host>/attask/api/v17.0/JRNLE/search" \
 
 ## Discovering an object code when a guess fails
 
-When an endpoint returns `Unknown object type: <CODE>`, don't keep guessing — list the real codes programmatically. `GET /attask/api/v17.0/metadata` returns every object under `data.objects` as `{DisplayName: {objCode: "..."}}`; grep it for the concept you want (e.g. `journal`, `audit`, `note`). For a specific object's fields, `GET /attask/api/v17.0/<OBJCODE>/metadata` returns `data.fields` — the ground truth for which field names exist in your API version (this is how the `oldTextVal`/`newTextVal` shape above was found).
+When an endpoint returns `Unknown object type: <CODE>`, don't keep guessing — list the real codes programmatically. `GET /attask/api/v22.0/metadata` returns every object under `data.objects` as `{DisplayName: {objCode: "..."}}`; grep it for the concept you want (e.g. `journal`, `audit`, `note`). For a specific object's fields, `GET /attask/api/v22.0/<OBJCODE>/metadata` returns `data.fields` — the ground truth for which field names exist in your API version (this is how the `oldTextVal`/`newTextVal` shape above was found).
 
 ## Verifying the URL path for an object
 

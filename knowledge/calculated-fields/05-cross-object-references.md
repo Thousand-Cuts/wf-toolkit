@@ -130,7 +130,7 @@ Prefix `DE:` with the parent traversal — using **dotted-brace syntax** with se
 | `MKT - Event Start Date` | `Event/Campaign Start Date` | `{program}.{DE:MKT - Event Start Date}` ✅ — `{DE:Event/Campaign Start Date}` ❌ |
 | `Choose Business Line` | `Choose Business Line - this goes away` | `{program}.{DE:Choose Business Line}` ✅ |
 
-To find the `name` of a custom field in this tenant: `GET /attask/api/v17.0/parameter/<paramID>?fields=name,label`. Don't rely on the in-UI label — names and labels diverge whenever a field gets relabeled, and the engine cares about the name.
+To find the `name` of a custom field in this tenant: `GET /attask/api/v22.0/parameter/<paramID>?fields=name,label`. Don't rely on the in-UI label — names and labels diverge whenever a field gets relabeled, and the engine cares about the name.
 
 **Hyphens, slashes, and other punctuation are fine in `name` references** — `{DE:MKT - Event Start Date}` parses cleanly. The earlier "labels with hyphens don't work" hypothesis is wrong; the real issue was always label-vs-name.
 
@@ -162,7 +162,7 @@ Community report (thread in `## Sources`, best answer by ninoskuflic, 2026-07-26
 
 The dotted suffix selects a key from that envelope, which is why `{ID}`, `{name}`, and `{objCode}` are the properties on offer. Same envelope documented for typed Typeahead fields in `../custom-forms/09-gotchas.md` § 30 — which is the reason the two field families ever shared a child-reference idiom.
 
-**Version floor — `INTRNL` does not exist on v17.0.** Verified 2026-08-08 on the same tenant: `GET /param/metadata` returns a `displayType` enum of **12** values on **v17.0**, with no `INTRNL`/`MULTINTRNL`; **v20.0** returns 26 including both; **v22.0** returns 27 (adds `SNGLROLLUP`). A tenant pinned to the toolkit's default v17.0 has no Internal Lookup field at all, so this syntax has nothing to reference — see `../api/14-api-version-drift.md`.
+**Version floor — `INTRNL` does not exist on v17.0.** Verified 2026-08-08 on the same tenant: `GET /param/metadata` returns a `displayType` enum of **12** values on **v17.0**, with no `INTRNL`/`MULTINTRNL`; **v20.0** returns 26 including both; **v22.0** returns 27 (adds `SNGLROLLUP`). A caller pinned to v17.0 — the toolkit's default until v0.41.0 — sees no Internal Lookup field at all, so this syntax has nothing to reference there; on the current v22.0 default the field type is visible. See `../api/14-api-version-drift.md`.
 
 **Consistent with the colon-traversal ban above.** The 28 real calc expressions on that sandbox use dotted-brace traversal exclusively — 9 cross-object, e.g. `{program}.{DE:spark451_planned_segments}`, `{portfolio}.{name}`, `{queueTopic}.{name}` — and **zero** use any colon form. Verified 2026-08-08 via `GET /category/search?fields=categoryParameters:customExpression,categoryParameters:parameter:name,categoryParameters:parameter:displayType`. That same scan found zero in-the-wild uses of `{DE:x}.{y}`, so the sandbox corroborates the *shape* of the claim without exercising it.
 

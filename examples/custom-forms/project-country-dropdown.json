@@ -20,7 +20,7 @@
     "max_per_call": 100,
     "chunks_needed_for_250": 3,
     "atomic_within_chunk": true,
-    "endpoint": "PUT /attask/api/v17.0/parameterOption?method=POST",
+    "endpoint": "PUT /attask/api/v22.0/parameterOption?method=POST",
     "body_per_chunk": "updates=[{parameterID, label, value, displayOrder}, ...]"
   },
   "categoryParameters_link_step": {

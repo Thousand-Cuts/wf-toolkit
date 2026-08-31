@@ -58,7 +58,7 @@
   ],
   "categoryParameters_link_step": {
     "_phaseA_note": "CategoryParameter is NOT a top-level object — created via PUT on parent Category with this nested categoryParameters collection.",
-    "_pseudo_call": "PUT /attask/api/v17.0/category/<categoryID>",
+    "_pseudo_call": "PUT /attask/api/v22.0/category/<categoryID>",
     "updates": {
       "categoryParameters": [
         {"parameterName": "wf_verify_vendor_name", "parameterGroupName": "Vendor Details", "displayOrder": 1, "isRequired": true},

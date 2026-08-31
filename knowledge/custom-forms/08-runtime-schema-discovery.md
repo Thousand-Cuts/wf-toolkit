@@ -7,11 +7,11 @@ The skill discovers Workfront's per-tenant schema for the five custom-form objec
 Five parallel `/metadata` GETs on the first write of a session:
 
 ```
-GET $$HOST/attask/api/v17.0/category/metadata
-GET $$HOST/attask/api/v17.0/parameter/metadata
-GET $$HOST/attask/api/v17.0/parameterGroup/metadata
-GET $$HOST/attask/api/v17.0/parameterOption/metadata
-GET $$HOST/attask/api/v17.0/categoryParameter/metadata
+GET $$HOST/attask/api/v22.0/category/metadata
+GET $$HOST/attask/api/v22.0/parameter/metadata
+GET $$HOST/attask/api/v22.0/parameterGroup/metadata
+GET $$HOST/attask/api/v22.0/parameterOption/metadata
+GET $$HOST/attask/api/v22.0/categoryParameter/metadata
 ```
 
 The skill consumes them to:

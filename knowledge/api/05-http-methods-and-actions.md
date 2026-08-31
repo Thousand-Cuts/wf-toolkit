@@ -15,17 +15,17 @@ The Workfront API combines standard HTTP verbs (GET, POST, PUT, DELETE) with an 
 
 **By ID:**
 ```
-GET /attask/api/v17.0/project/4c78821c0000d6fa8d5e52f07a1d54d0
+GET /attask/api/v22.0/project/4c78821c0000d6fa8d5e52f07a1d54d0
 ```
 
 **By a list of IDs:**
 ```
-GET /attask/api/v17.0/project?id=4c78...54d0,4c78...54d1
+GET /attask/api/v22.0/project?id=4c78...54d0,4c78...54d1
 ```
 
 **Search with filters** (the most common pattern):
 ```
-GET /attask/api/v17.0/project/search
+GET /attask/api/v22.0/project/search
   ?status=CUR
   &status_Mod=eq
   &fields=name,status,plannedCompletionDate
@@ -35,26 +35,26 @@ See `06-filtering-queries.md` for the full filter syntax.
 
 **Count only** (no data rows, just how many match):
 ```
-GET /attask/api/v17.0/project/count?status=CUR&status_Mod=eq
+GET /attask/api/v22.0/project/count?status=CUR&status_Mod=eq
 ```
 Returns `{"count": 42}`.
 
 **Report (aggregated):**
 ```
-GET /attask/api/v17.0/hour/report
+GET /attask/api/v22.0/hour/report
   ?project:name_1_GroupBy=true
   &hours_AggFunc=sum
 ```
 
 **Named query (shortcut for common views):**
 ```
-GET /attask/api/v17.0/work/myWork
+GET /attask/api/v22.0/work/myWork
 ```
 
 ### POST — creating objects
 
 ```
-POST /attask/api/v17.0/project
+POST /attask/api/v22.0/project
 Content-Type: application/x-www-form-urlencoded
 
 name=My+New+Project&status=PLN&portfolioID=4c7...
@@ -62,7 +62,7 @@ name=My+New+Project&status=PLN&portfolioID=4c7...
 
 **Copy an existing object** — include `copySourceID` in the POST body:
 ```
-POST /attask/api/v17.0/project
+POST /attask/api/v22.0/project
 Content-Type: application/x-www-form-urlencoded
 
 copySourceID=4c7...&name=Copied+Project
@@ -70,7 +70,7 @@ copySourceID=4c7...&name=Copied+Project
 
 **Create a project from a template** — include `templateID` in the POST body (empirical, a live production tenant, v17.0, 2026-07-06):
 ```
-POST /attask/api/v17.0/project
+POST /attask/api/v22.0/project
 Content-Type: application/x-www-form-urlencoded
 
 updates={"name":"New Project","programID":"<prgm-id>","templateID":"<tmpl-id>","status":"CUR"}
@@ -79,7 +79,7 @@ updates={"name":"New Project","programID":"<prgm-id>","templateID":"<tmpl-id>","
 
 **Upload a document** (two-step):
 ```
-POST /attask/api/v17.0/upload
+POST /attask/api/v22.0/upload
 (multipart body with file)
 ```
 Returns `{"handle": "4c7c08fa..."}`. Then POST a `document` object referencing that handle.
@@ -88,7 +88,7 @@ Returns `{"handle": "4c7c08fa..."}`. Then POST a `document` object referencing t
 
 **Simple update (ID in path):**
 ```
-PUT /attask/api/v17.0/project/4c7...
+PUT /attask/api/v22.0/project/4c7...
 Content-Type: application/x-www-form-urlencoded
 
 name=Updated+Name
@@ -96,7 +96,7 @@ name=Updated+Name
 
 **JSON update via `updates` parameter** (cleaner for nested data):
 ```
-PUT /attask/api/v17.0/project/4c7...
+PUT /attask/api/v22.0/project/4c7...
 Content-Type: application/x-www-form-urlencoded
 
 updates={"name":"Updated Name","status":"CUR"}
@@ -112,13 +112,13 @@ The API docs note: *"Updates made to the top level are sparse, updates to a coll
 ### DELETE — removing objects
 
 ```
-DELETE /attask/api/v17.0/task/4c7...
+DELETE /attask/api/v22.0/task/4c7...
 ```
 
 By default this is a **soft delete** — the object goes to the Workfront Recycle Bin and can be restored within 30 days. To hard-delete the object and its dependents:
 
 ```
-DELETE /attask/api/v17.0/task/4c7...?force=true
+DELETE /attask/api/v22.0/task/4c7...?force=true
 ```
 
 See `11-tips-and-gotchas.md` for soft-delete vs hard-delete behavior.
@@ -128,11 +128,11 @@ See `11-tips-and-gotchas.md` for soft-delete vs hard-delete behavior.
 Some operations don't fit CRUD. Pass `action=` (in the query string or body) to invoke them. They're typically sent as `PUT` or `GET` against the object URL.
 
 ```
-PUT /attask/api/v17.0/project/4c7...?action=calculateTimeline
+PUT /attask/api/v22.0/project/4c7...?action=calculateTimeline
 ```
 Or equivalently as a path segment:
 ```
-PUT /attask/api/v17.0/project/4c7.../calculateTimeline
+PUT /attask/api/v22.0/project/4c7.../calculateTimeline
 ```
 
 **Actions documented in Adobe's API basics page:**
@@ -169,16 +169,16 @@ Use the `move` **action** endpoint — NOT a field update. Both of these work:
 
 ```bash
 # updates=<JSON> form (consistent with other actions)
-PUT /attask/api/v17.0/optask/<issueID>/move?apiKey=<key>
+PUT /attask/api/v22.0/optask/<issueID>/move?apiKey=<key>
   updates={"projectID":"<dest-project-id>"}
 
 # flat query-param form (also works for this action)
-PUT /attask/api/v17.0/optask/<issueID>/move?projectID=<dest-project-id>&apiKey=<key>
+PUT /attask/api/v22.0/optask/<issueID>/move?projectID=<dest-project-id>&apiKey=<key>
 ```
 
 **Silent-no-op trap:** a plain field update — `PUT /attask/api/v17.0/optask/<issueID>` with body `{"projectID":"<dest>"}` — returns **HTTP 200 but does not move the issue** (the `projectID` is unchanged on a follow-up GET). `projectID` is not a writable field on the issue via a direct PUT; only the `move` action relocates it. Verified on a preview sandbox tenant, v17.0, 2026-06-17.
 
-The collection form `PUT /attask/api/v17.0/optask?action=move` with `updates={"IDs":[...],"projectID":...}` returns `422 ... action move does not support argument named IDs` — use the per-id `/optask/<id>/move` path instead.
+The collection form `PUT /attask/api/v22.0/optask?action=move` with `updates={"IDs":[...],"projectID":...}` returns `422 ... action move does not support argument named IDs` — use the per-id `/optask/<id>/move` path instead.
 
 Logging hours against the moved issue uses `opTaskID` on the HOUR object (issues are OPTASK), not `taskID`: `POST /hour {"opTaskID":"<issueID>","hours":...,"entryDate":...,"description":...}`.
 
@@ -191,7 +191,7 @@ Logging hours against the moved issue uses `opTaskID` on the HOUR object (issues
 **Wire format** — same `updates=<JSON>` pattern as `assignMultiple`, with the args as a JSON object inside:
 
 ```bash
-PUT /attask/api/v17.0/task?action=bulkCopy
+PUT /attask/api/v22.0/task?action=bulkCopy
   updates={"taskIDs":["<src-id>"],"projectID":"<dest-project-id>"}
 
 # Response: {"data":{"result":["<new-task-id>"]}}
@@ -227,7 +227,7 @@ Two paths to avoid the CPL-source corruption:
 **Wire format:**
 
 ```bash
-PUT /attask/api/v17.0/ttsk?action=bulkCopy
+PUT /attask/api/v22.0/ttsk?action=bulkCopy
   updates={"templateTaskIDs":["<donor-id>"],"templateID":"<dest-template-id>"}
 
 # Response: {"data":{"result":["<new-ttsk-id>"]}}
@@ -246,7 +246,7 @@ PUT /attask/api/v17.0/ttsk?action=bulkCopy
 
 ```bash
 # 1. Plain field updates — name, parent, role, category, duration are all editable
-PUT /attask/api/v17.0/ttsk/<new-id>
+PUT /attask/api/v22.0/ttsk/<new-id>
   name=<your-name>
   parentID=<parent-new-id>
   roleID=                     # empty to clear
@@ -255,7 +255,7 @@ PUT /attask/api/v17.0/ttsk/<new-id>
 
 # 2. Collection updates — assignments, predecessors. MUST be in a separate call:
 #    API errors with "Cannot mix 'updates' JSON parameter with non-JSON update parameter 'name'"
-PUT /attask/api/v17.0/ttsk/<new-id>
+PUT /attask/api/v22.0/ttsk/<new-id>
   updates={"assignments":[{"assignedToID":"<userID>","roleID":"<roleID>"}],"predecessors":[]}
 ```
 
@@ -278,7 +278,7 @@ Wire shape mirrors `bulkCopy`:
 
 ```bash
 # Mark one assignment as not-done
-PUT /attask/api/v17.0/task/<task-id>?action=markNotDone
+PUT /attask/api/v22.0/task/<task-id>?action=markNotDone
   updates={"assignmentID":"<assignment-id>"}
 
 # Response: {"data":{"result":null}}
@@ -292,7 +292,7 @@ Available on `optask` (Issue) and `task`. Takes arrays of team / user / role IDs
 
 **Form-encoded (curl / standard Workfront pattern):**
 ```
-PUT /attask/api/v17.0/optask/{issueID}/assignMultiple?apiKey=<key>
+PUT /attask/api/v22.0/optask/{issueID}/assignMultiple?apiKey=<key>
 Content-Type: application/x-www-form-urlencoded
 
 updates={"teamIDs":["50d0dc4c0010afa2f9fdac7ec52fe7ce","5390effa0098dd5dded9985143c31f0f"],"userIDs":[],"roleIDs":[]}
@@ -300,7 +300,7 @@ updates={"teamIDs":["50d0dc4c0010afa2f9fdac7ec52fe7ce","5390effa0098dd5dded99851
 
 **Raw JSON body (Fusion / HTTP module / clients that prefer JSON):**
 ```
-PUT /attask/api/v17.0/optask/{issueID}/assignMultiple?apiKey=<key>
+PUT /attask/api/v22.0/optask/{issueID}/assignMultiple?apiKey=<key>
 Content-Type: application/json
 Authorization: Bearer <token>   (or apiKey= query param)
 
@@ -339,7 +339,7 @@ Custom-form (category) assignment actions are hosted on **`CTGY`** (Category), n
 
 ```
 # Attach one or more forms to an issue (additive)
-PUT /attask/api/v17.0/ctgy/assignCategories?apiKey=<key>
+PUT /attask/api/v22.0/ctgy/assignCategories?apiKey=<key>
 Content-Type: application/x-www-form-urlencoded
 
 updates={"objCode":"OPTASK","objID":"<issueID>","categoryIDs":["<ctgyID1>","<ctgyID2>"]}
@@ -365,16 +365,59 @@ Sibling actions on `CTGY` follow the same shape:
 | `assignCategories` | `objCode, objID, categoryIDs[]` | Additive; rejects whole batch if any duplicate |
 | `unassignCategory` | `objCode, objID, categoryID` | Removes one |
 | `unassignCategories` | `objCode, objID, categoryIDs[]` | Removes many |
+| `reorderCategories` | `objCode, objID, categoryIDs[]` | Reorders the attached set. **Exact-set only** (see below) |
 | `getAttachableCategories` | `searchTerm, catObjCode, excludedIDs[], limit` | **Listed in metadata but does not dispatch on v17.0** — returns `does not support action getAttachableCategories (CTGY)` whether GET or PUT. Use `GET /ctgy/search?catObjCode=<OBJCODE>&fields=name,catObjCode` instead. |
+
+### Reordering the forms attached to a record: `reorderCategories`
+
+Which order the custom forms render in on a record is per-record state, held as `categoryOrder` on the `ObjectCategory` join row (**0-indexed**). Read the current order off the record itself:
+
+```
+GET /attask/api/v22.0/optask/<issueID>?fields=objectCategories:categoryID,objectCategories:categoryOrder
+```
+
+`reorderCategories` sets it from array position:
+
+```
+PUT /attask/api/v22.0/ctgy/reorderCategories?apiKey=<key>
+updates={"objCode":"OPTASK","objID":"<issueID>","categoryIDs":["<ctgyID3>","<ctgyID1>","<ctgyID2>"]}
+```
+
+Returns `{"data":{"result":null}}` on success. Nothing is attached or detached, and no field values are touched.
+
+**Position 0 and the record's primary `categoryID` are the same fact, and each write updates the other.** Verified on `a sandbox tenant.workfront.com` v17.0, 2026-08-27:
+
+- Reordering to `[C, A, B]` on an issue whose primary form was A returned `categoryID` = C.
+- Conversely, `PUT /optask/<id>` with `categoryID=<B>` pulled B to `categoryOrder` 0 and pushed the others down, preserving their relative order.
+
+There is no way to set one without moving the other, and no way to make a form primary while leaving it in the middle of the list. The practical consequence: **a cosmetic reorder silently re-points every report filter, `/search?categoryID=`, and Fusion condition that keys on the primary form.** Check what depends on `categoryID` before promoting a different form to the front.
+
+**`categoryIDs` must be the exact, complete set of currently attached forms.** Both a subset and a superset are rejected, with the same unhelpful message and no partial application:
+
+```
+{"error":{"message":"Invalid Parameter: categoryIDs value \"[<id>, <id>]\""}}
+```
+
+So always read the live `objectCategories` collection first and reorder *that list*. Don't assemble `categoryIDs` from an assumption about what's attached: a form auto-attached by a queue topic will be in the set and will fail the call if omitted.
+
+Do not confuse the two `categoryOrder` fields. `OBJCAT.categoryOrder` is this per-record position. `CTGY.categoryOrder` is the form's tenant-wide default position in Setup, and setting it does nothing to any existing record.
 
 **Alternative — full collection replace via `objectCategories`.** When you want to set the exact final set of forms in one call (drop any not in the list, keep any in it), PUT the target object directly with the `objectCategories` collection. This is replace, not additive:
 
 ```
-PUT /attask/api/v17.0/optask/<issueID>?apiKey=<key>
+PUT /attask/api/v22.0/optask/<issueID>?apiKey=<key>
 updates={"objectCategories":[{"categoryID":"<ctgyID1>"},{"categoryID":"<ctgyID2>"}]}
 ```
 
-The primary form (the `categoryID` scalar on the object) is independent of the `objectCategories` collection — it has its own slot and is updated by setting `categoryID=<ctgyID>` on the object directly.
+Array position sets `categoryOrder` here too, and the first entry becomes the primary `categoryID`, exactly as with `reorderCategories`. So this is a second way to reorder. Prefer `reorderCategories` when order is all you're changing: the collection PUT detaches anything you leave out, which turns an incomplete read into a data change rather than an error.
+
+That gives three ways to write the same per-record ordering, in decreasing order of how much else they touch:
+
+| Call | Attaches / detaches | Sets order | Sets primary `categoryID` |
+|---|---|---|---|
+| `PUT /<obj>/<id>` with `objectCategories:[...]` | Yes (replace) | Yes, by array position | Yes, first entry |
+| `PUT /ctgy/reorderCategories` | No | Yes, by array position | Yes, first entry |
+| `PUT /<obj>/<id>` with `categoryID=<ctgyID>` | No | Yes, as a side effect: named form moves to 0, others keep relative order | Yes, directly |
 
 **General rule this surfaces:** assignment-style actions in Workfront are hosted on the *metadata* object (here, `CTGY`) and routed by `PUT /<metaobj>/<action>` with all arguments serialized into the `updates=<JSON>` parameter. The action does not live on the target object's endpoint. If you see an action in `<obj>/metadata` and want to call it, this is the dispatch shape to try first.
 
@@ -382,7 +425,7 @@ The primary form (the `categoryID` scalar on the object) is independent of the `
 
 **`search` is not an `action=` value** — it's a URL path segment appended to the object name:
 ```
-GET /attask/api/v17.0/project/search?...
+GET /attask/api/v22.0/project/search?...
 ```
 
 ### `convertToTask` — Issue → Task conversion (empirical, client-c.preview v18.0, 2026-06-24)
@@ -449,11 +492,11 @@ The convert dialog's three toggles (from `GET /internal/qs/convertToTask/metaDat
 If your HTTP client or infrastructure doesn't support all four verbs, you can tunnel the intended method as a query parameter on a `GET` or `POST`:
 
 ```
-GET /attask/api/v17.0/project?id=4c7...&method=delete&sessionID=abc123
+GET /attask/api/v22.0/project?id=4c7...&method=delete&sessionID=abc123
 ```
 
 ```
-PUT /attask/api/v17.0/proj
+PUT /attask/api/v22.0/proj
   ?updates=[{"name":"Test_Project_1"},{"name":"Test_Project_2"}]
   &method=POST
   &apiKey=123ab...
@@ -467,7 +510,7 @@ Send an array to `updates` to create or modify multiple objects in one call. Max
 
 **Bulk create (using method tunneling):**
 ```
-PUT /attask/api/v17.0/proj
+PUT /attask/api/v22.0/proj
   ?updates=[{"name":"Project A"},{"name":"Project B"}]
   &method=POST
   &apiKey=<key>
@@ -475,7 +518,7 @@ PUT /attask/api/v17.0/proj
 
 **Bulk update:**
 ```
-PUT /attask/api/v17.0/proj
+PUT /attask/api/v22.0/proj
   ?updates=[{"ID":"abc...","name":"Project A Updated"},{"ID":"def...","name":"Project B Updated"}]
   &apiKey=<key>
 ```
@@ -495,7 +538,7 @@ There is no native `application/json` body for the core REST API — JSON must b
 
 For filter-heavy GET requests that exceed the 8,892-byte URL limit, post as form-encoded to the `/search` endpoint instead:
 ```
-POST /attask/api/v17.0/task/search
+POST /attask/api/v22.0/task/search
 Content-Type: application/x-www-form-urlencoded
 
 status=CUR&status_Mod=eq&EXISTS:1:$$OBJCODE=ASSGN&EXISTS:1:taskID=FIELD:ID&...

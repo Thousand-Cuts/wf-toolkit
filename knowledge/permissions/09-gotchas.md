@@ -118,6 +118,28 @@ Repeat across multiple parent objCodes. See `03-accessrule-shape` and `05-audit-
 **Why this is invisible to the resolver:** `AccessLevel.layoutTemplateID` is not a v17.0 field — `GET /accessLevel/<id>?fields=layoutTemplateID` returns "APIModel V17_0 does not support field". The model has no read access to this layer at all.
 **Diagnostic:** When Flow 1 produces ALLOW but the consultant insists the user is blocked, Layout Template is the #1 operational cause. Direct the consultant to Setup → Interface → Layout Templates → find the template bound to the user's access level (or their group, or their user record) and inspect tab/section/button visibility for the relevant objCode. Confirmed 2026-05-22 on a live-tenant ADD-document-on-task issue where the model said ALLOW and the actual blocker was Layout Template hiding the Documents tab on TASK.
 
+## 19. A flat share list does not scale; group nesting is the way past an entry cap
+
+**Surprise:** "This report has to reach 119 groups and the share dialog stops taking entries at 100."
+
+**Mechanic:** A share is one `ACSRUL` row per accessor, and the share list is flat: there is no "all groups" accessor and no bulk-add on the object. `GROUP`, however, is a **hierarchy**, and that is the lever. Verified 2026-08-28 on `a sandbox tenant.workfront.com` (sandbox), v17.0: `GET /group/metadata` returns a `parentID` field, a `parent` reference with `typeObjCode: GROUP`, and a `children` collection (there is no `subGroups` collection; the name is `children`). A live nested pair on that tenant confirms it is populated in practice, not just declared: `GET /group/<id>?fields=ID,name,parentID,children:ID,children:name` on "Financial Marketing" returns one child, "Financial Marketing - Quarterly Reports", and that child's own row carries the matching `parentID`. Negative control: `fields=ID,zzzNotAField` on the same endpoint is rejected with `APIModel V17_0 does not support field zzzNotAField (Group)`, so the field names above resolving is evidence rather than permissiveness.
+
+<!-- UNVERIFIED -->
+The community claim built on that substrate: a share granted to a **parent** group reaches the users of its subgroups, so N sibling groups renested under one new parent collapse to a single share row. Unverified because proving the cascade needs a share to be created and then read back as a different user, which is a write; this routine is read-only. The same answer offers sharing at the **Company** level as the other escape hatch, which only fits when the intended audience really is everyone.
+
+**Also unverified: the 100-entry cap itself.** It is the asker's premise, and nobody in the thread confirmed a number or named where the limit is enforced. No GET settles it, since reproducing it means creating more than 100 shares. Treat "around 100" as a reported ceiling to design away from, not a constant to quote at a client. What the sandbox does show is that real share lists sit nowhere near it: across 200 projects and 200 reports, the largest single `accessRules` collection held 10 rows.
+
+**Mitigation:** When a share list is heading for triple digits, restructure the accessor rather than the list. Audit what already exists first, because a tenant that has been running for years may already have the hierarchy: `GET /group/search?fields=ID,name,parentID&$$LIMIT=200` and group the result by `parentID` shows how much nesting is in place (on the verification tenant, 1 of 50 groups had a parent, so effectively none). Nesting is a governance change and not a free one: it also merges those groups for group-admin scope, group-level Layout Templates, and every other object already shared to the new parent, so it should be proposed as a structural change, not slipped in to unblock one report.
+
+**Related:** § 18 for the other reason a correct-looking share does not produce the visibility someone expects.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/share-report-with-more-than-100-users-groups-252329` | § 19: the reported 100-entry share cap, and the parent-group / Company-level workarounds. Best answer by Lyndsy-Denk, 2026-08-14 |
+
+
 ## Cross-references
 
 - `01-permission-model` — the 6-input model + exact-match coreAction
@@ -125,3 +147,4 @@ Repeat across multiple parent objCodes. See `03-accessrule-shape` and `05-audit-
 - `03-accessrule-shape` — accessorID, ancestorID, forbiddenActions enum
 - `06-inheritance-and-ownership` — inline isInherited
 - `07-system-wide-overrides` — what's not REST-accessible
+- `03-accessrule-shape` — one ACSRUL row per accessor, which is why § 19's list is flat
