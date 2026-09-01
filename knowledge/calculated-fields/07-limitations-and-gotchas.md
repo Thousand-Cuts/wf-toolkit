@@ -34,7 +34,43 @@ Practical consequence: never display cross-object calculated field values to sta
 
 ## Circular Dependencies
 
-Workfront does not allow a calculated field to reference itself (self-reference). If Field A references Field B, and Field B references Field A, Workfront will detect the circular reference and refuse to save. The form editor will surface an error. There is no workaround within calculated fields — break the cycle by restructuring the logic.
+**Mutual references between calculated fields are rejected.** If Field A references Field B, and Field B references Field A, Workfront detects the circular reference and refuses to save; the form editor surfaces an error. There is no workaround within calculated fields: break the cycle by restructuring the logic.
+
+**Direct self-reference is allowed.** A calculated field can reference itself (`{DE:X}` inside field X's own expression), subject to an ordering requirement: create the field, save the form once to commit it to the database, then edit the field and enter the calculation. An expression can only name a field that already exists. This is the basis of the first-touch timestamp latch pattern in `06-common-patterns.md` § "First-Touch Status Timestamp Latch":
+
+```
+IF({status}="ONH",IF(ISBLANK({DE:On Hold Date}),$$NOW,{DE:On Hold Date}),{DE:On Hold Date})
+```
+
+An earlier revision of this section claimed self-reference was disallowed outright ("Workfront will detect the circular reference and refuse to save"), conflating the direct case with the mutual case above. Corrected 2026-09-01 after a community report and live evidence; the mutual-case prohibition stands unchanged.
+
+Verified 2026-08-31 on a sandbox tenant (sandbox), v22.0: two independent self-referencing calculated
+fields exist and persist, both with `isInvalidExpression: false`, read via
+`GET /CTGY/search?fields=categoryParameters:customExpression,categoryParameters:isInvalidExpression,categoryParameters:parameter:name`:
+
+| Form | Field | Expression |
+|---|---|---|
+| Additional Task Details | `INPSTATUSDATE` | `IF({status}="INP",IF(ISBLANK({DE:INPSTATUSDATE}), $$NOW, {DE:INPSTATUSDATE}))` |
+| PMO Project Brief | `Job Number` | `IF(ISBLANK({DE:Job Number})||LEN({DE:Job Number})!=LEN(CONCAT(...)),CONCAT(...),{DE:Job Number})` |
+
+`INPSTATUSDATE` is the same latch shape the community thread describes, applied to `INP` instead of `ONH`,
+arrived at independently by whoever built that form. Negative control: `categoryParameters:bogusFieldXyz` on
+the same endpoint is rejected with `APIModel V22_0 does not support field bogusFieldXyz (CategoryParameter)`,
+so these field names resolving is evidence rather than silent tolerance.
+
+**Verification scope:**
+
+- **Verified:** a direct self-reference is accepted and persists on a live v22.0 tenant, on two unrelated
+  forms.
+- **Not verified:** the runtime latching behavior. Whether the stored value actually sticks across
+  recalculation, rather than re-evaluating to blank or to a fresh `$$NOW`, requires observing a recalc, which
+  needs a write. <!-- UNVERIFIED --> The latch semantics rest on the community thread and the pattern's wide
+  community circulation.
+- **Not retested:** the mutual case (Field A references Field B, Field B references Field A). The prohibition
+  above stands on the original claim, which the evidence never contradicted.
+- **Weak signal, stated so it is not over-read:** `isInvalidExpression` was `false` on all 647 category
+  parameters in the tenant, so it never discriminates here. The load-bearing evidence is that the expressions
+  persist at all, not that the flag says they are valid.
 
 ## Chained Calc Fields: Transitive Refresh Not Guaranteed
 
@@ -88,3 +124,4 @@ Community-reported, not reproduced in-house: all 200 `parameterOption` rows samp
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/best-way-to-report-the-counts-of-selections-from-a-multi-select-field-251655` | CONTAINS-on-multi-select matches `ParameterOption.value`, not `.label` — best answer by Lyndsy-Denk, 2026-07-10 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/using-journal-entry-data-for-reporting-on-custom-status-changes-252434` | Self-referencing calculated field as a first-touch status timestamp latch, plus the save-then-calculate ordering requirement. Contradicted the prior Circular Dependencies claim; arbitrated 2026-09-01 in favor of the thread and the claim rescoped to mutual references. Best answer by Richard_Le_, 2026-08-20 |

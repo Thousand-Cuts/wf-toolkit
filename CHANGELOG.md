@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.10 — 2026-09-01
+
+Automated knowledge sync from the maintainers' verification pipeline (scrub gate + validation passed).
+
 ## 1.1.9 — 2026-08-31
 
 Automated knowledge sync from the maintainers' verification pipeline (scrub gate + validation passed).

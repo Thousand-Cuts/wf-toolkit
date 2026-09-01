@@ -203,8 +203,30 @@ IF(CONTAINS("TW",{DE:Country})="true",1,0)
 <!-- UNVERIFIED -->
 A multi-select stores one concatenated string of the selected options' values, and a calc field emits one scalar — so there is no native "count per selection." One Number-format indicator field per option, SUMmed in a report grouping, yields per-option counts. Test against `ParameterOption.value`, never the display label — see `07-limitations-and-gotchas.md` § "CONTAINS on a Multi-Select Tests Option Values, Not Labels" for the silent-zero trap, the substring-collision caution, and why Format must be Number at creation. With many options, house the indicator fields on an admin-only reporting form rather than the user-facing one. Community-reported (see Sources); the `="true"` string compare is the form the source reports working — not lab-verified here.
 
+---
+
+## First-Touch Status Timestamp Latch (Self-Referencing)
+
+**Format:** Date/Time
+
+```
+IF({status}="ONH",IF(ISBLANK({DE:On Hold Date}),$$NOW,{DE:On Hold Date}),{DE:On Hold Date})
+```
+
+Stamps the first time a record enters a given status, with no Fusion scenario. The field references **itself**: when the status matches and nothing is stored yet, emit `$$NOW`; in every other case re-emit the stored value, so the first stamp sticks.
+
+Requirements and caveats:
+
+1. **Save the form first.** Create the field, save the form to commit it to the database, then edit the field and enter the calculation. An expression can only reference a field that already exists. Direct self-reference is allowed; mutual references between two fields are rejected at save (see `07-limitations-and-gotchas.md` § Circular Dependencies).
+2. **Recalc timing applies.** The stamp is written when the object's calculations run (edit-and-save, form attach plus save, or a recalc; see 07 § Stale Cross-Object Values). A status change with no accompanying recalc event will not stamp until the next one, so the timestamp is "first recalc while in status", not the literal transition instant.
+3. **First-touch, not most-recent.** A record that leaves and later re-enters the status keeps the original timestamp. Intended for first-touch stamps; wrong for a most-recent-touch stamp.
+
+<!-- UNVERIFIED -->
+The self-reference being accepted and persisting is verified on a live v22.0 tenant (evidence in `07-limitations-and-gotchas.md` § Circular Dependencies). The latch semantics, meaning the stored value surviving recalculation rather than re-evaluating to blank, are community-reported and match two independently built production fields, but have not been exercised in-house because proving it needs a write.
+
 ## Sources
 
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/best-way-to-report-the-counts-of-selections-from-a-multi-select-field-251655` | the per-option 0/1 indicator pattern for multi-select counts — best answer by Lyndsy-Denk, 2026-07-10 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/using-journal-entry-data-for-reporting-on-custom-status-changes-252434` | the self-referencing first-touch timestamp latch and the save-then-calculate ordering requirement; best answer by Richard_Le_, 2026-08-20 |

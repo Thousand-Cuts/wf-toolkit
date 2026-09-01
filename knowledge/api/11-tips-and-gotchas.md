@@ -561,6 +561,56 @@ GET /attask/api/v22.0/task/search?fields=ID,name,workRequired,workPerDate&workRe
 
 Verified 2026-08-24 on a sandbox tenant (sandbox), v17.0: `GET /task/metadata`, `/assignment/metadata`, `/optask/metadata`, `/project/metadata`, `/hour/metadata` for field presence and flags; a live `/task/search` returning `{"2026-07-06":11.0,"2026-07-07":4.0}` against `workRequired: 15` and `{"2026-07-07":180.0,"2026-07-08":60.0}` against `workRequired: 240` (both sum exactly). Negative controls: `fields=ID,workPerDateXYZ` → `APIModel V17_0 does not support field workPerDateXYZ (Task)`, so field acceptance is meaningful rather than silently ignored; the same query without `workPerDate` in `fields=` omits it entirely, confirming `LAZY_READ`; `workPerDate_Mod=isnull` → `Invalid Parameter: Search Parameter value "workPerDate"`, confirming it is unfilterable.
 
+## `convertedOpTaskEntryDate` mirrors the source issue's entry date, not the moment of conversion
+
+A project created by converting an issue carries four `convertedOpTask*` fields. The name of the date one reads as "when the conversion happened". It is not: `PROJ.convertedOpTaskEntryDate` is a **copy of the source issue's own `entryDate`**, stamped onto the project at conversion time.
+
+This matters because the obvious "issue wait time" formula — how long a request sat before it became a project — is routinely written as `issue.entryDate` against `project.convertedOpTaskEntryDate`. Those are the same instant, so the result is always zero, and it is zero silently rather than erroring.
+
+**The pair that actually measures the gap lives entirely on the project**, which means no join and no cross-object hop in a project report or calculated field:
+
+```
+DATEDIFF({entryDate}, {convertedOpTaskEntryDate})
+```
+
+`PROJ.entryDate` is the project row's own creation timestamp, and on a converted project that creation *is* the conversion.
+
+| Field on `PROJ` | What it holds |
+|---|---|
+| `convertedOpTaskID` | ID of the source issue |
+| `convertedOpTaskName` | Name of the source issue |
+| `convertedOpTaskEntryDate` | The source issue's `entryDate`, copied |
+| `convertedOpTaskOriginatorID` | Who entered the source issue |
+| `entryDate` | The project's own creation (= the conversion, on a converted project) |
+
+Note also that `OPTASK` carries **no** matching back-reference date: an `/optask/metadata` field scan for `convert` returns nothing. The conversion linkage is recorded on the project side only, so a report that starts from the issue has to reach across to the project rather than the reverse.
+
+**Verified 2026-08-31** on a sandbox tenant (sandbox, `WF_ENV_TYPE=sandbox`), read-only, nothing created:
+
+```bash
+# Population
+GET /attask/api/v22.0/proj/search?convertedOpTaskID_Mod=notnull\
+  &fields=ID,name,entryDate,convertedOpTaskID,convertedOpTaskEntryDate   # -> 9 projects
+
+# Discriminator — fetch each source issue and compare
+GET /attask/api/v22.0/optask/search?ID=<convertedOpTaskID>&fields=ID,entryDate
+#   5 of 5 pairs matched the project's convertedOpTaskEntryDate to the
+#   millisecond, e.g. issue 6a047340 entryDate 2026-05-13T06:49:04:099-0600
+#   == project 6a173d20 convertedOpTaskEntryDate 2026-05-13T06:49:04:099-0600,
+#   while that project's own entryDate is 2026-05-27T12:51:12:840-0600.
+#   The two candidate readings are 14 days apart here, so the match is not
+#   a coincidence of coarse timestamps.
+
+# Negative control
+GET /attask/api/v22.0/proj/search?convertedOpTaskID_Mod=isnull\
+  &fields=ID,name,entryDate,convertedOpTaskID,convertedOpTaskEntryDate
+#   -> 5 of 5 projects have BOTH convertedOpTaskID and
+#      convertedOpTaskEntryDate null. The field is populated only by
+#      conversion, so it is not a general-purpose date being read wrong.
+```
+
+**Scope limits.** What is proven is the equality `PROJ.convertedOpTaskEntryDate == source OPTASK.entryDate`, plus its null-on-unconverted behavior. The second claim — that `PROJ.entryDate` equals the conversion moment — rests on it being the project row's creation timestamp and on all 9 sampled projects having an `entryDate` later than their source issue's; no conversion was performed live in this pass to timestamp it directly. Not tested: whether an issue converted with "keep the original issue" set behaves differently, whether `convertedOpTaskEntryDate` is writable, or what happens to it if the source issue is later deleted. All 9 sampled projects came from one sandbox tenant.
+
 ## Sources
 
 | URL | What it provided |
@@ -573,3 +623,4 @@ Verified 2026-08-24 on a sandbox tenant (sandbox), v17.0: `GET /task/metadata`, 
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/fusion-module-to-clear-other-teams-251712` | one-PUT `{"homeTeamID": "", "teams": []}` to fully clear a user's teams — best answer by Tracy_Parmeter, 2026-07-16 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/data-connect-refresh-251986` | Data Connect freshness is readable from the share itself — `MONITORING_DATA_REFRESHES` view and the `DL_LOAD_TIMESTAMP` row column; one tenant's observed :20-past phase, read as UTC — best answer by BrookeSt5, 2026-07-28 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/extract-planned-hours-from-the-workload-balancer-using-an-api-128510` | `workPerDate` as the Workload Balancer's per-day hours, absent from the field selector, returning a date→minutes map — best answer by Rafal_Bainie, 2023-12-04 (object coverage, flags, JSON-vs-toString shape, and the three constraints verified live and corrected here) |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/calculate-datediff-between-issue-entry-date-and-the-date-it-was-converted-to-aporject-252510` | Prompted the check: the thread's standing advice pairs `issue.entryDate` with `project.convertedOpTaskEntryDate`, which are the same instant. Field semantics established live here, not taken from the thread — thread by ljorr16, 2026-08-30 |

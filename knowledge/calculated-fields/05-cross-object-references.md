@@ -31,6 +31,32 @@ A **project** calc field **cannot** reach down into its tasks or issues — thes
 
 **Workaround:** Use a Fusion scenario to aggregate child data and write the result to a custom field on the parent. The calc field on the project can then reference that written value.
 
+**Verified 2026-09-01** on a sandbox tenant (sandbox, `WF_ENV_TYPE=sandbox`), v22.0. The rejection is at **save time**, not a silent blank: the `PUT /category/<id>` carrying the expression is refused outright and no `CategoryParameter` row is written.
+
+```bash
+# Setup: a throwaway PROJ-scoped form (catObjCode=PROJ) + displayType=CALC parameters.
+# NOTE: Category create uses `catObjCode`, not `objCode` — `objCode=PROJ` fails with
+#   'Cannot invoke "...CategoryObjTypesEnum.getFeature()" because "objTypeEnum" is null'
+
+# Discriminator — downward reference into the child collection
+PUT /attask/api/v22.0/category/<catID>
+  updates={"categoryParameters":[{"parameterID":"<p>","displayOrder":1,
+           "customExpression":"{tasks}.{name}"}]}
+#   -> {"error":{"message":"Invalid Expression: \"{tasks}.{name}\" is not a
+#       field in your system"}}
+#   Read-back: categoryParameters count = 0. Nothing persisted.
+
+# Negative control — identical PUT shape, identical form, upward reference
+PUT /attask/api/v22.0/category/<catID>
+  updates={"categoryParameters":[{"parameterID":"<p>","displayOrder":1,
+           "customExpression":"{portfolio}.{name}"}]}
+#   -> 200, row persists, isInvalidExpression: false
+```
+
+The control is what makes this load-bearing: same endpoint, same payload shape, same PROJ-scoped form, same `displayType=CALC` parameter type. Only the traversal direction differs, so the refusal is attributable to the downward reference rather than to a malformed request.
+
+**Scope limits.** What is proven is that `{tasks}.{name}` is rejected on save on a PROJ-scoped form on one sandbox tenant at v22.0, while an upward reference on the same form is accepted. Not tested: other collection names (`{issues}`, `{documents}`, `{assignments}`), whether the UI form editor surfaces the same refusal or fails differently, and whether any collection is reachable via a non-collection singular alias. The "produce an error **or blank**" wording above is now settled on the error side for this case; no configuration was found that produces a silent blank instead.
+
 ### Sibling / Lateral References
 
 A field can reference its own related objects (owner, portfolio, program, etc.) but not sibling records of the same type. A task cannot reach other tasks; a project cannot reach other projects.
