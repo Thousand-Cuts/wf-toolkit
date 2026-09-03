@@ -12,6 +12,7 @@ A grab-bag of hard-won knowledge that doesn't fit cleanly elsewhere.
 | Filter modifier seems ignored | Missing `_Mod` line, or wrong modifier for the field type |
 | Custom field returns blank | `DE:` argument must match the parameter's internal `name`, not the UI `label`. When the two diverge (a renamed field), only the `name` resolves. See `01-syntax-fundamentals.md` § "DE: name vs. label" |
 | Cross-object reference (`{lastNote:noteText}`, `{program:DE:X}`, `{project:name}`) renders BLANK | Colon-inside-braces is silently rejected at render-time (PUT succeeds without error, cells just come back empty). Rewrite with dotted-brace traversal: `{lastNote}.{noteText}`, `{program}.{DE:X}`, `{project}.{name}`. Confirmed 2026-05-26 across 24 reports |
+| Reference renders blank ONLY inside a `type=iterate` column, while the identical reference works in ordinary columns of the same report | The frame inside an iterate is the **child**, not the report's base object. Traverse from the child using the child's relation name (`{project}.{entryDate}` on a task), not the base object's (`{resolveProject}.{entryDate}` on an issue). See `08-collections.md` § Reference frame inside `type=iterate` |
 | Wildcard doesn't expand | Wildcard used in `valuefield` instead of `valueexpression` |
 | Sort doesn't apply | `querysort` field name wrong, or grouping overrides it |
 | Combined column doesn't combine | One sub-column is missing `sharecol=true`, or the LAST one has it (it shouldn't) |
@@ -30,7 +31,7 @@ These naming choices cause silent failures in calculated fields, External Lookup
 | Question marks in field names | Preserve them — some instances have fields like `DE:Approved?`; don't strip the `?` |
 | `DE:` prefix | Always prefix custom field references with `DE:` inside expressions and filters |
 | Quoting `DE:` references | Don't wrap `DE:` field references in quotes inside expressions or filter values |
-| `{project}.` / `{task}.` prefixes | Only add when the report's base object requires reaching a parent (e.g., Assignment report reaching the parent Task). Don't add by default |
+| `{project}.` / `{task}.` prefixes | Only add when the report's base object requires reaching a parent (e.g., Assignment report reaching the parent Task). Don't add by default. Inside a `type=iterate` column the base object is not the frame — the iterated child is — so the prefix is required there for fields the outer row reaches without one (`08-collections.md` § Reference frame inside `type=iterate`) |
 
 When in doubt about a field name, point the user to the API Explorer rather than inventing a name.
 
@@ -175,3 +176,9 @@ Examples:
 | `$$OBJCODE` | the current object's objCode (e.g., `PROJ`, `TASK`, `OPTASK`) | Useful inside `valueexpression` IF chains that switch behavior based on object type — e.g., a polymorphic report joining projects and tasks |
 
 Source: Adobe `report-elements/understand-wildcard-filter-variables`. Snapshot date: 2026-05-14; Adobe may add new wildcards over time.
+
+## Sources
+
+| Source | What it provided |
+|---|---|
+| https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/weekdaydiff-between-native-field-and-the-date-of-specific-task-252589 | The iterate reference-frame blank-cell symptom and the `{project}.` prefix qualification — best answer by NicholeVargas, 2026-09-01 |

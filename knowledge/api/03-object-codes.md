@@ -102,6 +102,21 @@ curl -s --compressed -G "https://<host>/attask/api/v22.0/JRNLE/search" \
   -H "apiKey: <key>"
 ```
 
+### JRNLE is the field-change log, not the Updates feed
+
+The section above notes that `JRNLE` captures changes the Updates feed does not surface. The complement matters just as much and is easy to read past: **a free-form comment or status-update message typed into the Updates area is generally a `NOTE`, not a journal entry.** `JRNLE` records *tracked system and field changes*; it is not a superset of the Updates stream.
+
+So "the last update / last activity date on this project" has two different answers, and picking the wrong object returns plausible-looking timestamps for a different question:
+
+| The requester means | Query |
+|---|---|
+| when a field was last changed, and by whom | `JRNLE` (filter `editedByID` for a specific person) |
+| when someone last commented in the Updates area | `NOTE` |
+
+<!-- UNVERIFIED --> Community-reported; the distinction was not re-checked against a live tenant (the 2026-09-01 sweep could not reach one — `sweep-verify.sh` was blocked, see that run's PR). `NOTE` payload shape and its retroactively-pruned fields are documented in `11-tips-and-gotchas.md` § "Posting an update (NOTE)".
+
+<!-- UNVERIFIED --> The same thread gives `entryDate_Sort=desc` with `$$LIMIT=1` as the "most recent matching journal entry" idiom. `_Sort` syntax in general is covered in `09-pagination-and-limits.md` § Deterministic ordering — which explicitly asks you to confirm the parameter for your target object, and that confirmation has **not** been done for `JRNLE`. Treat it as a starting point, not a verified recipe.
+
 ## Discovering an object code when a guess fails
 
 When an endpoint returns `Unknown object type: <CODE>`, don't keep guessing — list the real codes programmatically. `GET /attask/api/v22.0/metadata` returns every object under `data.objects` as `{DisplayName: {objCode: "..."}}`; grep it for the concept you want (e.g. `journal`, `audit`, `note`). For a specific object's fields, `GET /attask/api/v22.0/<OBJCODE>/metadata` returns `data.fields` — the ground truth for which field names exist in your API version (this is how the `oldTextVal`/`newTextVal` shape above was found).
@@ -109,3 +124,9 @@ When an endpoint returns `Unknown object type: <CODE>`, don't keep guessing — 
 ## Verifying the URL path for an object
 
 Don't assume the URL segment matches the OBJCODE. Look the endpoint up in the Adobe Workfront API Explorer — it gives you the exact URL path, the supported HTTP methods, and the available fields for every object.
+
+## Sources
+
+| URL | What it provided |
+|---|---|
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/fetching-the-last-project-update-activity-date-by-the-project-owner-using-fusion-automation-252564` | The JRNLE-vs-NOTE reading of "last update date", and the `entryDate_Sort=desc` + `$$LIMIT=1` newest-entry idiom — best answer by etaylor-1, 2026-09-01. The rest of the answer (`objObjCode`/`objID`/`projectID` filtering, `editedByID`, `entryDate`, `$$LIMIT`) restates what this section already documented. |
