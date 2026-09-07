@@ -185,15 +185,42 @@ Read it as three moves: iterate the related object's children; select the one yo
 
 Caveats, both of which follow from rules stated above:
 - Non-matching children still render an entry (a blank one) — the `IF` has no else-skip. See § Common collection patterns.
-- Selecting by `CONTAINS` on `{name}` matches **every** task whose name contains the string, so a project with "Kickoff" and "Kickoff Prep" emits two values. Match on a task custom field or a milestone if the naming is not disciplined.
+- Selecting by `CONTAINS` on `{name}` matches **every** task whose name contains the string, so a project with "Kickoff" and "Kickoff Prep" emits two values. Match on a task custom field or a milestone if the naming is not disciplined — or, on template-generated projects, on `{templateTaskID}`; see § Pattern: selecting one specific child by template identity below.
 
 Swap `{actualStartDate}` for `{plannedStartDate}` / `{plannedCompletionDate}` as the question requires; the surrounding shape is unchanged.
+
+### Pattern: selecting one specific child by template identity
+
+<!-- UNVERIFIED -->
+The selector problem above — "I want *this one* child, and name matching is too loose" — has a stable answer whenever the project was created from a template. **`{templateTaskID}` on a task holds the ID of the template task (`TTSK`) it was generated from**, and that ID is the *same value* on the corresponding task in every project created from that template. So one hardcoded ID picks out "the same task" across the whole portfolio, where `{name}` matching depends on nobody having renamed or duplicated anything:
+
+```
+displayname=Specific Milestones
+listdelimiter=<p>
+listmethod=nested(tasks).lists
+type=iterate
+valueexpression=IF({templateTaskID}="aecf4d570693db8fe0539260720a5552",IF(!ISBLANK({milestoneID}),IF({canStart}="true",IF({project}.{status}!="CPL",{name}))))
+valueformat=HTML
+```
+
+The nesting reads as a filter chain, each `IF` narrowing the last: it is that one template task, **and** it is flagged as a milestone (`!ISBLANK({milestoneID})`), **and** it is ready to execute (`{canStart}`), **and** its project is not complete — then emit `{name}`. Note the reach-back to `{project}.{status}` from inside the iterate, per § Reference frame inside `type=iterate`.
+
+Where to get the ID: open the template task and take the ID from the URL, or `GET /attask/api/v22.0/tmplTask/search?fields=ID,name&templateID=<id>`.
+
+**Two limits, and the second is the more important one.**
+
+1. The ID is **template-scoped and environment-specific**. A project created ad hoc, or from a *different* template, has a different `templateTaskID` (or none), so the column silently renders empty for it rather than erroring — the same blank-cell signature as any other non-matching `IF`. The literal also differs between sandbox and production, so a view promoted between environments needs the ID swapped. This is the text-mode instance of the hardcoded-ID portability concern the Fusion bucket already tracks (`../fusion/08-scenario-creation-checklist.md`).
+
+2. <!-- UNVERIFIED --> **There is no way to take "the first N" of an iterate.** The thread this came from asked for *only the first active milestone when several are active*, and the accepted answer does not deliver that — it substitutes pinning one known identity. That substitution is the finding: `type=iterate` has no rank, limit, index, or short-circuit construct, so a `valueexpression` cannot express "whichever of these matches first". Every child that satisfies the `IF` renders, and ordering is whatever the collection returns. The workarounds are all upstream of text mode — pin an identity as above, tighten the predicate until exactly one child can match, or (the answerer's own practice) chain milestones with predecessors so that only one is ever `canStart` at a time, making the report's "only one" a property of the schedule rather than of the column.
+
+Treat "show me the first/latest/highest child" requests as a modeling question, not a syntax question.
 
 ## Sources
 
 | Source | What it provided |
 |---|---|
 | https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/weekdaydiff-between-native-field-and-the-date-of-specific-task-252589 | The `nested(<rel>.<collection>).lists` dotted form, the `{project}.{entryDate}` reach-back from inside an iterate, and the WEEKDAYDIFF-to-a-named-child pattern — best answer by NicholeVargas, 2026-09-01 |
+| https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/show-only-1-active-milestone-in-a-project-report-252441 | `{templateTaskID}` as a stable per-template selector inside a `nested(tasks).lists` iterate, the milestone/`canStart`/project-status filter chain, and — by what the answer declines to do — the absence of any first/limit construct in an iterate; the predecessor-chaining modeling workaround is the answerer's own practice. Best answer by NicholeVargas, 2026-09-03 |
 
 ## Cross-references
 
@@ -201,3 +228,4 @@ Swap `{actualStartDate}` for `{plannedStartDate}` / `{plannedCompletionDate}` as
 - `04-views-and-groupings.md` — the view-level directives these collection columns sit inside.
 - `09-tips-and-gotchas.md` — the blank-cell symptom table, including the iterate reference-frame row.
 - `../reports/07-view-patterns.md` § 6 — the same collection column expressed as UIVW JSON, and the per-child evaluation rule.
+- `../fusion/08-scenario-creation-checklist.md` — the hardcoded environment-specific ID concern that § Pattern: selecting one specific child by template identity inherits.
