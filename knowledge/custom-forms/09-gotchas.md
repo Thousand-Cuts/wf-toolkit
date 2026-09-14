@@ -387,6 +387,13 @@ GET /attask/api/v22.0/PARAM/metadata?fields=fields
 
 **Scope limits.** Metadata enumeration proves the fields do not exist, which is what rules out both a clear-on-hide attribute and a readable visibility flag. Not tested: whether the Workfront UI's form editor offers a clear-on-hide toggle backed by some non-REST internal surface (the `/internal/customForms/saveForm` payload was not re-captured for this), and no calc-field formula was executed against a hidden field to observe evaluation. The mitigation formula is the standard guard pattern and was not run end-to-end on a live form in this pass.
 
+**(c) The corollary that matters on an integration: display logic is not an access control, and not a data filter.** (b) established that visibility is computed at render time and persisted nowhere. The consequence generalizes past calculated fields to *every* consumer outside the form UI: a hidden field's stored value is returned to an authorized reader — REST, Fusion, a report, an export — exactly as a visible one is. Two things follow, and both are worth saying out loud to a client:
+
+- **Hiding a field does not keep its contents from anyone who can read the record.** Display logic is a user-experience feature; if a value must not be seen, that is a `CategoryParameter.securityLevel` question (§ 22) or a field that is never populated, not a cascade rule.
+- **"Field 2 has a value" is not evidence that Field 2 was shown.** An automation that infers the former from the latter will act on values stranded by a trigger change or a copied request — the same stale-value path as (a), reached from the integration side instead of the calc-field side.
+
+<!-- UNVERIFIED --> Community-reported from the Fusion surface specifically (thread below, best answer 2026-09-01): **Fusion exposes no supported runtime property such as `isVisible`** for a Workfront custom-form field, and the recommended design is to reproduce the display rule's own condition as a Fusion router or filter placed ahead of the modules that consume the dependent field — the guard-on-the-trigger mitigation above, applied one layer out. Consistent with the metadata enumeration in (b) (nothing persists visibility, so nothing can return it), but the Fusion-side statement itself is community hearsay and no GET settles what a Fusion module exposes. The same thread reports that the Workfront *Copy* misc action carries a `clearCustomData` option that clears **all** custom data rather than selected fields; that is a write-side claim this routine cannot confirm, and it is recorded here only so the next person knows to check it rather than rediscover it.
+
 ## 36. Reordering the forms on a record silently changes its primary `categoryID`
 
 **Surprise:** "A consultant reordered the three forms on a request so the triage form showed first. Nothing about the data changed. The next day a report filtered on `categoryID` stopped returning those requests."
@@ -414,9 +421,11 @@ Full dispatch shapes, the exact-set constraint on `reorderCategories`, and the t
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)
 - `calculated-fields/05-cross-object-references` — `{program}.{DE:NAME}` dotted syntax for cross-object refs; DE: lookups use parameter **name**, not label
 - dedicated bulk-update tooling — backfill / migration patterns
+- `fusion/02-module-configs` — the Fusion side of gotcha #35(c): a scenario reading a custom field cannot ask whether that field was displayed, so the display rule's condition has to be restated as a filter
 
 ## Sources
 
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/use-reference-number-in-internal-lookup-251783` | INTRNL end-user search matches name only, not reference number (gotcha #34) — best answer by jayciedido, 2026-07-17 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/capture-form-visibility-display-with-fusion-252470` | Independent corroboration of gotcha #35 from the Fusion surface, and the source of #35(c): no `isVisible` runtime property in Fusion, display logic is not a data-clearing or security rule, reproduce the display condition as a Fusion filter. Also the unconfirmed `clearCustomData` copy-action remark — best answer by etaylor-1, 2026-09-01 |
