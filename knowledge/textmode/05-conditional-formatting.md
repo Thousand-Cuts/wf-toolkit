@@ -29,7 +29,19 @@ Example: instead of `valueexpression=CONCAT(DATEDIFF({plannedCompletionDate},$$T
 - **Calculated column** (`valueexpression` in the view) — recomputes on every report render, sees `$$TODAY`/`$$NOW`, but CANNOT carry conditional formatting (the styledef engine ignores valueexpression-derived values).
 - **Calculated custom field** — can carry conditional formatting via styledef, but stores its value at custom-form save time and only recomputes on object save or bulk "Recalculate Custom Expressions" — and cannot reference `$$TODAY`/`$$NOW`.
 
-For "stale OK, formatting needed" — pick the custom field. For "live OK, formatting via cell color not needed" — pick the column. For "live AND formatting needed" — there's no clean path; use the column with `<span style='color:red'>` HTML inside the valueexpression, which works but is verbose. Source: Adobe `calculated-custom-data/calculated-custom-fields-calculated-columns`.
+For "stale OK, formatting needed" — pick the custom field. For "live OK, formatting via cell color not needed" — pick the column. Source: Adobe `calculated-custom-data/calculated-custom-fields-calculated-columns`.
+
+**For "live AND formatting needed" — use a coloured emoji, NOT inline HTML.** Earlier revisions of this file recommended wrapping the value in `<span style='color:red'>` from inside the `valueexpression`. That does not work: the tag renders as literal text in the cell, angle brackets and all, even with `valueformat=HTML` and `textmode=true` both set. This matches the standing consulting rule that HTML never goes inside a `valueexpression` (the sibling label sub-column pattern in `07-combined-and-shared-columns.md` is for *static* labels and cannot vary by value, so it does not solve this case either).
+
+What does work is putting a coloured emoji in the string:
+
+```
+column.0.valueexpression=IF({daysLate}<1,"🟢 0",IF({daysLate}<10,CONCAT("🟡 ",{daysLate}),CONCAT("🔴 ",{daysLate})))
+column.0.valueformat=HTML
+column.0.textmode=true
+```
+
+Plain text, renders in colour, and survives an Excel export intact — which the CSS version would not have, even if it had rendered. Verified against a rendered report on a client tenant, 2026-09-02.
 
 ## Conditional formatting syntax
 

@@ -522,6 +522,21 @@ Adobe documents the refresh interval as every 4 hours but publishes no wall-cloc
 <!-- UNVERIFIED -->
 One tenant's reported observation: refreshes land at 4:20 / 8:20 / 12:20 and so on, which the answerer read as the *completion* of a run started on the hour, with the timestamps rendered in **UTC** rather than the instance timezone. Treat the specific times as that tenant's phase, not a platform constant — the answerer explicitly hedged ("I'm not sure if it's the same for everyone"), and no second tenant confirmed it in the thread. The two artifact names are the durable part: query them per tenant instead of assuming a schedule. Provenance: best answer by BrookeSt5, 2026-07-28 (Sources below).
 
+## Adjacent surface: the Workfront MCP server's Insights data is ~15 minutes behind, by SLA
+
+Same reason as the Data Connect note above — not the REST API, but the same consultant question, and the same failure shape: a read that is *correct* and *stale* looks exactly like a read that is wrong.
+
+Adobe documents the Insights tools (the ones an agentic client uses to find, filter and report on Workfront data) as reflecting changes "on a near real-time basis, **with a service level agreement (SLA) of up to approximately 15 minutes**." So the sequence a consultant will actually run during a demo or an acceptance test — change something in Workfront, immediately ask the MCP client about it — is specified to return the old value, and the client will answer confidently with it.
+
+This matters more than the number suggests, because the failure is indistinguishable from the two things people reach for first:
+
+- **Not** the client re-using data from earlier in the conversation. That is a separate documented cause with a separate fix (ask explicitly for fresh data, *"Don't use cached results"*), and it does nothing for the SLA lag.
+- **Not** a permissions or write problem. A write that genuinely failed and a write that succeeded 30 seconds ago look the same through an Insights read.
+
+**Mitigation:** Wait a few minutes and ask again, or confirm the change directly in Workfront / over REST, which has no such lag. When scripting an acceptance test against the MCP server, put the confirmation read on the REST API rather than on an Insights tool — and never demo a write-then-read round trip through MCP on a stopwatch.
+
+`14-api-version-drift.md` carries the MCP *tool* churn (the 2026-08-13 Search Users tool and the six unnamed lookup deprecations); this is an operational property of the server rather than a change to its tool list, so it lives here.
+
 ## Daily work distribution: `workPerDate` and `workPerDayList`
 
 The Workload Balancer's per-day hour boxes are not a UI-only rendering — they are a real field, `workPerDate`, readable over REST. It is absent from the report/field-selector UI, so it is routinely assumed to be unavailable and rebuilt (badly) from `workRequired` divided by duration.
@@ -624,3 +639,4 @@ GET /attask/api/v22.0/proj/search?convertedOpTaskID_Mod=isnull\
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/data-connect-refresh-251986` | Data Connect freshness is readable from the share itself — `MONITORING_DATA_REFRESHES` view and the `DL_LOAD_TIMESTAMP` row column; one tenant's observed :20-past phase, read as UTC — best answer by BrookeSt5, 2026-07-28 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/extract-planned-hours-from-the-workload-balancer-using-an-api-128510` | `workPerDate` as the Workload Balancer's per-day hours, absent from the field selector, returning a date→minutes map — best answer by Rafal_Bainie, 2023-12-04 (object coverage, flags, JSON-vs-toString shape, and the three constraints verified live and corrected here) |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/calculate-datediff-between-issue-entry-date-and-the-date-it-was-converted-to-aporject-252510` | Prompted the check: the thread's standing advice pairs `issue.entryDate` with `project.convertedOpTaskEntryDate`, which are the same instant. Field semantics established live here, not taken from the thread — thread by ljorr16, 2026-08-30 |
+| AdobeDocs/workfront.en `help/quicksilver/workfront-basics/workfront-mcp-server/use-workfront-mcp-server.md` @ `136f06e5` (2026-09-18) | § "the Workfront MCP server's Insights data is ~15 minutes behind": the ~15-minute Insights SLA, added this window as a new section plus a matching troubleshooting row, and its separation from the pre-existing conversational-caching cause. Blob: `https://github.com/AdobeDocs/workfront.en/blob/136f06e5336bba85bd7e8066f0662ffef81588ff/help/quicksilver/workfront-basics/workfront-mcp-server/use-workfront-mcp-server.md` |

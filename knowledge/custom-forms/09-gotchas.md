@@ -411,6 +411,19 @@ There is no way to promote a form to primary without moving it to the front of t
 
 Full dispatch shapes, the exact-set constraint on `reorderCategories`, and the three-way comparison table live in `api/05-http-methods-and-actions` § "Assigning custom forms".
 
+## 37. The AI Assistant cannot fill a typeahead or Internal Lookup from a display name — it needs the ID
+
+**Surprise:** "I had the AI Assistant populate a request form from an Excel file and every plain field landed. The typeahead fields stayed empty. I converted the typeahead to an Internal Lookup and it was *still* empty. Putting the raw user ID in the spreadsheet column filled the Internal Lookup immediately."
+
+<!-- UNVERIFIED -->
+**Mechanic:** Reported from the field, not reproduced here. The reported behaviour is exactly the write-side asymmetry gotchas #30 and #33 already document at the REST layer, surfacing one layer up: a reference-typed parameter (`TYAH` with `refObjCode`, or `INTRNL`/`MULTINTRNL`) **writes as a bare ID string** and reads back as the canonical envelope `{"objCode","name","ID"}`. Nothing in that path resolves a human-readable name to an object. The AI Assistant is writing through the same door, so a spreadsheet column holding `"Jane Cooper"` has nothing to bind to, while one holding the user's ID binds on the first try. Converting `TYAH` → `INTRNL` changes nothing because both are the same reference mechanism — which is why the reporter's second attempt failed the same way as the first.
+
+**Mitigation:** When scoping an AI-Assistant or document-driven intake, treat every reference-typed field as **ID-in, envelope-out** and say so before the client builds the spreadsheet. Either carry IDs in the source data, or resolve names to IDs in a prior step (a Fusion lookup, or `/USER/search?firstName=…&lastName=…` returning `ID`) and hand the assistant the IDs.
+
+**The limit that usually kills this design:** IDs are tenant-scoped. The reporter's actual goal was pulling requests from a *client's* instance into their own, where an ID from the source tenant resolves to nothing in the target — so the ID workaround rescues same-tenant intake and does not rescue cross-tenant intake. For cross-tenant, the name→ID resolution has to run against the **target** tenant before the assistant sees the data.
+
+Not checkable by GET: what the AI Assistant does or does not resolve is UI behaviour, and `sweep-verify.sh` was unavailable this run besides (see the run's PR digest). The underlying REST-layer asymmetry it is attributed to *is* verified — 2026-06-09, gotcha #30.
+
 ## Cross-references
 
 - `01-object-model` — value-vs-label distinction, composite CategoryParameter ID
@@ -429,3 +442,4 @@ Full dispatch shapes, the exact-set constraint on `reorderCategories`, and the t
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/use-reference-number-in-internal-lookup-251783` | INTRNL end-user search matches name only, not reference number (gotcha #34) — best answer by jayciedido, 2026-07-17 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/capture-form-visibility-display-with-fusion-252470` | Independent corroboration of gotcha #35 from the Fusion surface, and the source of #35(c): no `isVisible` runtime property in Fusion, display logic is not a data-clearing or security rule, reproduce the display condition as a Fusion filter. Also the unconfirmed `clearCustomData` copy-action remark — best answer by etaylor-1, 2026-09-01 |
+| `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/workfront-ai-assistant-typeahead-fields-252748` | Gotcha #37: the AI Assistant leaves typeahead fields empty when fed display names from a spreadsheet, converting to Internal Lookup does not help, and supplying the raw ID works — plus the cross-tenant limit that makes the workaround unusable for pulling requests between instances — best answer by MorganHatcher, 2026-09-14 |

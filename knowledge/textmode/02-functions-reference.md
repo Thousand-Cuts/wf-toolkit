@@ -30,6 +30,20 @@ column.0.valueexpression=IF({status}!="CPL","Incomplete","Complete")
 column.0.valueexpression=IF(!({status}="ONH"),"Active","On Hold")
 ```
 
+> **`DATEDIFF` and `WEEKDAYDIFF` take their arguments in OPPOSITE orders.**
+> `DATEDIFF(a,b)` returns `a - b`; `WEEKDAYDIFF(a,b)` returns `b - a`. Swapping
+> one for the other in place, keeping the argument order, silently inverts the
+> sign. Nothing errors and the column still renders numbers, so the mistake
+> survives review — especially where the expression also clamps negatives to
+> zero, which turns every genuinely late row into `0` and leaves only the early
+> rows showing a value. Verified against a rendered report on a client tenant,
+> 2026-09-02.
+>
+> A calculated column's sign is only confirmed by reading it out of the
+> RENDERED report. Offline arithmetic over the raw dates re-checks your own
+> assumption, not Workfront's behaviour, and an API round-trip proves storage,
+> not semantics.
+
 ## Logical / conditional
 
 | Function | Purpose | Example |
@@ -70,8 +84,8 @@ column.0.valueexpression=IF(!({status}="ONH"),"Active","On Hold")
 | `ADDYEARS` | Add years | `ADDYEARS({plannedCompletionDate},1)` |
 | `CLEARTIME` | Strip time portion | `CLEARTIME($$NOW)` |
 | `DATE` | Construct a date | `DATE(2026,1,15)` |
-| `DATEDIFF` | Difference in days (calendar) | `DATEDIFF({plannedCompletionDate},$$TODAY)` |
-| `WEEKDAYDIFF` | Difference in business days | `WEEKDAYDIFF({actualCompletionDate},{plannedCompletionDate})` |
+| `DATEDIFF` | Difference in days (calendar), **first minus second** | `DATEDIFF({plannedCompletionDate},$$TODAY)` = days remaining |
+| `WEEKDAYDIFF` | Difference in business days, **second minus first** | `WEEKDAYDIFF({plannedCompletionDate},{actualCompletionDate})` = days late |
 | `WORKMINUTESDIFF` | Difference in working minutes (respects schedule) | |
 | `DAYOFMONTH` | Day number | |
 | `DAYOFWEEK` | 1=Sunday … 7=Saturday | |

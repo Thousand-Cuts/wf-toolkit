@@ -962,15 +962,24 @@ The UIGB wrapper around `definition` looks like this:
 
 ```json
 {
-  "label": "_grouping",
-  "objCode": "UIGB",
+  "name": "Active Projects — groupBy",
   "uiObjCode": "TASK",
-  "groupingType": "REPORT",
+  "isReport": true,
+  "isText": false,
   "definition": { "group": [...] }
 }
 ```
 
-`groupingType: "REPORT"` is consistent across all 40 UIGBs in the survey (parallel to `filterType: "REPORT"` on UIFTs — see `06-filter-patterns.md`). Always emit `"REPORT"` on create.
+**There is no `groupingType` on UIGB, and no `label`.** UIFT has `filterType: "REPORT"`, but UIGB does not mirror it — the symmetry is a trap. Posting `groupingType` fails the whole call:
+
+```
+POST /attask/api/v17.0/uigb   updates={"groupingType":"REPORT", ...}
+{"error":{"message":"APIModel V17_0 does not support field groupingType (UIGroupBy)"}}
+```
+
+Verified against a production tenant (v17.0, 2026-09-15) while creating a grouped PROJ report. `GET /uigb/metadata` there lists 23 fields and neither `groupingType` nor `label` is among them; the row is named via `name` (with `displayName` as the render-side sibling). Re-posting the identical payload with `groupingType` removed succeeded.
+
+The authoritative UIGB field map is `01-report-object-shape.md` § 3 — `name`, `uiObjCode`, `isReport`, `isText`, `definition`, and nothing else. When this section and that table disagree, the table wins.
 
 **Empty grouping.** A report with no grouping omits the UIGB row entirely OR writes `{"group": []}` — both work. List-style ASSGN reports omit UIGB entirely (cite `client-c-sample/ASSGN-user-assignments-L-report.json` whose `groupByID: null`); the report renders as one flat list. The four-call create sequence in `02-create-from-scratch-recipe.md` always writes a UIGB row even when empty, to keep the wrapper invariant simple.
 

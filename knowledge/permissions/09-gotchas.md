@@ -133,11 +133,38 @@ The community claim built on that substrate: a share granted to a **parent** gro
 
 **Related:** § 18 for the other reason a correct-looking share does not produce the visibility someone expects.
 
+## 20. Adjacent surface (Workfront Planning): field-level sharing is enforced through the API, so an integration can silently read fewer fields
+
+Planning has no bucket of its own; this is filed here because "why can't this identity see that value" is a permissions question and this is where a consultant searches for it.
+
+**Surprise:** "The Fusion scenario reads the record fine and one column comes back missing. Nobody changed the record type's sharing, and the same call as an admin returns the field."
+
+**Mechanic:** Workfront Planning shares permissions at the **individual field** level, below the record type, and Adobe states the restriction is enforced "everywhere where the field displays … including all the views, record details pages, request forms, connections and lookup fields, Canvas dashboards, **the API, and MCP tools**." So field-level sharing is not a UI-only nicety: it changes what a REST or Fusion identity reads back, and it does so without an error. This is the same shape as the `items: []` trap in `../fusion/11-platform-and-tenancy.md` § 7 — an empty or absent value that means "this identity cannot see it", not "there is nothing there".
+
+The rules that decide what an identity gets:
+
+- Access combines **inherited permissions** (a field inherits the record type's access by default: View → view values, Contribute/Manage → manage values) with either **Everyone with access to the record type can view** or **Only invited people can access**. Where several rules hit one person, the **highest** applies.
+- **Lookup fields always inherit their source object's field permissions** and cannot be shared separately.
+- **System fields (Created By, Record ID) and primary fields cannot be restricted at all** — so their presence proves nothing about whether other fields were withheld.
+- Only **workspace owners and managers** can adjust field permissions, and a workspace manager's Manage access to every field cannot be lowered. Field sharing governs *values*, not the field's configuration.
+- Granting someone a field does **not** grant workspace or record-type access; until they have that, the grant sits inactive behind a warning icon.
+- For **global record types**, field permissions are set once and apply across all secondary workspaces, and cannot be overridden locally.
+- Fields can only be shared **from the table view** of a record type.
+
+**Two consequences for audit work, both stated by Adobe:** restricted field value changes are **not recorded in the record's History**, and field permission changes **trigger no notifications**. A field-level restriction is therefore close to invisible after the fact — the audit trail a consultant would normally reach for does not carry it.
+
+**Mitigation:** When a Planning integration reports a missing or empty field, check field-level sharing for the integration's identity before debugging the scenario, the mapping or the API version. When designing one, give the integration identity a role whose field access is deliberate rather than incidental — and record it, because History will not.
+
+**One Adobe-side open question, worth not relying on.** The published page carried "when you duplicate a record, the restricted values are not copied to the new records" until this commit, which **removed the line into an HTML comment** with the writer's own note: *"Not sure if this is right - right now, it allows me to duplicate with the values in the new record - checking with Lilit"*. Adobe has retracted that claim pending its own check, so do not design a redaction-by-duplication step on it. (Visible only because the upstream sweep reads HTML comments; the rendered Experience League page shows neither the claim nor the retraction.)
+
+First-party; no live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest), and the sandbox tenant is not a Planning tenant regardless.
+
 ## Sources
 
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/share-report-with-more-than-100-users-groups-252329` | § 19: the reported 100-entry share cap, and the parent-group / Company-level workarounds. Best answer by Lyndsy-Denk, 2026-08-14 |
+| AdobeDocs/workfront.en `help/quicksilver/planning/access/share-fields.md` @ `136f06e5` (2026-09-18) | § 20: Planning field-level sharing, its enforcement through the API and MCP tools, the inheritance/override rules, the un-restrictable field classes, the History and notification gaps, and the retracted duplicate-record claim. The page left preview gating in this window (the `class="preview"` block was uncommented) and gained its full "Share fields" procedure. Blob: `https://github.com/AdobeDocs/workfront.en/blob/136f06e5336bba85bd7e8066f0662ffef81588ff/help/quicksilver/planning/access/share-fields.md` |
 
 
 ## Cross-references

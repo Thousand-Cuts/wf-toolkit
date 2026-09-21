@@ -125,7 +125,7 @@ v22 added `ReportShareableFolder (RPSHFD)` with full CRUD (`add/count/delete/edi
 
 ## Event Subscriptions v2 — multi-select fields always deliver as arrays (v21-era breaking change)
 
-Called out in both the 26-Q1 and 26-Q2 release overviews as a breaking change accompanying v21: Event Subscriptions **version 2** always sends multi-select custom-field values as **arrays**, where version 1 sent a bare string when only one value was selected. Any consumer parsing event-subscription payloads — Fusion Watch Event scenarios included — must tolerate the array shape for single selections. Not GET-checkable (event delivery only); provenance: the release overviews in `../release-notes/01-workfront-releases.md` § Sources.
+Called out in both the 26-Q1 and 26-Q2 release overviews as a breaking change accompanying v21: Event Subscriptions **version 2** always sends multi-select custom-field values as **arrays**, where version 1 sent a bare string when only one value was selected. Any consumer parsing event-subscription payloads — Fusion Watch Event scenarios included — must tolerate the array shape for single selections. Not GET-checkable (event delivery only); provenance: the release overviews in `../release-notes/01-workfront-releases.md` § Sources. **"v21-era" dates the announcement, not a dependency:** event-subscription versioning is its own version number and is independent of the REST API version — Adobe states v2 is a change to the event subscription functionality, not to the API. All remaining v1 subscriptions were migrated to v2 on 2026-01-15, so v1 no longer exists on any tenant. Full treatment in `18-event-subscriptions.md`.
 
 ## Other notable additions
 
