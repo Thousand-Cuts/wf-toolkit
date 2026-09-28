@@ -106,6 +106,24 @@ Affects `workfront-api` callers in general and dedicated bulk-update tooling flo
 
 **Practical impact:** bulk-update flows that read or write `role.overrideCostPerHour` or `role.overrideBillingPerHour` against a v21+ tenant will silently no-op. Either pin the request to `v20.0` (or `v17.0`) to keep the old fields, or rewrite the flow against the Rate primitive.
 
+### January 2027: `Billing Per Hour` and `Cost Per Hour` leave the API entirely — and this one is not version-scoped
+
+Everything above is version drift: pin an older version and the old field comes back. **This is different, and it is the more dangerous shape.** Adobe's 26-Q4 release overview announces that **with the January 2027 release** the legacy fields **`Billing Per Hour`** and **`Cost Per Hour`** "will no longer be available in the Workfront API or in User and Job Role list views, including Filter / View / Grouping configurations (both direct references and text mode calculated columns)."
+
+Note what is *not* said: no version is named. The v21 removals above took `Role.overrideCurrency` and friends out of v21 while leaving them reachable on v20 and v17, which is why "pin lower" is the stated mitigation for them. A removal announced against "the Workfront API" with no version qualifier should be planned for as **affecting every version still supported in January 2027**, because the alternative reading — that v20 and v22 keep the fields and only some future version drops them — is not what the note says and is not a safe default to sell to a client. Adobe may yet clarify; until it does, treat a version pin as no defence here.
+
+**Three exposures, in the order they will surface:**
+
+1. **Integrations and Fusion scenarios** reading `billingPerHour` / `costPerHour` on `USER` or `ROLE`. These break at the API layer.
+2. **Reports** — and this is the one nobody inventories, because the note explicitly covers *text mode calculated columns* as well as direct field references. A `valueexpression` mentioning either field in a User or Job Role view is in scope even though no field picker ever showed it.
+3. **Bulk-update flows** in `../bulk-updates/` that read a rate to compute a new one.
+
+**The replacement is the Rate primitive's collections, which this file already documents** (`billingRates` / `costRates`, v20). Adobe supplies the text-mode form directly — see `../textmode/08-collections.md` § "Job role and user rates after the January 2027 removal" for it written up as a working column, with the `startDate`/`endDate`/`value` shape that makes a rate collection different from the single scalar it replaces: a rate is now **time-phased**, so "the cost per hour" becomes "the cost per hour *as of when*", and a report that used to print one number now prints a list unless it selects a period.
+
+To manage rates going forward Adobe directs to the dedicated surfaces — user rates from the user profile, job-role rates from **Job Role > Rates**, and **Rate Reports** for analysis across users and roles — and states no action is required beyond updating any list views that display the two legacy fields.
+
+First-party, dated, and carried as a deadline in `../release-notes/01-workfront-releases.md`. No live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest); when the wrapper is working again, the check worth running is whether `billingPerHour` / `costPerHour` are still present on `role/metadata` and `user/metadata` at v22 today, with a bogus field name as the negative control, so the pre-removal baseline is on record before January 2027.
+
 ## Multi-currency rollout
 
 | Version | What gained `currency` (or override-currency) |
@@ -145,3 +163,7 @@ Called out in both the 26-Q1 and 26-Q2 release overviews as a breaking change ac
 ## Source
 
 Adobe Experience League release notes at `https://experienceleague.adobe.com/en/docs/workfront/using/adobe-workfront-api/api-notes/new-api-version-{20,21,22}`. Layout-template empirical re-verify against a live production tenant on 2026-05-22.
+
+| Source | What it provided |
+|---|---|
+| AdobeDocs/workfront.en `help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` @ `da1df635` (2026-09-25) | § "January 2027: `Billing Per Hour` and `Cost Per Hour` leave the API entirely": the deprecation date, the scope (API plus User/Job Role list views, Filter/View/Grouping, and text mode calculated columns), the absence of a version qualifier, the replacement rate-management surfaces, and Adobe's own replacement text-mode snippet. Live prose at this SHA, confirmed outside `<!-- -->` staging. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` |

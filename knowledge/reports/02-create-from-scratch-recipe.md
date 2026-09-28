@@ -355,12 +355,10 @@ Wire-format anchors worth repeating:
 
 ## Phase G — Smoke-test verify
 
-Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the client's deliverables folder for the audit trail:
+Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the client's SharePoint `Workfront Changes` folder (`<changes-dir>`, resolved in step 1 of the skill's flow) for the audit trail:
 
 ```bash
-DEST_SLUG=$(bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-resolve.sh --dest)
-SMOKE_OUT=~/wf-envs/${DEST_SLUG}/deliverables/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json
-mkdir -p ~/wf-envs/${DEST_SLUG}/deliverables
+SMOKE_OUT="<changes-dir>/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json"
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   /attask/api/v22.0/report/$REPORT_ID \
   --data-urlencode 'fields=*,definition,filterID,groupByID,viewID' \

@@ -1037,6 +1037,14 @@ Treat as an edge case the sanitizer accepts both ways — the skill emits with D
 
 **Sanitizer implication.** The clone-flow `sanitize_clone.py` does NOT rewrite the DE: prefix per-location — it preserves whatever was at the source. The destination tenant must have a custom form with the same field name attached to the same object (see `03-clone-and-adapt-recipe.md` Phase 5 parity check). What the sanitizer DOES flag is the field NAME itself — every distinct DE: field in the bundle becomes a parity-check item for the consultant to confirm.
 
+**Operational consequence: the column IS the user's write surface for that field.** Inline-editing a `DE:` column in a rendered report attaches the field's owning custom form to the record automatically, so the record does not need that form beforehand (`custom-forms/09-gotchas.md` § 38). The corollary is the part that bites: **omitting the column makes the field unsettable from that report**, no matter what is attached to the record. When a user reports that a custom field is missing on some records but not others, compare the view columns of the reports they are actually opening before investigating form attachment on the records. Sibling reports over one object drift apart easily, and the column and the matching filter clause are stored on two different objects (`UIVW` vs `UIFT`), so a half-finished rollout can leave a report that filters on a field it never displays, or displays one it never filters on. Check both:
+
+```
+GET /REPORT/<id>?fields=viewID,filterID
+GET /UIVW/<viewID>?fields=definition     # definition.column
+GET /UIFT/<filterID>?fields=definition   # filter clauses
+```
+
 ## § 15. Per-uiObjCode column variants — PARAM and PGRP
 
 Two niche objects use a different column shape. The standard column key set (§ 2) does not apply; instead, PARAM and PGRP columns use `name` and `descriptiveText`.

@@ -298,7 +298,7 @@ Setting a custom-form field value on a record (PROJ / TASK / OPTASK / …) via R
 
 - The `DE:` key uses the Parameter **`name`** (the snake_case API identifier), **not** the UI `label` — mirrors the `DE:` filter rule.
 - Keys go at the **top level** of `updates`, NOT nested in `parameterValues`. `parameterValues` is a **read-side** projection (what `GET …?fields=parameterValues` returns, keyed `DE:<name>`); it is not a write envelope.
-- The form must be attached to the record first (`updates={"objectCategories":[{"categoryID":<cid>}]}`) or the DE: write is rejected — see gotcha #3.
+- For **API writes**, the form must be attached to the record first (`updates={"objectCategories":[{"categoryID":<cid>}]}`) or the DE: write is rejected (see gotcha #3). This gate is API-only: the UI attaches the form automatically when a user inline-edits the field from a report column (gotcha #38).
 - SLCT / RDIO fields must receive a value that exactly matches a `ParameterOption.value`; number/currency accept a bare numeric.
 
 Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds for every parameter type; only the read-side envelope shape differs by type. Verified on a sandbox tenant v15.0, 2026-07-02.
@@ -424,6 +424,63 @@ Full dispatch shapes, the exact-set constraint on `reorderCategories`, and the t
 
 Not checkable by GET: what the AI Assistant does or does not resolve is UI behaviour, and `sweep-verify.sh` was unavailable this run besides (see the run's PR digest). The underlying REST-layer asymmetry it is attributed to *is* verified — 2026-06-09, gotcha #30.
 
+## 38. The `DE:` write gate is API-only: the UI auto-attaches the form on inline edit
+
+**Surprise:** "This document has no custom form attached, so users can't set the field. We'll need an automation to attach the form to every record first."
+
+**Mechanic:** the attachment requirement in gotcha #31 constrains the **REST write path**, not the product. When a user inline-edits a `DE:` field from a report column, Workfront attaches that field's parent form to the record as part of the save. The record needs no form beforehand.
+
+**Verified:** production tenant, 2026-09-22. A proof document confirmed to carry zero `objectCategories` was given a value for a radio field directly in a report row; the owning form was attached automatically by that save.
+
+**Why it matters:** the inference "form not attached, therefore users cannot set this field" is wrong, and it is expensive to get wrong. On the tenant above it produced a recommendation for a Fusion auto-attach scenario plus a 183-record backfill, when the real fix was adding one column to two report views. **Attachment counts tell you who has used a field, not who can.**
+
+**Diagnostic:** when a user reports a missing custom field in the UI, check the report's **view columns** before the record's form attachment.
+
+```
+GET /REPORT/<id>?fields=viewID,filterID
+GET /UIVW/<viewID>?fields=definition     # columns live under definition.column
+GET /UIFT/<filterID>?fields=definition   # filter clauses are a separate object
+```
+
+A field that a report filters on but has no column for is invisible and unsettable from that screen, whatever the record's attachment state. Sibling reports over one object drift apart easily: on the tenant above, six reports over the same document set disagreed on **both** the column and the matching filter clause, in both directions, which reached users as "it works on some records but not others" when the real variable was which report they had open.
+
+This does not relax gotcha #31. Scripted `DE:` writes still need the form attached first.
+
+## 39. Adjacent surface (Workfront Planning request forms): the logic set is smaller than the custom-form designer's, and choices are not editable on the form
+
+Planning has no bucket; a request form is form design, so a consultant looks for it here. Preview **2026-09-25**, fast release 2026-10-14, everyone **2026-10-15**.
+
+**Surprise:** "The form designer has validation and editability logic, so we scoped the intake form around a validation rule. On the Planning request form there is no validation option — and we cannot even fix the choice labels without leaving the form."
+
+**Mechanic:** a Planning **request form** is a distinct designer from the Workfront custom-form designer this bucket otherwise documents, and it is behind it on two axes:
+
+1. **The logic set differs by environment, and the Production set is two options.** In Production a Planning request-form field offers only **Display Logic** and **Skip Logic**. The Preview environment expands that to **Display, Skip, Default value, Validation, Formatting, Editability** — the set `07-display-logic.md` § "Not yet mapped" lists as the `defaultValueFormula` / `validationFormula` / `valueEditabilityFormula` / `formattingFormula` keys inside `fieldDefinition`. So a rule set designed against Preview, or against the Workfront form designer, does not necessarily port to a Planning request form in Production today. Adobe also notes that validation and default-value rules "are not available for all field types".
+2. **Logic needs a select field to hang off.** Adobe now states plainly that *"Add logic is available only when fields are, or are preceded by, single- and multi-select fields."* This generalises what the Display Logic option already required to the whole logic feature — a field with no select field at or above it in the form order has no logic available at all, which reads as a missing feature rather than an ordering problem.
+
+**The choices trap is the one that costs an afternoon:** *"You cannot rename or remove choices on a Planning request form. You must edit the field choices in the table view of the record type."* The request form surfaces choice **ordering** controls (Sort Choices A-Z, drag-and-drop, and per-choice Select by Default / Hide choice) which makes it look like the place choices are managed — but the label set itself lives on the record-type field, edited from the record type's **table view**. Hiding a choice on the form and deleting it are different operations in different places.
+
+**Mitigation:** establish the record type's fields and their choice labels *before* building the request form, and treat the form as presentation and routing only. When a stakeholder asks for validation on a Planning intake form, confirm which environment they saw it in before agreeing to it. Where Production cannot express the rule, the fallback is the approval rules on the form's Settings tab (which route on submitted field values) rather than field-level validation.
+
+**Related:** `07-display-logic.md` for the CTCSRL/CTCSRM rule objects on the Workfront side, and the four formula keys this Preview set appears to expose in the UI; `../permissions/09-gotchas.md` § 21 for the request *sharing* half of the same release.
+
+First-party and dated. No live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest); Planning request-form logic is UI behaviour on a non-Planning sandbox regardless, so this carries first-party provenance rather than a verification line.
+
+## 40. AI Form Fill now reads a linked Workfront object — same-instance only, which is exactly where gotcha #37 broke
+
+**Already live everywhere.** Adobe shipped this off-schedule on **2026-09-22**, with Preview, fast release and quarterly all carrying that one date, so unlike most of the 26-Q4 list there is no rollout window to wait out.
+
+**Surprise:** "We can point AI Form Fill at an existing project and have it fill the request from that. So we can point it at the client's project in their instance too." — no.
+
+**Mechanic:** AI Form Fill accepts a third prompt input alongside a typed prompt and an uploaded document: **a link to an existing project, task, or issue**, pasted into the prompt window, applied either to the whole form or to one section. Adobe states the constraint in one line: *"The project, task, or issue must be in the same instance of Workfront as your request."*
+
+**Why that line is the interesting part.** Gotcha #37 records the AI Assistant failing to fill typeahead and Internal Lookup fields from display names, where the working answer was to supply the raw ID — and the limit that made the workaround useless in practice was that **IDs are tenant-scoped**, so the reporter's actual goal, pulling requests from a client's instance into their own, could not work. This feature is the same boundary drawn by Adobe from the other side: object references resolve within one instance and nowhere else. A link-based fill is a genuinely faster intake path for same-tenant work and is not a cross-tenant migration tool, and it will be asked for as one.
+
+**Mitigation:** use it for same-instance intake — cloning a request from a comparable project is the obvious fit. For anything crossing instances, the path is still name→ID resolution against the *target* tenant first, per gotcha #37. Note also that unreviewed field suggestions are **accepted automatically on submit**, so a link-filled form carries whatever it inferred unless someone rejects it explicitly.
+
+**Related:** gotcha #37 for the ID-in / envelope-out asymmetry underneath this, and the tenant-scoped-ID limit it shares.
+
+First-party; no live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest), and AI Form Fill behaviour is not GET-checkable in any case.
+
 ## Cross-references
 
 - `01-object-model` — value-vs-label distinction, composite CategoryParameter ID
@@ -432,6 +489,7 @@ Not checkable by GET: what the AI Assistant does or does not resolve is UI behav
 - `02-parameter-types` — empirical enums for `dataType` / `displayType`
 - `03-create-form-recipe` — corrected POST sequence
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)
+- `reports/07-view-patterns` § 14: the view-column side of gotcha #38, where a `DE:` column doubles as the user's write surface and omitting it makes the field unsettable from that report
 - `calculated-fields/05-cross-object-references` — `{program}.{DE:NAME}` dotted syntax for cross-object refs; DE: lookups use parameter **name**, not label
 - dedicated bulk-update tooling — backfill / migration patterns
 - `fusion/02-module-configs` — the Fusion side of gotcha #35(c): a scenario reading a custom field cannot ask whether that field was displayed, so the display rule's condition has to be restated as a filter
@@ -440,6 +498,10 @@ Not checkable by GET: what the AI Assistant does or does not resolve is UI behav
 
 | URL | What it provided |
 |---|---|
+| Direct observation, consultant-run test on a production tenant, 2026-09-22 | Gotcha #38: inline-editing a `DE:` field from a report column auto-attaches the owning custom form to a record that had none. Reproduced deliberately against a document verified to carry zero `objectCategories`. |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/use-reference-number-in-internal-lookup-251783` | INTRNL end-user search matches name only, not reference number (gotcha #34) — best answer by jayciedido, 2026-07-17 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/capture-form-visibility-display-with-fusion-252470` | Independent corroboration of gotcha #35 from the Fusion surface, and the source of #35(c): no `isVisible` runtime property in Fusion, display logic is not a data-clearing or security rule, reproduce the display condition as a Fusion filter. Also the unconfirmed `clearCustomData` copy-action remark — best answer by etaylor-1, 2026-09-01 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/workfront-ai-assistant-typeahead-fields-252748` | Gotcha #37: the AI Assistant leaves typeahead fields empty when fed display names from a spreadsheet, converting to Internal Lookup does not help, and supplying the raw ID works — plus the cross-tenant limit that makes the workaround unusable for pulling requests between instances — best answer by MorganHatcher, 2026-09-14 |
+| AdobeDocs/workfront.en `help/quicksilver/planning/requests/create-request-form.md` @ `da1df635` (2026-09-25) | Gotcha #39: the Production (Display, Skip) versus Preview (Display, Skip, Default value, Validation, Formatting, Editability) logic sets on a Planning request form, the "logic is available only when fields are, or are preceded by, single- and multi-select fields" rule, the Size and Choices field options, and the "you cannot rename or remove choices on a Planning request form — edit them in the record type's table view" constraint. All confirmed as live prose outside `<!-- -->` staging at this SHA. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/planning/requests/create-request-form.md` |
+| AdobeDocs/workfront.en `help/quicksilver/manage-work/requests/create-requests/autofill-from-prompt-document.md` @ `da1df635` (2026-09-25) | Gotcha #40: the link-to-an-object prompt input for AI Form Fill, its "must be in the same instance of Workfront" constraint, the apply-to-form / apply-to-section split, and the auto-accept-on-submit behaviour for unreviewed suggestions. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/manage-work/requests/create-requests/autofill-from-prompt-document.md` |
+| AdobeDocs/workfront.en `help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` @ `da1df635` (2026-09-25) | Gotchas #39 and #40: the release dates. AI Form Fill's link input is flagged **Off schedule** with Preview, fast release and quarterly all 2026-09-22; the Planning request-form items are Preview 2026-09-25 → everyone 2026-10-15. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` |

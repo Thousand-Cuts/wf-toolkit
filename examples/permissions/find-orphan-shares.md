@@ -69,7 +69,7 @@ Top user — Old Employee 1 (47 rules):
 
 If the consultant wants to remediate:
 
-1. Export this list (CSV).
+1. Export this list (CSV) to the client's SharePoint `Workfront Exports` folder (`wf-env-outdir.sh "Workfront Exports"`), so whoever does the cleanup has it.
 2. Filter out `isInherited=true` rows — those need cleanup at the ancestor, not the child.
 3. Hand off to dedicated bulk-update tooling with a "bulk delete AccessRules where ID in [...]" task targeting the direct rules.
 4. Audit-log the deletion (bulk-updates skill handles pre-state capture).

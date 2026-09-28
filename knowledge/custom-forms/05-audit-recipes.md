@@ -171,7 +171,7 @@ All flows can exceed default `$$LIMIT`. Use `workfront-api` `knowledge/api/09-pa
 
 - Total counts via `/count` endpoint first
 - `$$LIMIT=200` default for list flows
-- Offer CSV export when total > 200
+- Offer CSV export when total > 200. Save it to the client's SharePoint `Workfront Exports` folder (`bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-outdir.sh "Workfront Exports"`; exit 4 or 5 is handled per `skills/_shared/references/sharepoint-deliverables.md`) as `<UTC>-<what>.csv`, not the current directory, so the team has it.
 
 ## Cross-references
 

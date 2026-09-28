@@ -159,11 +159,36 @@ The rules that decide what an identity gets:
 
 First-party; no live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest), and the sandbox tenant is not a Planning tenant regardless.
 
+## 21. Adjacent surface (Workfront Planning): a request inherits permissions from its record type and cannot be narrowed off them
+
+Filed here for the same reason as § 20 — Planning has no bucket, and this is where a consultant looks for "who can see this". Preview **2026-09-25**, fast release 2026-10-14, everyone **2026-10-15**, so this reaches production within weeks of writing.
+
+**Surprise:** "We locked the workspace down, then shared one intake request with a vendor at View. They can read every other request submitted through that form as well — and there is no inherited-permission row to remove."
+
+**Mechanic:** Planning requests are now shareable objects in their own right (View / Contribute / Manage), but their access is *composed*, and two of the composition rules grant more than the person doing the sharing expects:
+
+- **Manage on a record type inherits Manage on that record type's intake form and on every request submitted through it.** Request-level sharing is not the only path to a request, and the broad grant is usually a record-type grant someone made months earlier for an unrelated reason.
+- **Requests inherit from the workspace and the record type, and for Planning requests those inherited permissions cannot be removed or edited.** A request therefore cannot be made *more* private than its record type. The narrowing move available on many Workfront objects — share explicitly, then strip inheritance — does not exist here.
+- **Requesters are automatically granted Manage on what they submit**, unless an admin set a different default on the request form (a new Permissions section in the form's Settings area, same release).
+- **Where grants collide the highest wins**, exactly as at field level in § 20: a user with Contribute whose group has View keeps Contribute. Restricting someone means finding *every* entity that grants them access, not adding a narrower row.
+- Sharing is capped at your own level — Contribute cannot grant Manage. Workfront administrators reach every request regardless.
+
+**Adobe widened who can be a sharee in the same window**, which enlarges the surface all of the above runs over: workspaces, record types and records can now be shared with **users, groups, teams, companies, and job roles**, where the page previously said only "people inside your organization". The job-role share is the one to watch on an audit, because its membership changes without anyone touching the share.
+
+**Mitigation:** treat the record type as the real permission boundary for intake, because it is the level that propagates — assume anything holding record-type Manage can read every request through that form. When one request genuinely needs to be narrower than its record type, the answer is a separate record type, not a share edit, because the inheritance cannot be stripped. When auditing "why can this person see this", enumerate group, team, company and job-role grants before concluding the request-level share is the whole story.
+
+**Related:** § 20 for the field-level half of the same model, including the same highest-wins rule; `../fusion/11-platform-and-tenancy.md` § 7 for why an integration identity reading less than expected looks like empty data rather than an error.
+
+First-party and dated. No live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest); the sandbox tenant is not a Planning tenant, and the Planning API is not reachable through the sweep's wrapper in any case, so this entry would carry first-party provenance rather than a verification line even with the wrapper working.
+
 ## Sources
 
 | URL | What it provided |
 |---|---|
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/share-report-with-more-than-100-users-groups-252329` | § 19: the reported 100-entry share cap, and the parent-group / Company-level workarounds. Best answer by Lyndsy-Denk, 2026-08-14 |
+| AdobeDocs/workfront.en `help/quicksilver/planning/requests/share-requests.md` @ `da1df635` (2026-09-25) | § 21: the View/Contribute/Manage levels on a Planning request, requester auto-Manage and the form-level default that overrides it, record-type Manage inheriting the intake form and every request through it, the un-removable inherited permissions, highest-wins across entities, and the share-at-or-below-your-own-level rule. New file this window. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/planning/requests/share-requests.md` |
+| AdobeDocs/workfront.en `help/quicksilver/planning/access/sharing-permissions-overview.md` @ `da1df635` (2026-09-25) | § 21: workspaces, record types and records shareable with users, groups, teams, companies and job roles (previously "people inside your organization"). The page's Preview-environment *field*-sharing block remains inside `<!-- -->` staging at this SHA and is deliberately not drawn on here — § 20 already carries the field-level model from `share-fields.md`. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/planning/access/sharing-permissions-overview.md` |
+| AdobeDocs/workfront.en `help/quicksilver/product-announcements/product-releases/planning-release-activity/planning-release-activity-26-q4.md` @ `da1df635` (2026-09-25) | § 21's release dates: Preview 2026-09-25, production fast release 2026-10-14, production for everyone 2026-10-15, for request sharing, field sharing and multi-stage request approvals alike. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/product-announcements/product-releases/planning-release-activity/planning-release-activity-26-q4.md` |
 | AdobeDocs/workfront.en `help/quicksilver/planning/access/share-fields.md` @ `136f06e5` (2026-09-18) | § 20: Planning field-level sharing, its enforcement through the API and MCP tools, the inheritance/override rules, the un-restrictable field classes, the History and notification gaps, and the retracted duplicate-record claim. The page left preview gating in this window (the `class="preview"` block was uncommented) and gained its full "Share fields" procedure. Blob: `https://github.com/AdobeDocs/workfront.en/blob/136f06e5336bba85bd7e8066f0662ffef81588ff/help/quicksilver/planning/access/share-fields.md` |
 
 

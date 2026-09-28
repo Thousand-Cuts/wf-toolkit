@@ -215,12 +215,34 @@ Where to get the ID: open the template task and take the ID from the URL, or `GE
 
 Treat "show me the first/latest/highest child" requests as a modeling question, not a syntax question.
 
+### Job role and user rates after the January 2027 removal
+
+A collection replacing a scalar is the most common reason a working text-mode column has to be rewritten, and there is a dated one coming. Adobe's 26-Q4 release overview states that **with the January 2027 release** the legacy **`Billing Per Hour`** and **`Cost Per Hour`** fields leave the Workfront API *and* User / Job Role list views — explicitly including **text mode calculated columns**, not just fields picked from a list. Adobe gives the replacement as a collection column (`costRates` or `billingRates`, whichever the report needs):
+
+```
+displayname=Test
+listdelimiter=<br>
+listmethod=nested(costRates).lists
+type=iterate
+valueexpression=CONCAT({startDate}," - ",{endDate},": ",{value})
+valueformat=HTML
+```
+
+**The shape change is the finding, not the syntax.** The old fields were one number per role or user. `costRates` / `billingRates` are the v20 Rate primitive's collections (`../api/14-api-version-drift.md` § Financial layer), and every entry carries `startDate`, `endDate` and `value` — rates are **time-phased**. So:
+
+- A column that printed one figure now prints **one row per rate period**, which is why Adobe's own snippet sets `listdelimiter=<br>` and concatenates the dates into the output rather than emitting `{value}` alone.
+- "The cost per hour" stops being a well-formed question without a date. If a report needs a single current figure, the period has to be selected inside the `valueexpression` — an `IF` on `{endDate}` in the manner of § "Pattern: selecting one specific child by template identity" above — and that selection is a modeling decision someone has to make, not a mechanical port.
+- Anything downstream that parsed the old single-value column (an export, a Fusion scenario reading a report, a hand-built dashboard) sees a delimited list after the switch even if the column name never changes.
+
+**Why to inventory now rather than in January:** the removal covers text mode, so exposure is not discoverable from a field picker or a view's column list. Grep the tenant's User and Job Role views for both field names — direct references *and* anything inside a `valueexpression` — because a calculated column mentioning either one looks like ordinary arithmetic until the field underneath it is gone.
+
 ## Sources
 
 | Source | What it provided |
 |---|---|
 | https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/weekdaydiff-between-native-field-and-the-date-of-specific-task-252589 | The `nested(<rel>.<collection>).lists` dotted form, the `{project}.{entryDate}` reach-back from inside an iterate, and the WEEKDAYDIFF-to-a-named-child pattern — best answer by NicholeVargas, 2026-09-01 |
 | https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/show-only-1-active-milestone-in-a-project-report-252441 | `{templateTaskID}` as a stable per-template selector inside a `nested(tasks).lists` iterate, the milestone/`canStart`/project-status filter chain, and — by what the answer declines to do — the absence of any first/limit construct in an iterate; the predecessor-chaining modeling workaround is the answerer's own practice. Best answer by NicholeVargas, 2026-09-03 |
+| AdobeDocs/workfront.en `help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` @ `da1df635` (2026-09-25) | § "Job role and user rates after the January 2027 removal": the January 2027 removal of `Billing Per Hour` / `Cost Per Hour`, its explicit inclusion of text mode calculated columns, and Adobe's own `nested(costRates).lists` replacement column quoted verbatim. Live prose at this SHA, confirmed outside `<!-- -->` staging. Blob: `https://github.com/AdobeDocs/workfront.en/blob/da1df63501d251518dc65a56c38524774aa25caa/help/quicksilver/product-announcements/product-releases/26-q4-release-activity/26-q4-release-overview.md` |
 
 ## Cross-references
 

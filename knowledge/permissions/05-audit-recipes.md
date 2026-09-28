@@ -76,7 +76,7 @@ Owned objects:
   Dashboards:  3
 ```
 
-Realistic output sizes: an admin user may produce a 500-row effective-access table. Paginate / offer CSV when total >50.
+Realistic output sizes: an admin user may produce a 500-row effective-access table. Paginate / offer CSV when total >50 (saved as in § Pagination below).
 
 ## Flow 3 — "Who has access to object Y?"
 
@@ -219,7 +219,7 @@ All flows can exceed default `$$LIMIT` on large tenants. Use `workfront-api` `kn
 
 - `$$LIMIT=200` per page; iterate `$$FIRST` until empty
 - For total counts: hit `/count` first (where supported)
-- Offer CSV export when total > 200
+- Offer CSV export when total > 200. Save it to the client's SharePoint `Workfront Exports` folder (`bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-outdir.sh "Workfront Exports"`; exit 4 or 5 is handled per `skills/_shared/references/sharepoint-deliverables.md`) as `<UTC>-<what>.csv`, not the current directory, so the team has it. It holds user names and access details, which is why it belongs in the access-controlled environment folder and nowhere else.
 
 ## Cross-references
 

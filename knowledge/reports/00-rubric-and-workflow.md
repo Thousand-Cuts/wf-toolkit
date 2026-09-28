@@ -125,7 +125,7 @@ What the skill *does* print to terminal scrollback:
 - The smoke-test GET response: `GET /report/<id>?fields=*,definition`, so the consultant can verify the report row references the UI-objects the skill just created (see the silent-re-resolution gotcha, `05-gotchas.md` #5).
 - On modify: the pre-state JSON for the report + its three UI-objects, printed before the PUT sequence. That is the manual-rollback artifact.
 
-For runs the consultant wants to persist (smoke-test JSON, the success URL printout, clone sanitization reports), the recipes write them to `~/wf-envs/<dest-slug>/deliverables/<UTC>-report-<verb>.{json,md}`. See `02-create-from-scratch-recipe.md` Phase G and `03-clone-and-adapt-recipe.md` for the exact paths.
+The files the recipes do write (the smoke-test JSON, clone sanitization reports) go to the destination client's SharePoint `Workfront Changes` folder, `<changes-dir>`, as `<UTC>-report-<verb>-….json`, so the team has a record of what was created. Resolve it once per run, before any write, with `wf-env-outdir.sh --slug <dest-slug> "Workfront Changes"` (`skills/_shared/references/sharepoint-deliverables.md`). See `02-create-from-scratch-recipe.md` Phase G and `03-clone-and-adapt-recipe.md` for the exact paths.
 
 ## Closing phase: surface divergences back to the skill
 
