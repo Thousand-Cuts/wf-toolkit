@@ -92,10 +92,10 @@ You can chain up to five FORMAT rules per field.
 | `ADDMONTHS` | `ADDMONTHS(date, n)` | |
 | `ADDYEARS` | `ADDYEARS(date, n)` | |
 | `ADDHOURS` | `ADDHOURS(date, n)` | Not available in Workfront Planning |
-| `CLEARTIME` | `CLEARTIME(date)` | Strip time, keep date |
+| `CLEARTIME` | `CLEARTIME(date)` | Strip time, keep date. Use it on both sides of a date comparison: a same-day completion later in the day than the baseline's time then compares as on time, not late |
 | `DATE` | `DATE(string)` | Parse string to date |
-| `DATEDIFF` | `DATEDIFF(date1, date2)` | Calendar days between dates (`date1 − date2`) |
-| `WEEKDAYDIFF` | `WEEKDAYDIFF(date2, date1)` | Business days between (note argument order) |
+| `DATEDIFF` | `DATEDIFF(date1, date2)` | Calendar days, `date1` minus `date2`. `DATEDIFF(CLEARTIME(a),CLEARTIME(b))` gives whole days |
+| `WEEKDAYDIFF` | `WEEKDAYDIFF(date1, date2)` | Weekdays, `date2` minus `date1`: the **opposite** order to `DATEDIFF`. Weekends are excluded; company holidays are **not** |
 | `WORKMINUTESDIFF` | `WORKMINUTESDIFF(date1, date2)` | Working minutes per default schedule |
 | `DAYOFMONTH` | `DAYOFMONTH(date)` | Returns 1–31 |
 | `DAYOFWEEK` | `DAYOFWEEK(date)` | 1 = Sunday, 7 = Saturday |
@@ -109,6 +109,8 @@ You can chain up to five FORMAT rules per field.
 | `SECOND` | `SECOND(date)` | 0–59 |
 | `MONTH` | `MONTH(date)` | 1–12 |
 | `YEAR` | `YEAR(date)` | 4-digit year |
+
+Verified in a Project calculated field on a client prod tenant 2026-09-30, values matching ones computed independently from the raw dates: `CLEARTIME({actualCompletionDate})`; `DATEDIFF(CLEARTIME(a),CLEARTIME(b))` as `a` minus `b` in whole days; `WEEKDAYDIFF({actualStartDate},{actualCompletionDate})` as the weekdays from start to completion. The same argument orders were verified on rendered report columns the day before (`../textmode/02-functions-reference.md` § Verified behaviour on a rendered report). Ready-made fields built from these are in `06-common-patterns.md`.
 
 ### Date wildcards
 
@@ -140,7 +142,7 @@ You can chain up to five FORMAT rules per field.
 
 ### Note on hours vs. minutes
 
-Duration fields in Workfront (like `actualDurationMinutes`) store values in **minutes**. To display as hours, divide by 60: `DIV({actualDurationMinutes}, 60)`.
+Duration fields in Workfront (like `actualDurationMinutes`) store values in **minutes**. To display as hours, divide by 60: `DIV({actualDurationMinutes}, 60)`. To display as 8-hour work days, divide by 480: `DIV({template}.{durationMinutes},480)` gives the source template's duration in days in a Project calculated field (verified on a client prod tenant 2026-09-30).
 
 ## Functions Shared With Text Mode vs. Functions Unique to Calc Fields
 

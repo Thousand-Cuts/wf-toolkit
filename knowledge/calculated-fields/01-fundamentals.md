@@ -39,6 +39,7 @@ Understanding when values recalculate is essential — stale data is the number-
 | A **directly referenced field** on the same object is edited | Calculated field **updates automatically** |
 | A field on a **referenced parent or related object** changes | Calculated field **does NOT update automatically** — value goes stale |
 | A user saves the object or the custom form | Calculated field **recalculates** |
+| A form is attached with `PUT /<obj>/<id>` and `objectCategories` | The new form's calc fields **compute in that call**, and calc fields on the record's other forms **recalculate** too (the PUT is a save). Verified on a client prod tenant 2026-09-30; see `07-limitations-and-gotchas.md` § Recalculation on Form Attachment |
 | An admin/user selects **Recalculate Custom Expressions** from the object's More (⋯) menu | Field **recalculates on that object** |
 | Bulk edit via a report | **Recalculates all selected objects** — best method for mass refresh |
 

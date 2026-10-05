@@ -77,6 +77,10 @@ updates={"name":"New Project","programID":"<prgm-id>","templateID":"<tmpl-id>","
 ```
 `templateID` is a real copy trigger, not just a reference field: the created project comes back populated with the template's task structure. Verified end-to-end — a project created from the "Creative Master" template (objCode `TMPL`) returned **25 copied tasks** on a `GET /TASK/search?projectID=<new-id>` immediately after create. Distinct from `copySourceID` (which clones an existing *project*); `templateID` instantiates a *template* into a live project. The template's own tasks are objCode `TMPLTASK` — but note a portfolio-scoped API key may return nothing when reading `TMPLTASK`/`TMPL` internals directly, so verify the copy by counting `TASK` on the *resulting project*, not by pre-reading the template.
 
+The template's custom forms come across too: a project created this way carried the template's forms (verified on a client prod tenant 2026-09-30). That is not evidence for `convertToProject`, a different path whose form carry-over was not tested here.
+
+**Project creation can require a template.** A tenant can restrict project creation to templates. There, a `POST /project` without `templateID` fails with `The system administrator restricts you from creating projects without using a template.`, and the same POST with `templateID` in the `updates` body succeeds. Seen on a client prod tenant 2026-09-30 while creating a test project. When a setup script needs a throwaway project, create it from a template (a small one keeps the copied task count down) rather than asking for the restriction to be lifted.
+
 **Upload a document** (two-step):
 ```
 POST /attask/api/v22.0/upload
@@ -402,14 +406,16 @@ So always read the live `objectCategories` collection first and reorder *that li
 
 Do not confuse the two `categoryOrder` fields. `OBJCAT.categoryOrder` is this per-record position. `CTGY.categoryOrder` is the form's tenant-wide default position in Setup, and setting it does nothing to any existing record.
 
-**Alternative — full collection replace via `objectCategories`.** When you want to set the exact final set of forms in one call (drop any not in the list, keep any in it), PUT the target object directly with the `objectCategories` collection. This is replace, not additive:
+**Alternative: full collection replace via `objectCategories`.** When you want to set the exact final set of forms in one call (drop any not in the list, keep any in it), PUT the target object directly with the `objectCategories` collection. This is documented as replace, not additive:
 
 ```
 PUT /attask/api/v22.0/optask/<issueID>?apiKey=<key>
-updates={"objectCategories":[{"categoryID":"<ctgyID1>"},{"categoryID":"<ctgyID2>"}]}
+updates={"objectCategories":[{"categoryID":"<ctgyID1>","categoryOrder":0},{"categoryID":"<ctgyID2>","categoryOrder":1}]}
 ```
 
-Array position sets `categoryOrder` here too, and the first entry becomes the primary `categoryID`, exactly as with `reorderCategories`. So this is a second way to reorder. Prefer `reorderCategories` when order is all you're changing: the collection PUT detaches anything you leave out, which turns an incomplete read into a data change rather than an error.
+To **add** a form this way, send every form the record already has plus the new one, each with its `categoryOrder`. Verified on a client prod tenant 2026-09-30 (REST v17.0) on projects with 1 and 2 prior forms: all prior forms stayed attached in order, no field value changed, and the calculated fields on the new form computed in the same call, because the PUT is a save (`../custom-forms/09-gotchas.md` § 41). The replace half, a form left out of the list being detached, has not itself been observed; the original 2026-05-15 verification covered the CTGY actions only. Treat it as replace and never send a partial list. `POST /objcat` is refused; the parent's collection is the write path.
+
+Array position sets `categoryOrder` here too, and the first entry becomes the primary `categoryID`, exactly as with `reorderCategories`. So this is a second way to reorder. Prefer `reorderCategories` when order is all you're changing: the collection PUT is documented to detach anything you leave out, which would turn an incomplete read into a data change rather than an error.
 
 That gives three ways to write the same per-record ordering, in decreasing order of how much else they touch:
 

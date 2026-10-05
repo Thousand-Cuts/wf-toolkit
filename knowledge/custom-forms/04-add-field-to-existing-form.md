@@ -78,7 +78,7 @@ Collection-replace replaces *the whole row*, not just the keys you mention — s
 | Field | What it does | Reset behaviour if omitted |
 |---|---|---|
 | `rowShared` | Two-up layout: `true` means this field shares a row with its sibling, rendering as a 2-column pair in the UI | Reset to `false` → field renders full-width on its own line. **Every paired field on the form collapses to single-column.** |
-| `customExpression` | The formula on calc fields (displayType=CALC) | Calc body lost — the field still exists but stops computing |
+| `customExpression` | The formula on calc fields (displayType=CALC) | Calc body lost: the field still exists but stops computing. A `categoryParameters:*` read never returns this key, so a payload built from `*` loses every formula (`09-gotchas` § 42) |
 | `hideFormulaFromDescription` | Calc-field UI flag controlling whether the formula text appears in the field's description tooltip | Reset to `false` → formula leaks into UI description |
 | `securityLevel` / `viewSecurityLevel` | Per-field edit/view security (LE, V, etc.) | Reset to defaults — field becomes editable/viewable to roles that previously couldn't see it |
 

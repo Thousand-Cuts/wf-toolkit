@@ -122,6 +122,17 @@ group.0.valueexpression=IF(DATEDIFF({plannedCompletionDate},$$TODAY)<0,"Overdue"
 group.0.valueformat=HTML
 ```
 
+### Group header labels
+
+A native relation grouping built by the UI (`valuefield=owner:name`, `namekey=view.relatedcolumn`, `namekeyargkey=["owner","name"]`) labels its headers "Owner: Name: <value> (N)". Add a `displayname` to the group entry to control the label:
+
+```
+group.0.valuefield=owner:name
+group.0.displayname=Owner
+```
+
+renders "Owner: <value> (N)". A custom `displayname` on a `template:name` grouping worked the same way. A date grouping with `groupdatesby=MY` and `valueformat=atDateAsMonthString` on `actualCompletionDate` renders "Actual Completion Date: Sep, 2026 (230)". Verified on a client prod tenant 2026-09-29, rendered report.
+
 ### Nested groupings (two levels)
 ```
 group.0.valuefield=portfolio:name
@@ -137,7 +148,7 @@ group.1.linkedname=direct
 
 **Grouping count cap: 3 for standard reports, 4 for matrix reports.** Standard list reports support up to 3 levels of grouping. Matrix reports (`reportType: "M"` per `knowledge/reports/01-report-object-shape.md`) support up to 4 levels. Adobe's `text-mode/edit-text-mode-in-grouping` page incorrectly states "max 4" without the split; the canonical source is `report-elements/groupings-overview`. The 4th level on matrix reports MUST be authored in text mode — the builder UI doesn't expose it. Source: Adobe `report-elements/groupings-overview`.
 
-**Groupings can't be sorted directly.** The UI offers no "sort by this grouping" control. To order grouped buckets, mirror the grouping field in a view column and set that column's `querysort=<field>` — the report's row-level sort then determines bucket order. The sort-index prefix pattern in `knowledge/reports/07-view-patterns.md` § 12 ("01: 0% to 10%", "02: 11% to 20%") is the workaround for calculated-grouping range buckets where direct field mirroring isn't an option. Source: Adobe `report-elements/groupings-overview`.
+**Groupings can't be sorted directly: headers follow the row sort.** The UI offers no "sort by this grouping" control. Group headers appear in the order their first row appears under the report's row sort, and that holds for calculated (`valueexpression`) groupings too: they are NOT sorted alphabetically by label. On a report sorted by `plannedCompletionDate` ascending, buckets labelled "1. ..." to "8. ..." rendered in the order 8, 7, 6, 3, 4, 5, 2, 1. So a numeric prefix in the label ("01:", "02:") orders nothing by itself; it only lines up when the row sort already does. To order the buckets, sort the rows by a field that runs in bucket order. Setting the REPORT row's `sortBy` over the API worked, including a reference path: `PUT /report/<id>` with `updates={"sortBy":"defaultBaseline:plannedCompletionDate","sortType":"desc"}` rendered the 8 buckets as 1 to 8. For stage-name buckets on TASK, `sortBy=taskNumber` ascending was a usable approximation. Verified on a client prod tenant 2026-09-29, rendered report. For native groupings, mirroring the grouping field in a view column with `querysort=<field>` works on the same principle. Source for the missing control: Adobe `report-elements/groupings-overview`.
 
 **Cannot group by multi-select custom fields or multi-value built-in fields (e.g., Resource Manager).** The grouping engine requires a scalar bucket key; multi-value fields don't have one. Workaround: derive a scalar key with a calculated custom field (concatenate the values, or pick a representative) and group on the calculated field. Source: Adobe `report-elements/groupings-overview`.
 
@@ -193,6 +204,27 @@ column.0.displayname=Avg Days Late
 column.0.textmode=true
 ```
 
+### Share and count of rows matching a condition
+
+The column and its aggregator can carry DIFFERENT expressions. The column shows a readable per-row value; the aggregator computes the group figure:
+
+```
+column.0.valueexpression=IF(<condition>,"Yes","No")
+column.0.aggregator.function=AVG
+column.0.aggregator.valueexpression=IF(<condition>,100,0)
+column.0.aggregator.displayformat=doubleAsPercentRounded
+column.0.displayname=Share late
+column.0.textmode=true
+```
+
+For a count instead of a share, use `IF(<condition>,1,0)` with `function=SUM` and `displayformat=doubleAsString`.
+
+**`doubleAsPercentRounded` does not multiply by 100.** It rounds the value and appends `%`. An `AVG` of `IF(<condition>,1,0)` therefore rendered `1%` or `0%` (0.54 rounded) where 54% was meant; aggregating `IF(<condition>,100,0)` rendered 45%, 51%, 72%, 54%, 60% and 64%, each matching the share computed independently. Verified on a client prod tenant 2026-09-29, rendered report.
+
+**A collapsed grouping reads as a summary table.** With `group.0.iscollapsed=true`, each group's aggregate values render on its collapsed header row, so the report opens as one line per group with its counts and shares. Useful on a dashboard, subject to the dashboard's 200-row page limit (`knowledge/reports/05-gotchas.md` #27).
+
+**The Summary tab does not compute `valueexpression` aggregators.** On a report with native groupings, the Summary tab showed correct counts across all rows, but a `valueexpression` AVG column was left blank or omitted. Read `valueexpression` aggregates on the Details tab, or store the value in a field.
+
 ## Full `valueformat` token catalogue
 
 Adobe documents a closed enumeration of valid `column.N.valueformat=` tokens. The empirically-verified tokens, grouped by underlying data type:
@@ -220,8 +252,8 @@ Adobe documents a closed enumeration of valid `column.N.valueformat=` tokens. Th
 | `doubleAsString` | Double rendered as string verbatim |
 | `currencyStringCurrency` | "$1,234.56" (tenant's currency symbol + 2 decimals) |
 | `currencyStringCurrencyRounded` | "$1,235" (rounded, no decimals) |
-| `doubleAsPercent` | "12.50%" (multiplied by 100, 2 decimals) |
-| `doubleAsPercentRounded` | "13%" |
+| `doubleAsPercent` | "12.50%" (2 decimals). This table used to say it multiplies by 100; that is not verified, and its rounded sibling does not multiply (next row), so test before relying on it |
+| `doubleAsPercentRounded` | Rounds and appends `%`, **no multiply by 100**: an aggregate of 54 renders "54%", of 0.54 renders "1%". Verified as an aggregator `displayformat` (client prod tenant 2026-09-29, rendered report); column-level `valueformat` not tested |
 | `doubleAsFinancial` | "(1,234.56)" for negatives (parens, no minus) |
 | `doubleAsFinancialRounded` | "(1,235)" for negatives |
 

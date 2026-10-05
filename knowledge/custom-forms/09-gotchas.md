@@ -20,6 +20,8 @@ The most common ways consultants get tripped up by Workfront custom forms. Updat
 **Mechanic:** Adding a field propagates the structure instantly; values are not back-filled. Each existing record has the new field at null until set.
 **Mitigation:** Flow 2 (add field) prints attachment count and routes to dedicated bulk-update tooling for backfill.
 
+This is about adding a field to a form that is already attached. Attaching a form to a record that did not have it is a different write, with its own body and side effects (calculated fields compute in the same call): see § 41.
+
 ## 4. Per-tenant uniqueness of `Parameter.name`
 
 **Surprise:** "I can't create a second `Vendor Name` field for issues — Workfront says it already exists."
@@ -298,7 +300,7 @@ Setting a custom-form field value on a record (PROJ / TASK / OPTASK / …) via R
 
 - The `DE:` key uses the Parameter **`name`** (the snake_case API identifier), **not** the UI `label` — mirrors the `DE:` filter rule.
 - Keys go at the **top level** of `updates`, NOT nested in `parameterValues`. `parameterValues` is a **read-side** projection (what `GET …?fields=parameterValues` returns, keyed `DE:<name>`); it is not a write envelope.
-- For **API writes**, the form must be attached to the record first (`updates={"objectCategories":[{"categoryID":<cid>}]}`) or the DE: write is rejected (see gotcha #3). This gate is API-only: the UI attaches the form automatically when a user inline-edits the field from a report column (gotcha #38).
+- For **API writes**, the form must be attached to the record first or the DE: write is rejected. Attach it by sending the record's existing forms plus the new one in `objectCategories`, each with a `categoryOrder` (§ 41); a body naming only the new form risks detaching the others. This gate is API-only: the UI attaches the form automatically when a user inline-edits the field from a report column (gotcha #38).
 - SLCT / RDIO fields must receive a value that exactly matches a `ParameterOption.value`; number/currency accept a bare numeric.
 
 Generalizes gotcha #30 (documented there for TYAH): write-as-`DE:<name>` holds for every parameter type; only the read-side envelope shape differs by type. Verified on a sandbox tenant v15.0, 2026-07-02.
@@ -481,11 +483,51 @@ First-party and dated. No live re-check was available this run (`sweep-verify.sh
 
 First-party; no live re-check was available this run (`sweep-verify.sh` blocked — see the PR digest), and AI Form Fill behaviour is not GET-checkable in any case.
 
+## 41. Attaching a form to a record that already has forms: send the full set, with `categoryOrder`
+
+**Surprise:** "I attached the new reporting form with `updates={"objectCategories":[{"categoryID":"<new>"}]}`. Did the record keep its request form?"
+
+**The safe body:** read the record's current forms, then send all of them plus the new one at the next `categoryOrder`:
+
+```
+GET /attask/api/v22.0/project/<id>?fields=objectCategories:categoryID,objectCategories:categoryOrder
+
+PUT /attask/api/v22.0/project/<id>
+updates={"objectCategories":[
+  {"categoryID":"<existing>","categoryOrder":0},
+  {"categoryID":"<new>","categoryOrder":1}
+]}
+```
+
+Verified on a client prod tenant 2026-09-30 (REST v17.0) on 3 projects, among them one with 1 prior form and one with 2 prior forms (a request form and a legacy details form): every prior form stayed attached, in its original order, and every existing field value was unchanged (19, 31 and 40 values compared before and after). The new form landed at the end.
+
+**Not verified: sending only the new form.** Whether a body naming just the new form merges with the attached set or replaces it has not been observed. `../api/05-http-methods-and-actions.md` documents this PUT as a replace, and Adobe's general rule is that a collection in `updates` replaces, so assume it would detach every form you leave out and never rely on the short body. The `PUT /ctgy/assignCategories` action is the documented additive alternative (`../api/05-http-methods-and-actions.md` § Assigning custom forms), but its effect on calculated fields was not tested.
+
+**`POST /objcat` does not attach a form.** OBJCAT is a secondary object; `/objcat` and `/objectcategory` are read-only, and a POST is refused (`unable to find method for service endpoint type: ADD`, seen on the firm's tenant 2026-06-12). Write through the parent record's `objectCategories`.
+
+**The attach PUT is a save, so it recalculates.** The new form's calculated fields compute in the same call (a 5-field form on 3 of 3 records, values matching ones computed independently), and the calculated fields on the record's **other** forms are re-evaluated too. A stale calc value on an already-attached form can therefore change during an attach. For a bulk attach, guard with a before/after read of `parameterValues` and `objectCategories` on every record:
+
+- **Log, don't stop:** a calculated field changing from one filled value to another, or filling in on the new form.
+- **Stop:** any non-calculated field changing; a calculated field going from filled to blank (a missing or broken formula, see § 42); any previously attached form missing afterwards.
+- **Telling them apart:** `GET /param/search?displayType=CALC&fields=name` lists the calculated fields (raise `$$LIMIT` past 100 on a large tenant). Detail: `../calculated-fields/07-limitations-and-gotchas.md` § Recalculation on Form Attachment. The bulk recipe is `../bulk-updates/05-common-patterns.md` Pattern 5.
+
+## 42. `categoryParameters:*` omits `customExpression`, so a PUT built from it blanks every formula
+
+**Surprise:** "I read the form with `fields=categoryParameters:*`, changed one row, and PUT the collection back. Days later the calculated fields stopped populating."
+
+**Mechanic:** the `*` expansion of `categoryParameters` does not include `customExpression`, although the field reads fine when named. The link PUT is a collection replace that resets any key a row leaves out (`04-add-field-to-existing-form.md` § Field-style fields), so a payload built from a `*` read writes an empty formula to every calculated field on the form. Nothing errors, `isInvalidExpression` stays false, and the fields still render. A backup captured the same way cannot restore them, and `customExpression` is not versioned or in the audit trail.
+
+**Mitigation:** name the fields: `fields=categoryParameters:parameterID,categoryParameters:displayOrder,categoryParameters:customExpression,...` (the full list is in `04-add-field-to-existing-form.md` step 2). Count the non-empty `customExpression` values before and after any form PUT and compare. The same trap exists on reports, where `fields=*,definition` returns no `definition` (`../reports/05-gotchas.md` #25).
+
+Observed on a client tenant 2026-09-08, where a form edited from a `*` read had all 10 formulas blank while an untouched sibling form returned its 1,771-character formula when named explicitly. Re-observed on a client prod tenant 2026-09-30: reading back newly created formulas needed an explicit `fields=categoryParameters:customExpression`.
+
 ## Cross-references
 
 - `01-object-model` — value-vs-label distinction, composite CategoryParameter ID
 - `api/05-http-methods-and-actions`: CTGY-hosted attach / detach / reorder actions and their dispatch shape
 - `api/08-related-objects-and-collections`: OBJCAT join table, multi-form attachment reads
+- `calculated-fields/07-limitations-and-gotchas` § Recalculation on Form Attachment: the calc side of gotcha #41
+- `bulk-updates/05-common-patterns` Pattern 5: gotcha #41 as a bulk write, with the before/after guard
 - `02-parameter-types` — empirical enums for `dataType` / `displayType`
 - `03-create-form-recipe` — corrected POST sequence
 - `07-display-logic` — REST authoring pattern + matchType + ruleType enums (since v0.25.0)
@@ -499,6 +541,8 @@ First-party; no live re-check was available this run (`sweep-verify.sh` blocked 
 | URL | What it provided |
 |---|---|
 | Direct observation, consultant-run test on a production tenant, 2026-09-22 | Gotcha #38: inline-editing a `DE:` field from a report column auto-attaches the owning custom form to a record that had none. Reproduced deliberately against a document verified to carry zero `objectCategories`. |
+| Direct observation, consultant-run writes on a client prod tenant (REST v17.0), 2026-09-30 | Gotcha #41: the full-set `objectCategories` attach body keeping 1 and 2 prior forms and 19, 31 and 40 field values unchanged; calculated fields computing in the attach call on 3 of 3 records; calc fields on other forms re-evaluated by the same save. Gotcha #42: an explicit `categoryParameters:customExpression` needed to read new formulas back. |
+| Consultant incident on a client tenant, 2026-09-08 | Gotcha #42: 10 formulas blanked by a PUT built from a `categoryParameters:*` read, against a 1,771-character formula on an untouched sibling form read by name. |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-23/use-reference-number-in-internal-lookup-251783` | INTRNL end-user search matches name only, not reference number (gotcha #34) — best answer by jayciedido, 2026-07-17 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-fusion-24/capture-form-visibility-display-with-fusion-252470` | Independent corroboration of gotcha #35 from the Fusion surface, and the source of #35(c): no `isVisible` runtime property in Fusion, display logic is not a data-clearing or security rule, reproduce the display condition as a Fusion filter. Also the unconfirmed `clearCustomData` copy-action remark — best answer by etaylor-1, 2026-09-01 |
 | `https://experienceleaguecommunities.adobe.com/adobe-workfront-general-23/workfront-ai-assistant-typeahead-fields-252748` | Gotcha #37: the AI Assistant leaves typeahead fields empty when fed display names from a spreadsheet, converting to Internal Lookup does not help, and supplying the raw ID works — plus the cross-tenant limit that makes the workaround unusable for pulling requests between instances — best answer by MorganHatcher, 2026-09-14 |

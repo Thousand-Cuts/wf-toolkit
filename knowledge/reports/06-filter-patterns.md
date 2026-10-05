@@ -162,7 +162,7 @@ A scalar `$$USER.ID` used with `_Mod=in` is legal — Workfront just resolves th
 
 **Sanitizer behaviour.** These tokens are tenant-neutral by construction — they resolve at render time, and any user in any tenant will get a sensible answer (or fall through to "no rows" if the session has no home team). The clone-flow sanitizer in `sanitize_clone.py` passes them through unchanged. The skill does NOT prompt the consultant about them.
 
-**Date format note.** The bare `$$TODAY` token is timezone-aware (it resolves to midnight in the tenant's configured timezone). A literal date string in the same filter slot, like `client-c-sample/PROJ-revenue-prog-CHART-uift.json`'s `"entryDate": "2025-01-01T00:00:00:000-0500"`, IS tenant-specific — the offset (`-0500`) is the tenant's server offset at the moment the report was authored. On a cross-tenant clone, the sanitizer flags literal date strings for the consultant to confirm or replace with `$$TODAY±Nd` arithmetic.
+**Date format note.** The bare `$$TODAY` token is documented as timezone-aware (midnight in the tenant's configured timezone); that has not been re-verified in a filter. Inside a view `valueexpression` it resolved to the UTC date, which rolls over in the US evening (verified on a client prod tenant 2026-09-29, rendered report; `05-gotchas.md` #26). A literal date string in the same filter slot, like `client-c-sample/PROJ-revenue-prog-CHART-uift.json`'s `"entryDate": "2025-01-01T00:00:00:000-0500"`, IS tenant-specific: the offset (`-0500`) is the tenant's server offset at the moment the report was authored. On a cross-tenant clone, the sanitizer flags literal date strings for the consultant to confirm or replace with `$$TODAY±Nd` arithmetic.
 
 ## § 5. Cross-object join paths
 
@@ -358,6 +358,20 @@ On clone, preserve whatever shape the source UIFT uses; don't normalize.
 **`isnull` / `notnull` / `notblank` value requirement.** All three operators require the paired value to be the empty string `""`. Setting the value to anything else (including `null` or omitting the key) causes Workfront to silently switch interpretation modes on some tenants — most often by treating the operator as `eq ""`, which is a substring match against literal empty rather than a NULL check. The skill always emits the empty string as the paired value.
 
 **Date strings in tenant-local offset.** Hard-coded date strings like `"2025-12-31T19:00:00:000-0500"` (Client C's `entryDate`) carry the source tenant's timezone offset. On a cross-tenant clone where the destination tenant runs on a different offset (e.g., `-0800`), the absolute moment shifts. The sanitizer flags literal datetimes for replacement; the skill prefers `$$TODAY±Nd` arithmetic when authoring fresh.
+
+## § 10a. TASK filter keys verified on a rendered report
+
+Each key below filtered a TASK report as described, confirmed by reading the rendered report (client prod tenant 2026-09-29, rendered report):
+
+| Key | Value | `_Mod` | Keeps |
+|---|---|---|---|
+| `indent` | `"1"` | `eq` | Tasks at hierarchy level 1, one below the top-level tasks (level 0). |
+| `numberOfChildren` | `"0"` | `gt` | Parent tasks only. |
+| `actualDurationMinutes` | `"0"` | `gt` | Tasks with real recorded duration. Drops tasks checked off after the fact: of 431 tasks whose start-to-complete span was under 5 minutes, 413 had `actualDurationMinutes` 0. |
+| `name` | TAB-joined list of task names (§ 3) | `in` | Tasks with one of the listed names, e.g. the stage tasks every template carries. |
+| `project:status` | `"CUR"` | as for `status` (§ 2) | Tasks on current projects (one-hop join, § 5). |
+
+An `OR:1:` group that repeats the base conditions with a different status and name pair (the bare + `OR:1:` duplication in § 7) also rendered as expected.
 
 ## § 11. Cross-references
 

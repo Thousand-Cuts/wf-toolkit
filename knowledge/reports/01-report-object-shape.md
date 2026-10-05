@@ -7,6 +7,8 @@ This file documents the field maps of the four objects a Workfront report writes
 - **UIGB** — the groupBy
 - **UIVW** — the view
 
+plus, in § 8, the two objects a dashboard is made of (`PTLTAB` and its `PRTBSC` sections).
+
 A "report" in Workfront's REST surface is not a single record. It is a `PTLSEC` row that holds three foreign keys (`filterID`, `groupByID`, `viewID`) into three sibling UI-object tables. The skill's create flow writes the three UI-objects first, then the REPORT row referencing them, in that order.
 
 Field-level pattern detail for `definition` lives in:
@@ -38,10 +40,10 @@ Total field count from `/report/metadata` and the survey GETs: 58–60 depending
 | `isReport` | bool | YES | Always `true` for a report row. Distinguishes a report from a raw PTLSEC dashboard section (which uses the same objCode but with `isReport=false`). |
 | `filterID` | uuid \| null | YES | UIFT ID written in Phase F.1, or literal `null` for a no-filter report. |
 | `groupByID` | uuid \| null | YES | UIGB ID written in Phase F.2, or literal `null` for a list report with no grouping. |
-| `viewID` | uuid | YES | UIVW ID written in Phase F.3. Never null — a report always has a view. |
+| `viewID` | uuid | YES | UIVW ID written in Phase F.3. Never null: a POST without it fails with `viewID cannot be null` and creates nothing (verified v17.0, 2026-09-29). `POST /report` keeps the ID you send; `POST /ptlsec` does not (`05-gotchas.md` #5). |
 | `description` | string \| null | optional | Free-form description; null is fine. |
-| `maxResults` | int | optional | Row cap. Defaults observed in survey: `15` (most common), `100`, `200` (analytics-heavy reports), `0` (treated as "no override"). |
-| `sortBy` / `sortType` | string \| null | optional | REPORT-level sort override. Rare; usually null because column-level sort on the view wins. |
+| `maxResults` | int | optional | Row cap. Defaults observed in survey: `15` (most common), `100`, `200` (analytics-heavy reports), `0` (treated as "no override"). An API create that omits it gets `0`, which a dashboard section renders as 15 rows; sections page at most 200 rows whatever the value (`05-gotchas.md` #27). |
+| `sortBy` / `sortType` | string \| null | optional | REPORT-level row sort. Usually null in the survey, where column-level sort on the view wins. It accepts a reference path (`defaultBaseline:plannedCompletionDate`), and it is what orders text-mode group headers, which follow the row sort (`07-view-patterns.md` § 12). Verified on a client prod tenant 2026-09-29, rendered report. |
 | `sortBy2` / `sortType2` / `sortBy3` / `sortType3` | string \| null | optional | Secondary/tertiary sort. Almost always null in survey. |
 | `isStandalone` | bool | optional | Hard-code `false` in v0.9.0; 0/33 standalone in survey. Standalone behavior is a v0.10.0 candidate. |
 | `enablePromptSecurity` | bool | optional | Set to `false` in v0.9.0; runtime semantics undocumented. |
@@ -215,7 +217,45 @@ Report created.
 
 ---
 
-## 8. Cross-references
+## 8. Dashboards: `PTLTAB` and its `PRTBSC` sections
+
+A dashboard is a `PTLTAB` row (portal tab). Each report on it is a `PRTBSC` row (portal tab section) linking the tab to a `PTLSEC` report row. `PRTBSC` is not a top-level object: it cannot be POSTed, and it is written as the `portalTabSections` collection through a PUT on the `PTLTAB` (`05-gotchas.md` #24). The report side exposes the same collection as `PTLSEC.portalTabSections`.
+
+Verified on a client prod tenant, v17.0, 2026-09-29.
+
+### 8.1 `PTLTAB` (the dashboard)
+
+Endpoint: `$$HOST/attask/api/v22.0/ptltab`
+
+| Field | Type | Required on POST? | Notes |
+|---|---|---|---|
+| `name` | string | YES | Dashboard name as shown in the Dashboards list. |
+| `docID` | string | YES | `"doc.applicationhome.home"`. Without it: `docID cannot be null` (`05-gotchas.md` #23). |
+| `description` | string | optional | |
+| `userID` | uuid \| null | optional | The owner. `null` after an API POST unless set; UI-built dashboards always have one. Set it in the sections PUT. |
+| `portalTabSections` | collection | via PUT only | The sections, one per report. See § 8.2. |
+
+Other metadata fields: `ID`, `accessorIDs`, `customerID`, `displayOrder`, `extRefID`, `isPublic`, `lastUpdateDate`, `lastUpdatedByID`, `nameKey`, `portalProfileID`, `tabname`. There is no `owner` or `ownerID`: v17.0 rejects both in `fields=` on `PTLTAB` and on `PTLSEC` (`does not support field owner`), so read `userID` or `lastUpdatedBy:name`.
+
+### 8.2 `PRTBSC` (one section, inside `portalTabSections`)
+
+| Field | Value | Notes |
+|---|---|---|
+| `portalSectionObjID` | the report's ID | The `PTLSEC` row being placed. |
+| `portalSectionObjCode` | `"PTLSEC"` | The report row's own objCode. |
+| `internalSectionID` | the report's ID | Same value as `portalSectionObjID` in every verified write. |
+| `area` | int | Layout region. UI-built dashboards use 1, 2 and 3. **Which region each value renders as is not yet verified.** |
+| `displayOrder` | int | Position within its `area`, from 0. |
+
+The full create sequence is in `02-create-from-scratch-recipe.md` § "Compose a dashboard".
+
+### 8.3 What a report shows inside a section
+
+A section is not the whole report. It renders 15 rows for a report with `maxResults: 0` (the API default), and at most 200 rows per page however high `maxResults` is set. On the Details tab, group header counts and aggregates are computed from the visible page, so a grouped report over 200 rows shows wrong group summaries inside a dashboard while the same report opened on its own is correct. The Summary tab and charts count all rows for native groupings but leave `valueexpression` aggregators out. Before placing a grouped report, confirm it returns 200 rows or fewer, or that it only needs native-grouping counts (or stored-field aggregates) from its Summary or Chart tab. Details and evidence: `05-gotchas.md` #27. Verified on a client prod tenant 2026-09-29, rendered dashboard and report.
+
+---
+
+## 9. Cross-references
 
 - **Filter half** (UIFT.definition) → `06-filter-patterns.md`. The `<field>` / `<field>_Mod` JSON-object shape, EXISTS blocks, `$$` placeholders, OR-block grouping, custom-field references (`DE:` prefix).
 - **View half** (UIVW.definition) and **group half** (UIGB.definition.group[]) → `07-view-patterns.md`. Column shape, link blocks, conditional formatting on row[], view properties, valueexpression columns, the canonical column field set (`descriptionkey`, `linkedname`, `valuefield`, `valueformat`, `listsort`, `querysort`, `shortview`, `stretch`, `width`).
@@ -223,7 +263,7 @@ Report created.
 - **Schema cache TTL + invalidation** → `04-runtime-schema-discovery.md`. Per-host, per-uiObjCode caching of `/<uiObjCode>/metadata`.
 - **Auth, $$HOST resolution, API version pinning** → `workfront-api`. The v0.9.0 skill pins to `v17.0`; auth header is `apiKey: <key>`.
 - **Every byte of authoring inside `definition` string values** (e.g. `valueexpression` calc-style syntax inside a UIVW column) → `workfront-textmode`. Text Mode is the column-value DSL; this skill calls into it for column composition.
-- **Gotchas** (REPORT row's empty `definition`, silent re-resolution, chart/prompts spillover via `preferenceID`, UI-object re-use on modify) → `05-gotchas.md`.
+- **Gotchas** (REPORT row's empty `definition`, endpoint-specific re-resolution, chart/prompts spillover via `preferenceID`, UI-object re-use on modify, dashboard `docID` and sections) → `05-gotchas.md`.
 - **Top-level workflow** (which file to consult in which phase) → `00-rubric-and-workflow.md`.
 
 ---

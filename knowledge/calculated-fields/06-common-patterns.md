@@ -160,6 +160,54 @@ Duration fields store minutes internally. Divide by 60 to convert to hours.
 
 ---
 
+## Project Delivery Metrics (Completion, Duration, Late vs Baseline, Template SLA)
+
+A set of Project fields for "how long did it take, was it late, and what did the template promise". Built from expressions verified in a Project calculated field on a client prod tenant 2026-09-30: a new form of 5 calculated fields was attached to 3 projects, and every stored value matched one computed independently from the raw dates. The building blocks verified there are `CLEARTIME(...)`, `DATEDIFF(CLEARTIME(a),CLEARTIME(b))`, `WEEKDAYDIFF({actualStartDate},{actualCompletionDate})`, `{defaultBaseline}.{plannedCompletionDate}`, `DIV({template}.{durationMinutes},480)`, and the `IF(ISBLANK(x) || ISBLANK(y),"",...)` guard.
+
+### Completion Date
+
+**Format:** Date
+
+```
+CLEARTIME({actualCompletionDate})
+```
+
+### Weekdays to Complete
+
+**Format:** Number
+
+```
+IF(ISBLANK({actualStartDate}) || ISBLANK({actualCompletionDate}),"",WEEKDAYDIFF({actualStartDate},{actualCompletionDate}))
+```
+
+Weekdays from actual start to actual completion. Weekends are excluded; company holidays are **not**. For calendar days use `DATEDIFF(CLEARTIME({actualCompletionDate}),CLEARTIME({actualStartDate}))`, and note the argument order flips: `DATEDIFF(a,b)` is `a` minus `b`, `WEEKDAYDIFF(a,b)` is `b` minus `a`.
+
+### Finished After Original Schedule (100/0 for a % Late Average)
+
+**Format:** Number
+
+```
+IF(ISBLANK({actualCompletionDate}) || ISBLANK({defaultBaseline}.{plannedCompletionDate}),"",IF(DATEDIFF(CLEARTIME({actualCompletionDate}),CLEARTIME({defaultBaseline}.{plannedCompletionDate}))>0,100,0))
+```
+
+100 when the project finished on a later day than its baseline (original schedule) planned, 0 when on time. Averaged in a report grouping, it reads directly as "% finished late".
+
+- **Why 100 and not 1:** the `doubleAsPercentRounded` aggregator format appends `%` without multiplying by 100, so an average of 1/0 renders as `1%` (`../textmode/04-views-and-groupings.md` and `../reports/07-view-patterns.md`).
+- **Why `""` instead of 0 for incomplete projects:** a blank Number result leaves the field absent from `parameterValues`, so the average skips the project instead of counting it as on time.
+- **Why `CLEARTIME` on both sides:** a project completed on the baseline's day, but later in the day than the baseline's time, compares as on time only when both dates drop their time. Verified on the same tenant.
+
+### Template SLA Days
+
+**Format:** Number
+
+```
+DIV({template}.{durationMinutes},480)
+```
+
+The source template's duration in 8-hour work days (`durationMinutes` is work minutes; 480 is one day). Compare it with Weekdays to Complete to see whether the project beat its template. A project not created from a template has no `{template}`; what this returns there was not checked.
+
+---
+
 ## $$OBJCODE Branch for Multi-Object Forms
 
 **Format:** Text
@@ -218,7 +266,7 @@ Stamps the first time a record enters a given status, with no Fusion scenario. T
 Requirements and caveats:
 
 1. **Save the form first.** Create the field, save the form to commit it to the database, then edit the field and enter the calculation. An expression can only reference a field that already exists. Direct self-reference is allowed; mutual references between two fields are rejected at save (see `07-limitations-and-gotchas.md` § Circular Dependencies).
-2. **Recalc timing applies.** The stamp is written when the object's calculations run (edit-and-save, form attach plus save, or a recalc; see 07 § Stale Cross-Object Values). A status change with no accompanying recalc event will not stamp until the next one, so the timestamp is "first recalc while in status", not the literal transition instant.
+2. **Recalc timing applies.** The stamp is written when the object's calculations run (edit-and-save, a form attach through the API, which is itself a save, or a recalc; see 07 § Stale Cross-Object Values and § Recalculation on Form Attachment). A status change with no accompanying recalc event will not stamp until the next one, so the timestamp is "first recalc while in status", not the literal transition instant.
 3. **First-touch, not most-recent.** A record that leaves and later re-enters the status keeps the original timestamp. Intended for first-touch stamps; wrong for a most-recent-touch stamp.
 
 <!-- UNVERIFIED -->

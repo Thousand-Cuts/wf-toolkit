@@ -44,6 +44,40 @@ column.0.valueexpression=IF(!({status}="ONH"),"Active","On Hold")
 > assumption, not Workfront's behaviour, and an API round-trip proves storage,
 > not semantics.
 
+> **`$$TODAY` inside a `valueexpression` is the UTC date, not the viewer's.**
+> At 8:39 PM EDT on 2026-09-29, `DATEDIFF(CLEARTIME(<a 2026-09-30 date>),$$TODAY)`
+> rendered `0`, and all 8 date-relative buckets on the report matched
+> independently computed counts only with "today" = 2026-09-30. So every
+> `$$TODAY`-relative column or grouping rolls over to tomorrow in the US
+> evening: 8 PM EDT, 5 PM PDT. Verified on a client prod tenant 2026-09-29,
+> rendered report. The filter-side `$$TODAY` was not tested. Detail and
+> mitigations: `09-tips-and-gotchas.md` § "`$$TODAY` in a valueexpression is
+> the UTC date".
+
+### Verified behaviour on a rendered report
+
+Each of these rendered, on PROJ and TASK reports, values matching ones
+computed independently from the raw data (client prod tenant 2026-09-29,
+rendered report):
+
+| Expression | Behaviour |
+|---|---|
+| `CLEARTIME({plannedCompletionDate})` | Drops the time of day; use it on both sides of a date comparison. |
+| `DATEDIFF(CLEARTIME(a),CLEARTIME(b))` | `a` minus `b` in whole calendar days. |
+| `WEEKDAYDIFF(a,b)` | `b` minus `a` in weekdays. Weekends are excluded; **company holidays are not** (it matched `numpy.busday_count(a,b)` with no holiday list). |
+| `DIV({durationMinutes},480)` | Work minutes to days: 480 minutes is one 8-hour day. |
+| `{defaultBaseline}.{plannedCompletionDate}` | The baseline's planned completion, on a PROJ report. |
+| `{template}.{durationMinutes}` | The source template's duration, on a PROJ report. |
+| `{templateTask}.{durationMinutes}` | The source template task's duration, on a TASK report. |
+| `ISBLANK({templateTaskID})` | True for tasks added by hand rather than from the template. |
+| Nested `IF(...,"label",IF(...,"label",...))` | String results render as text, at any depth used here. |
+
+A template-based SLA for a task, in days: `DIV({templateTask}.{durationMinutes},480)`.
+Compare it with the task's actual span
+(`WEEKDAYDIFF(CLEARTIME({actualStartDate}),CLEARTIME({actualCompletionDate}))`)
+and guard hand-added tasks with `ISBLANK({templateTaskID})`, which have no
+template duration to compare against.
+
 ## Logical / conditional
 
 | Function | Purpose | Example |
@@ -84,8 +118,8 @@ column.0.valueexpression=IF(!({status}="ONH"),"Active","On Hold")
 | `ADDYEARS` | Add years | `ADDYEARS({plannedCompletionDate},1)` |
 | `CLEARTIME` | Strip time portion | `CLEARTIME($$NOW)` |
 | `DATE` | Construct a date | `DATE(2026,1,15)` |
-| `DATEDIFF` | Difference in days (calendar), **first minus second** | `DATEDIFF({plannedCompletionDate},$$TODAY)` = days remaining |
-| `WEEKDAYDIFF` | Difference in business days, **second minus first** | `WEEKDAYDIFF({plannedCompletionDate},{actualCompletionDate})` = days late |
+| `DATEDIFF` | Difference in days (calendar), **first minus second**. Wrap both sides in `CLEARTIME` for whole days. | `DATEDIFF({plannedCompletionDate},$$TODAY)` = days remaining |
+| `WEEKDAYDIFF` | Difference in weekdays, **second minus first**. Skips weekends, not company holidays. | `WEEKDAYDIFF({plannedCompletionDate},{actualCompletionDate})` = days late |
 | `WORKMINUTESDIFF` | Difference in working minutes (respects schedule) | |
 | `DAYOFMONTH` | Day number | |
 | `DAYOFWEEK` | 1=Sunday … 7=Saturday | |
@@ -144,3 +178,8 @@ column.0.valueformat=doubleAsPercentRounded
 column.0.displayname=% Complete
 column.0.textmode=true
 ```
+
+`percentComplete` is already 0 to 100, which is what this needs: as an
+aggregator `displayformat`, `doubleAsPercentRounded` rounds and appends `%`
+without multiplying by 100 (verified, see `04-views-and-groupings.md`
+§ Aggregators). The column-level `valueformat` was not tested separately.

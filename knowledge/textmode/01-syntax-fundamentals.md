@@ -85,7 +85,7 @@ Wildcards work in `valueexpression` and filter values, but NOT in `valuefield`. 
 
 | Wildcard | Returns |
 |---|---|
-| `$$TODAY` | Today at midnight, tenant timezone |
+| `$$TODAY` | Today at midnight. Inside a `valueexpression` "today" is the UTC date, so it rolls over in the US evening (`09-tips-and-gotchas.md`) |
 | `$$NOW` | Current timestamp (sub-day precision; unsupported in Resource Planner) |
 | `$$USER.ID` | Rendering user's UUID |
 | `$$USER.name` | Rendering user's full name (text-mode only) |

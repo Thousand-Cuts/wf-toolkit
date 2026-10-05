@@ -20,6 +20,10 @@ A grab-bag of hard-won knowledge that doesn't fit cleanly elsewhere.
 | `NOT(...)` returns syntax error or always false | Use `!(...)` instead; `NOT()` is not valid Workfront text mode syntax |
 | `NOTBLANK` returns nothing useful | Use `!ISBLANK(...)` instead |
 | Parentheses in custom field name cause weirdness in expressions or filters | Strip parens from the field name in Setup; parentheses cause problems in calculated fields and External Lookup substitution |
+| Date-relative buckets or "days until" values jump by a day in the evening | `$$TODAY` in a `valueexpression` is the UTC date. See § "`$$TODAY` in a valueexpression is the UTC date" |
+| A percentage aggregate shows `0%` or `1%` | `doubleAsPercentRounded` does not multiply by 100. Aggregate `IF(cond,100,0)`, not `IF(cond,1,0)`. See `04-views-and-groupings.md` § Aggregators |
+| Text-mode group headers come out in a scrambled order | Headers follow the report's row sort, not the label's alphabet. Set the REPORT `sortBy` to a field that orders the buckets. See `04-views-and-groupings.md` § Groupings |
+| Group counts on a dashboard are too small, or change page to page | A dashboard section computes group counts and aggregates from the visible page only (max 200 rows). See `knowledge/reports/05-gotchas.md` #27 |
 
 ## Field naming conventions to avoid
 
@@ -71,7 +75,7 @@ When in doubt, look it up there.
 
 | Expression | Meaning |
 |---|---|
-| `$$TODAY` | Today, no time |
+| `$$TODAY` | Today, no time (the UTC date inside a `valueexpression`; see below) |
 | `$$NOW` | Right now, with time |
 | `$$TODAY+7d` | 7 days from today |
 | `$$TODAY-1m` | One month ago |
@@ -82,6 +86,19 @@ When in doubt, look it up there.
 Date math works in filter values and `valueexpression`.
 
 **`$$NOW` is unsupported in the Resource Planner.** The Resource Planner renderer ignores `$$NOW` wildcards in valueexpression-driven columns and groupings; the column renders blank. `$$TODAY` works fine. If a report drives a Resource Planner view, substitute `$$TODAY` for `$$NOW` — you lose sub-day precision but gain compatibility. Source: Adobe `report-elements/understand-wildcard-filter-variables`.
+
+## `$$TODAY` in a valueexpression is the UTC date
+
+**Surprise:** a report bucketing work as "Due today", "Due this week", "Overdue" and so on shows everything one day further along when opened in the evening. Nothing errors.
+
+**Mechanic:** inside a `valueexpression`, `$$TODAY` resolves to the current **UTC** date, not the date in the viewer's or the tenant's time zone. Evidence: at 8:39 PM EDT on 2026-09-29 (00:39 UTC on 2026-09-30), `DATEDIFF(CLEARTIME(<a 2026-09-30 date>),$$TODAY)` rendered `0`, and all 8 buckets of a date-relative pipeline report matched independently computed counts only when "today" was taken as 2026-09-30. For US viewers the day turns over at 8 PM EDT (7 PM EST, 5 PM PDT). Verified on a client prod tenant 2026-09-29, rendered report.
+
+**Scope:** only the `valueexpression` context was tested. A `$$TODAY` in a filter value was not, and Adobe describes it as tenant-timezone midnight, so do not assume the two agree.
+
+**Mitigation:**
+
+- Tell the audience the buckets follow the UTC day, and point scheduled deliveries (subscriptions) at a morning send time, before the rollover.
+- When the report must be right at any hour, or must be right on a dashboard or in a chart, compute the bucket into a stored field instead: a calculated custom field for date logic without "today", or a scheduled Fusion scenario that stamps the bucket in local time when the logic needs "today" (calculated custom fields cannot reference `$$TODAY`).
 
 ## Status codes quick reference
 
@@ -151,7 +168,7 @@ Complete enumeration of session and runtime wildcards usable inside `valueexpres
 
 | Wildcard | Resolves to | Notes |
 |---|---|---|
-| `$$TODAY` | midnight (start of day) in tenant timezone | |
+| `$$TODAY` | midnight (start of day); Adobe documents the tenant timezone | Inside a `valueexpression` it is the UTC date (verified 2026-09-29, rendered report); see § "`$$TODAY` in a valueexpression is the UTC date" |
 | `$$NOW` | current timestamp (sub-day precision) | Unsupported in Resource Planner — see Date math syntax above |
 
 **Arithmetic grammar** for date wildcards: `<TODAY|NOW><b|e><q|h|d|w|m|y>[+|-N]`

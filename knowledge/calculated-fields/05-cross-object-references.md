@@ -71,9 +71,11 @@ Common reference paths:
 |---|---|
 | Task | `{project}`, `{assignedTo}`, `{owner}`, `{createdBy}`, `{category}` |
 | Issue (OPTASK) | `{project}`, `{task}`, `{assignedTo}`, `{owner}` |
-| Project | `{owner}`, `{portfolio}`, `{program}`, `{sponsor}`, `{category}` |
+| Project | `{owner}`, `{portfolio}`, `{program}`, `{sponsor}`, `{category}`, `{defaultBaseline}`, `{template}` |
 | Portfolio | `{owner}` |
 | Document | `{project}`, `{task}`, `{issue}` |
+
+`{defaultBaseline}.{plannedCompletionDate}` (the original schedule's planned completion) and `DIV({template}.{durationMinutes},480)` (the source template's duration in 8-hour days) both resolve in a Project calculated field and stored values matching ones computed independently. Verified on a client prod tenant 2026-09-30. Both are cross-object references, so the staleness rule below applies: a new default baseline or an edited template reaches the stored value on the project's next save.
 
 ### Multi-hop traversal works — chains resolve past the first parent (verified 2026-08-06)
 

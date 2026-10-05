@@ -17,10 +17,10 @@ When a field on a **parent or related object** changes, the calculated field on 
 Practical consequence: never display cross-object calculated field values to stakeholders without a documented recalc process in place.
 
 **Ways to recalculate:**
-1. Edit and save the child object (any edit triggers recalc).
+1. Edit and save the child object (any edit triggers recalc). Over the API, any `PUT /<obj>/<id>` is a save, including one that only attaches a form (see "Recalculation on Form Attachment" below).
 2. **Recalculate Custom Expressions** from the object's More (⋯) menu.
 3. Bulk edit via a report: select all relevant records → Edit → make a trivial change → Save.
-4. API: `PUT /attask/api/v22.0/PROJ/recalculateCustomFields` (or equivalent for the object type).
+4. API: `PUT /attask/api/v22.0/project/<id>/calculateDataExtension` (the same action exists on most objects; see `../api/17-action-endpoint-catalog.md`). An earlier revision named `PROJ/recalculateCustomFields`, which is not in Adobe's published action catalog.
 
 ## $$TODAY and $$NOW Go Stale
 
@@ -98,7 +98,17 @@ Duration and time-related fields (e.g., `actualDurationMinutes`, `workRequired`)
 
 ## Recalculation on Form Attachment
 
-When a custom form with a calculated field is attached to an existing object, the calculated field is **not automatically computed** until the object is saved or recalculated. Newly attached forms show blank calc field values until the first recalc event.
+**Attaching a form through `PUT /<obj>/<id>` with `objectCategories` computes its calculated fields in the same call.** The attach PUT is a save, and a save recalculates. No separate `calculateDataExtension` pass is needed.
+
+Verified on a client prod tenant 2026-09-30 (REST v17.0): a new Project form of 5 calculated fields was attached to 3 of 3 records (a test project and 2 completed projects). Every applicable field was filled when the PUT returned, and every value matched one computed independently from the raw dates. The attach body is in `../custom-forms/09-gotchas.md` § 41.
+
+An earlier revision of this section said newly attached forms show blank calc values until the first recalc event. That is wrong for the API attach above. It may still hold for a form attached some other way that has not been tested: the `PUT /ctgy/assignCategories` action, a queue topic auto-attaching a form at request creation, or `convertToProject`. If a form attached one of those ways shows blank calc values, a save or `calculateDataExtension` fills them.
+
+**The same PUT recalculates the calculated fields on the record's other forms too.** Because the attach is a save, every calc field already on the record is re-evaluated, so a stale value (a cross-object reference, or `$$TODAY`) can change to its current value during an attach. That is correct behavior, but it means a before/after comparison around a bulk attach will see calc values move on forms nobody touched. Guard for a bulk attach:
+
+- **Expected (log it):** a calculated field changing from one filled value to another, or filling in on the new form.
+- **Stop on:** any non-calculated field changing; a calculated field going from filled to blank, which points to a missing or broken formula (see `../custom-forms/09-gotchas.md` § 42 for how formulas get blanked); any previously attached form missing afterwards.
+- **Which fields are calculated:** `GET /param/search?displayType=CALC&fields=name` gives the names to treat as calculated (it returns 100 rows by default; raise `$$LIMIT` on a larger tenant). The `parameterValues` keys are `DE:<name>`.
 
 ## CONTAINS on a Multi-Select Tests Option Values, Not Labels
 

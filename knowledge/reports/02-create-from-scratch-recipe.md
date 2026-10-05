@@ -13,6 +13,7 @@ E. Single `apply` gate
 F. Write (POST sequence)
 G. Smoke-test verify
 H. Print URLs
+I. Compose a dashboard (optional, only when asked)
 ```
 
 ## Phase A — Setup and schema discovery
@@ -355,24 +356,24 @@ Wire-format anchors worth repeating:
 
 ## Phase G — Smoke-test verify
 
-Immediately after the REPORT POST returns, GET the report back to detect silent re-resolution per `05-gotchas.md` #5. Save the result to the client's SharePoint `Workfront Changes` folder (`<changes-dir>`, resolved in step 1 of the skill's flow) for the audit trail:
+Immediately after the REPORT POST returns, GET the report back to confirm it references the UI-objects the skill just created (`05-gotchas.md` #5). Save the result to the client's SharePoint `Workfront Changes` folder (`<changes-dir>`, resolved in step 1 of the skill's flow) for the audit trail:
 
 ```bash
 SMOKE_OUT="<changes-dir>/$(date -u +%Y%m%dT%H%M%SZ)-report-create-smoke.json"
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
   /attask/api/v22.0/report/$REPORT_ID \
-  --data-urlencode 'fields=*,definition,filterID,groupByID,viewID' \
+  --data-urlencode 'fields=ID,name,uiObjCode,filterID,groupByID,viewID' \
   | tee "$SMOKE_OUT" | python3 -m json.tool
 echo "Smoke-test saved to $SMOKE_OUT"
 ```
 
-Compare the response's `filterID` / `groupByID` / `viewID` against the IDs captured in Phase F.1, F.2, F.3. If any differ, Workfront silently re-resolved the report to point at a pre-existing UI-object whose `definition` matches byte-for-byte. The report renders correctly, but the UI-object the skill POSTed is now orphaned in the tenant.
+Name the fields explicitly: `fields=*` hides `definition` (`05-gotchas.md` #25), and to check a definition landed, read the UI object itself with `fields=ID,definition`.
 
-Print the diff so the consultant knows which sub-objects they actually own:
+Compare the response's `filterID` / `groupByID` / `viewID` against the IDs captured in Phase F.1, F.2, F.3. Through `POST /report` they matched in 7 of 7 verified creates (v17.0, 2026-09-29); `POST /ptlsec` is the endpoint that re-resolves (`05-gotchas.md` #5). If any differ, print the diff so the consultant knows which sub-objects the report actually uses:
 
-> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v22.0/uift/<our-uift-id>`."
+> "Workfront re-resolved this report's `filterID` to `<other-uift-id>` (we POSTed `<our-uift-id>`). The UIFT row at `<our-uift-id>` is now unreferenced. DELETE curl, once you have confirmed which definition the report carries: `WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh -X DELETE /attask/api/v22.0/uift/<our-uift-id>`."
 
-This is the #1 silent-failure mode for reports authored via API. The smoke-test catches it; without the smoke-test, the consultant has no signal.
+The smoke test is cheap and is the only signal a mismatch would give, so it runs on every create.
 
 ## Phase H — Print URLs
 
@@ -386,6 +387,52 @@ Report created.
 
 The bare URL opens the report's editor (Columns / Groupings / Filters / Chart tabs). The `/view` suffix renders the report immediately as a table or chart. The skill prints both after every create.
 
+## Phase I: Compose a dashboard (optional)
+
+Only when the consultant asks for the reports on a dashboard. Two dashboard writes: create the dashboard, then place every section in one PUT (plus a `maxResults` PUT for any existing report that needs one, I.0). All of them sit behind the same single `apply` gate as the report writes (name the dashboard and its sections in the Phase E banner), and on a prod destination each carries `WF_ENV_WRITE_ACK=1` like every other write in the run. Verified on a client prod tenant, v17.0, 2026-09-29.
+
+**I.0 Check each report will be accurate on a dashboard.** A dashboard section shows at most 200 rows per page, and on the Details tab it computes group counts and aggregates from that page only (`05-gotchas.md` #27). For every grouped report going on the dashboard, confirm one of:
+
+- it returns 200 rows or fewer (check with `/<objCode>/search` on the report's filter and `$$LIMIT=201`), or
+- it relies only on native groupings, with counts or stored-field aggregates, and the audience will read the Summary or Chart tab.
+
+If neither holds, say so before the `apply` gate: date-relative buckets and `valueexpression` aggregates over more rows need a stored field (a calculated custom field, or a scheduled Fusion stamp when `$$TODAY` is involved, see `05-gotchas.md` #26). Also set `maxResults` on each report: an API create that omits it leaves `0`, which a section renders as 15 rows. For a report this run creates, put the value in the C.4 REPORT body; for an existing one it is a `PUT /report/<id>` with `updates={"maxResults":2000}` (verified), inside the same `apply` gate. The section's page-size dropdown still stops at 200.
+
+**I.1 Resolve the owner.** Ask whose dashboard it is and look up that user's ID (`/user/search?emailAddr=<email>&fields=ID,name`). An API-created dashboard has no owner unless one is set (`05-gotchas.md` #23).
+
+**I.2 Create the dashboard.** `docID` is required:
+
+```bash
+DASH_ID=$(WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+  -X POST /attask/api/v22.0/ptltab \
+  --data-urlencode 'updates={"name":"<Dashboard name>","docID":"doc.applicationhome.home","description":"<optional>"}' \
+  | jq -r '.data.ID')
+echo "Dashboard created: $DASH_ID"
+```
+
+Without `docID` the POST fails with `docID cannot be null`.
+
+**I.3 Place the reports and set the owner.** `POST /prtbsc` is refused (`PRTBSC is not a top level object`), so the sections go in as the dashboard's `portalTabSections` collection, one entry per report, in a single PUT that also sets `userID`:
+
+```bash
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+  -X PUT /attask/api/v22.0/ptltab/$DASH_ID \
+  --data-urlencode 'updates={"userID":"<ownerUserID>","portalTabSections":[
+    {"portalSectionObjID":"<reportID-1>","portalSectionObjCode":"PTLSEC","internalSectionID":"<reportID-1>","area":1,"displayOrder":0},
+    {"portalSectionObjID":"<reportID-2>","portalSectionObjCode":"PTLSEC","internalSectionID":"<reportID-2>","area":1,"displayOrder":1}]}'
+```
+
+`displayOrder` counts from 0 within an `area`. UI-built dashboards spread sections over `area` 1, 2 and 3, but which on-screen region each area is has not been verified, so keep everything in `area: 1` unless the consultant has confirmed a layout. Send the complete list: whether a later PUT replaces or appends was not tested.
+
+**I.4 Verify and print.** Read the sections back and print the dashboard:
+
+```bash
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/ptltab/$DASH_ID \
+  --data-urlencode 'fields=ID,name,userID,portalTabSections:*'
+```
+
+Expect one section per report sent, each with the `portalSectionObjID` you sent. Do not add `owner` or `ownerID` to the field list; v17.0 rejects both on `PTLTAB`. Ask the consultant to open the dashboard in the UI (Dashboards list) and confirm the layout, since the `area` mapping is still unverified. In the browser, reload (F5) after navigating to each report or dashboard URL: moving between report URLs by hash in one tab often leaves the previous report on screen.
+
 ## Error handling
 
 Inline only — no auto-rollback, no retry beyond what's listed here. The skill streams DELETE curls for the orphaned UI-objects so the consultant has manual rollback in terminal scrollback.
@@ -398,7 +445,10 @@ Inline only — no auto-rollback, no retry beyond what's listed here. The skill 
 | UIVW POST fails (Phase F.3) | Print DELETE curls for both UIFT and UIGB. Print the API error. Stop. |
 | REPORT POST fails (Phase F.4) | Print DELETE curls for all three UI-objects. Print the API error. If the error names a specific field, surface the field name and the cached metadata's enum (if applicable). Stop. |
 | `uiObjCode` value rejected (Phase F.4) | Print the valid enum from the cached `/report/metadata`. Ask the consultant for a new value and retry F.4 with the three UI-objects still in place. The UI-objects' `uiObjCode` does NOT have to match the REPORT row's `uiObjCode` on POST — but the report won't render correctly until it does, so the skill warns. |
-| REPORT POST returns success but smoke-test shows re-resolution | Print the diff per Phase G. The report renders correctly; the orphaned UI-objects need manual cleanup. See `05-gotchas.md` #5. |
+| REPORT POST returns success but smoke-test shows re-resolution | Print the diff per Phase G. Check which definitions the report now carries before cleaning up the unreferenced UI-objects. See `05-gotchas.md` #5. |
+| REPORT POST fails with `viewID cannot be null` | The UIVW ID never reached the body (F.3 failed or the jq patch was skipped). Nothing was created by this call. Fix the body and retry F.4 with the UI-objects still in place. |
+| `POST /ptltab` fails with `docID cannot be null` (Phase I) | Add `"docID":"doc.applicationhome.home"` and retry. See `05-gotchas.md` #23. |
+| `POST /prtbsc` refused as not a top-level object (Phase I) | Expected. Write sections through `PUT /ptltab/<id>` with `portalTabSections` (I.3). |
 | Smoke-test GET fails (Phase G) | Likely a permissions issue on the new report (rare). Print the URL and let the consultant verify in the UI. |
 
 ## Modify flow (the PUT variant)
@@ -409,17 +459,23 @@ When the consultant gives a report ID or URL and a change ("change the filter to
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      /attask/api/v22.0/report/<reportID> \
-     --data-urlencode 'fields=*,definition,filterID,groupByID,viewID,uiObjCode' \
+     --data-urlencode 'fields=ID,name,description,uiObjCode,reportType,isReport,filterID,groupByID,viewID,maxResults,sortBy,sortType,sortBy2,sortType2,sortBy3,sortType3,isStandalone,showPrompts,definition' \
      | python3 -m json.tool
    ```
-   Note: do NOT request `categoryID` in the fields list. The v0.8.0 file did; the v17.0 endpoint responds with `"APIModel V17_0 does not support field categoryID (PortalSection)"`. Custom-form attachment is via a different (UI-side) mechanism and is not API-writable in v0.9.0. See `01-report-object-shape.md` § 1.
+   Name every field: `fields=*` hides `definition` (`05-gotchas.md` #25). Do NOT request `categoryID`, `ownerID` or `owner`: v17.0 answers `"APIModel V17_0 does not support field categoryID (PortalSection)"` for the first and `does not support field owner` for the others. Custom-form attachment is via a different (UI-side) mechanism and is not API-writable in v0.9.0. See `01-report-object-shape.md` § 1.
 
-2. **GET each referenced UI-object** with `fields=*,definition`:
+2. **GET each referenced UI-object** with an explicit field list that includes `definition`:
    ```bash
    bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
      /attask/api/v22.0/uift/<filterID> \
-     --data-urlencode 'fields=*,definition'
-   # Repeat for /uigb/<groupByID> and /uivw/<viewID>. Skip a GET if its ID is null.
+     --data-urlencode 'fields=ID,name,uiObjCode,filterType,isReport,isText,isSavedSearch,definition'
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+     /attask/api/v22.0/uigb/<groupByID> \
+     --data-urlencode 'fields=ID,name,uiObjCode,isReport,isText,definition'
+   bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+     /attask/api/v22.0/uivw/<viewID> \
+     --data-urlencode 'fields=ID,name,uiObjCode,layoutType,uiviewType,isReport,isText,isNewFormat,definition'
+   # Skip a GET if its ID is null.
    ```
 
 3. **Print the current state** — the full JSON for the report and its three UI-objects. This is the rollback artifact; the consultant copies it from terminal scrollback if they need to revert. There is no auto-rollback in v0.9.0.
@@ -456,7 +512,7 @@ When the consultant gives a report ID or URL and a change ("change the filter to
    ```
    PUT only the fields that need to change — the server merges the patch on top of the existing record. PUT against `/report/<reportID>` when REPORT-level fields change (name, description, sort, maxResults). Repeat the PUT pattern for whichever sub-objects changed; skip the ones that didn't.
 
-9. **Smoke-test GET** as in Phase G of create. PUT can silently re-resolve too (rare but possible — same mechanism as create-time re-resolution per `05-gotchas.md` #5).
+9. **Smoke-test GET** as in Phase G of create, plus a `fields=ID,definition` read of each UI object you PUT, so the new definition is confirmed on the row rather than assumed.
 
 ### Hard-block on `uiObjCode` change
 

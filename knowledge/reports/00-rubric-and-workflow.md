@@ -13,8 +13,9 @@ Trigger phrases that should route here:
 - "Modify the filter on report `<ID>` to also exclude templates."
 - "Change the grouping on this report from portfolio to program."
 - "Add a column showing % complete to the report at `<URL>`."
+- "Put these four reports on a dashboard for the PMO."
 
-In short: any request that ends in a written REPORT row (or its UIFT / UIGB / UIVW siblings) inside a target Workfront tenant.
+In short: any request that ends in a written REPORT row (or its UIFT / UIGB / UIVW siblings), or a dashboard (`PTLTAB`) holding reports, inside a target Workfront tenant.
 
 ## When NOT to use this skill
 
@@ -51,8 +52,14 @@ Does the consultant want to change an existing client-side report?
         against the existing UIFT/UIGB/UIVW/REPORT rows; see
         `02-create-from-scratch-recipe.md` "Modify flow" section)
 
-Does the request ask for sharing/accessRules, prompts, calendar, matrix, or
-dashboard composition?
+Does the consultant want the reports placed on a dashboard?
+  yes → after the reports exist, compose the dashboard (`02-create-from-scratch-recipe.md`
+        Phase I): POST /ptltab with docID, then one PUT carrying every section
+        and the owner. Same single `apply` gate and prod ack as the report writes.
+        Section `area` layout is unverified; keep sections in area 1 unless the
+        consultant confirms otherwise in the UI.
+
+Does the request ask for sharing/accessRules, prompts, calendar, or matrix?
   yes → out of scope for v1. Surface the limitation, complete what you can,
         point the consultant at the in-product builder for the rest.
 ```
@@ -67,7 +74,7 @@ Workfront reports are created by 3 or 4 sequential POSTs depending on whether th
 | List report, no grouping (`reportType:"L"`) | 3 | `groupByID: null` (UIGB POST omitted) |
 | View-only report (no filter) | 3 | `groupByID: null` (UIFT POSTed with empty `definition:{}`; UIGB omitted) |
 
-`null` is the literal JSON value, not omitted. `viewID` is always required.
+`null` is the literal JSON value, not omitted. `viewID` is always required: a REPORT POST without it fails with `viewID cannot be null` and creates nothing.
 
 **UIFT is always written**, even when the consultant declines a filter — v0.9.0 convention is to POST `{"definition": {}, ...}` rather than skip the call. 29/30 reports in the empirical survey have a non-null `filterID`; the always-1×UIFT convention matches reality and keeps the Phase F write loop's call count predictable. **UIGB is the only optional UI-object**: skip its POST entirely when no grouping is requested and pass `groupByID: null` on the REPORT.
 
@@ -91,18 +98,18 @@ Notes:
 - **`definition` is a JSON object.** Each of UIFT, UIGB, UIVW has a `definition` field whose value is a structured object — NOT the text-mode `\n`-separated string a consultant sees in the in-product Text Mode tab. See `06-filter-patterns.md` (filter half), `07-view-patterns.md` (view + group halves).
 - **UIGB requires ≥1 group entry.** Empty `group: []` is rejected with "No groupings were defined". If you want no grouping, OMIT the UIGB POST entirely and pass `groupByID: null` on the REPORT.
 - **Pre-flight validation.** Between composing the payloads and the `apply` gate, the skill runs `pre_flight_validator.py` to check every field reference against cached `/<uiObjCode>/metadata`. Errors block with suggestions. See `08-pre-flight-validation.md`.
-- **Order matters.** The REPORT POST references `filterID` / `groupByID` / `viewID`, so the UI-objects must exist first. Capture each returned ID before firing the next call.
+- **Order matters.** The REPORT POST references `filterID` / `groupByID` / `viewID`, so the UI-objects must exist first. Capture each returned ID before firing the next call. `POST /report` keeps the IDs you send (7 of 7 verified, v17.0, 2026-09-29); `POST /ptlsec` does not, so always create through `/report` (`05-gotchas.md` #5).
 - **Modify variant.** When changing an existing report, PUT-in-place against the existing UIFT/UIGB/UIVW rows preserves their IDs and any external references (subscriptions, dashboards). See `05-gotchas.md` #7 for the UI-object re-use warning.
 
 ## Safety baseline
 
 The `workfront-reports` skill writes to the destination Workfront tenant. The design choice (per the spec) is "just write it" — reports are cheap to delete, so the heavy multi-stage safety machinery used by dedicated bulk-update tooling is not warranted. The baseline:
 
-- **One `apply` confirmation gate per run.** Not two. Not per-call. The consultant types the literal word `apply` once to authorise the whole four-call sequence (or the PUT sequence on modify). No other word proceeds. `y`, `yes`, `proceed`, `apply now` — none of those count. If the consultant types `edit`, return to the interview with the existing fields prefilled.
+- **One `apply` confirmation gate per run.** Not two. Not per-call. The consultant types the literal word `apply` once to authorise the whole four-call sequence (or the PUT sequence on modify), including the dashboard POST and PUT when the run composes a dashboard. No other word proceeds. `y`, `yes`, `proceed`, `apply now`: none of those count. If the consultant types `edit`, return to the interview with the existing fields prefilled.
 - **No backup-and-rollback machinery.** There is no pre-state JSON file, no audit log, no per-record rollback plan. The modify flow GETs the current state of the report + its three UI-objects and prints them inline before writing — *that* is the rollback mechanism. If the consultant needs to revert, they copy the pre-state JSON from terminal scrollback and re-issue it as a PUT.
 - **Cross-tenant: never write to source.** In the clone flow, source and destination are pre-registered as separate environment folders. The skill activates the source slug for read phases and the dest slug for write phases via `/wf-env-use`. The wrapper sources `~/wf-envs/.active`, so cross-instance leakage is impossible by design. Every interactive step prints a banner naming both tenants. The single `apply` gate names the destination tenant explicitly.
 - **API key is never in chat or context.** Credentials live in `~/wf-envs/<slug>/.env` at mode 600, set by the consultant via `wf-env-setkey.sh` in their terminal. Every API call against a client tenant goes through `bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh` — the wrapper sources the active environment's .env and puts `apiKey=` in the URL query string (no key in argv).
-- **Prod destination requires explicit acknowledgement.** When the active (destination) client is `WF_ENV_TYPE=prod`, the wrapper refuses every write (exit 3) until `WF_ENV_WRITE_ACK=1` is set per call. After the `apply` gate, surface the prod warning verbatim, get a typed `yes`, then prepend the env var to every wrapper invocation in the 3-or-4-call write sequence.
+- **Prod destination requires explicit acknowledgement.** When the active (destination) client is `WF_ENV_TYPE=prod`, the wrapper refuses every write (exit 3) until `WF_ENV_WRITE_ACK=1` is set per call. After the `apply` gate, surface the prod warning verbatim, get a typed `yes`, then prepend the env var to every wrapper invocation in the 3-or-4-call write sequence and to the dashboard writes.
 - **`[wf-reports-verify]` flow is separate.** That flow is exclusively for sanity-checking against the maintainers' own Workfront tenant before suggesting documentation or knowledge-file changes — it uses `wf-curl.sh` + `~/.claude/secrets/workfront/reports-verify.env` + the `[wf-reports-verify]` prefix. See `09-verification-flow.md`. Don't conflate it with the client-side flow.
 - **No `uiObjCode` mutation.** A report's `uiObjCode` is the object it reports on (PROJ, TASK, OPTASK, USER, …). Changing it after the fact is destructive — every column in the view becomes invalid because column tokens are resolved against the target object. If the consultant requests a `uiObjCode` change on modify, hard-block and recommend delete-and-recreate. See `05-gotchas.md` #1.
 - **Schema discovery before first write.** Before writing to any tenant the skill hasn't seen this session, run the four-call `/metadata` burst (see `04-runtime-schema-discovery.md`). The REPORT object's field schema is not reliably published; runtime discovery is what protects the skill from `uiObjCode`-vs-`reportObjCode` drift.
@@ -122,7 +129,7 @@ What the skill *does* print to terminal scrollback:
 - The four resolved JSON payloads before the `apply` gate (so the consultant can copy them if they want a record).
 - The returned IDs after each POST (`filterID`, `groupByID`, `viewID`, then `reportID`).
 - After the REPORT POST: `Report created: $$HOST/report/<reportID>` and `$$HOST/report/<reportID>/view` (the in-app URL pattern is convention — see `05-gotchas.md` #4).
-- The smoke-test GET response: `GET /report/<id>?fields=*,definition`, so the consultant can verify the report row references the UI-objects the skill just created (see the silent-re-resolution gotcha, `05-gotchas.md` #5).
+- The smoke-test GET response: `GET /report/<id>?fields=ID,name,uiObjCode,filterID,groupByID,viewID`, so the consultant can verify the report row references the UI-objects the skill just created (`05-gotchas.md` #5). Name fields explicitly on every read: `fields=*` hides `definition` (`05-gotchas.md` #25).
 - On modify: the pre-state JSON for the report + its three UI-objects, printed before the PUT sequence. That is the manual-rollback artifact.
 
 The files the recipes do write (the smoke-test JSON, clone sanitization reports) go to the destination client's SharePoint `Workfront Changes` folder, `<changes-dir>`, as `<UTC>-report-<verb>-….json`, so the team has a record of what was created. Resolve it once per run, before any write, with `wf-env-outdir.sh --slug <dest-slug> "Workfront Changes"` (`skills/_shared/references/sharepoint-deliverables.md`). See `02-create-from-scratch-recipe.md` Phase G and `03-clone-and-adapt-recipe.md` for the exact paths.

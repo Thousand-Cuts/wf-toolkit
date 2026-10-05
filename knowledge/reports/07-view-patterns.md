@@ -252,6 +252,24 @@ The `IF(...)` resolves to either `{hours}` or `0` per row, then `SUM` totals the
 
 **Multi-aggregator on the same group.** Each column carries at most one aggregator, but a view can carry many aggregator columns. `client-b-sample/PROJ-exec-report-uivw.json` has a MAX aggregator and the per-column aggregators stack at every group break.
 
+**Share and count of matching rows: different expressions on column and aggregator.** The column can show a readable per-row value while its aggregator computes a different one:
+
+```json
+{
+  "displayname": "Share late",
+  "textmode": "true",
+  "valueexpression": "IF(<condition>,\"Yes\",\"No\")",
+  "valueformat": "HTML",
+  "aggregator": {
+    "function": "AVG",
+    "valueexpression": "IF(<condition>,100,0)",
+    "displayformat": "doubleAsPercentRounded"
+  }
+}
+```
+
+For a count, use `IF(<condition>,1,0)` with `"function": "SUM"` and `"displayformat": "doubleAsString"`. **`doubleAsPercentRounded` rounds and appends `%` without multiplying by 100**, so the aggregate must already be on a 0 to 100 scale: `AVG` of `IF(<condition>,1,0)` rendered `1%` / `0%` where 54% was meant, and `IF(<condition>,100,0)` rendered 45%, 51%, 72%, 54%, 60%, 64%, each matching the independently computed share. Verified on a client prod tenant 2026-09-29, rendered report. The Summary tab leaves `valueexpression` aggregators blank or omits them, even over native groupings; read them on the Details tab (`05-gotchas.md` #19).
+
 ## § 6. `valueexpression` columns (custom calc)
 
 Column without `valuefield` — value computed by an expression.
@@ -814,7 +832,7 @@ Citation: `client-b-sample/TASK-ready-to-work-uigb.json`. Group on TASK status.
 - `valuefield` — the field to group by. DROPS the `DE:` prefix on custom fields (see § 14).
 - `valueformat` — how the group label renders. Same enumeration as column `valueformat`.
 - `type: "enum"` — optional discriminator for enum groups; `enumclass` + `enumtype` work the same as in § 4.
-- `iscollapsed` — `"true"` for default-collapsed in render; `"false"` or absent for default-expanded.
+- `iscollapsed`: `"true"` for default-collapsed in render; `"false"` or absent for default-expanded. Collapsed groups still show each column's aggregate on the header row, so a collapsed grouped report reads as a one-line-per-group summary table (verified on a client prod tenant 2026-09-29, rendered report).
 
 **Multi-group: array order is outermost-first.** Three-level grouping example:
 
@@ -855,6 +873,7 @@ Citation: `client-b-sample/PROJ-exec-report-uigb.json`. Reads as: first group by
 | `"D"` | `"atDate"` | per-day buckets |
 | `"QY"` | `"atDateAsQuarterOfYearString"` | "Q2 2026" (citation: `client-b-sample/proj-labor-by-month-uigb.json`) |
 | `"MY"` | `"atDateAsMonthOfYearString"` | month-of-year (citation: same file) |
+| `"MY"` | `"atDateAsMonthString"` | "Actual Completion Date: Sep, 2026 (230)" as the full header (verified on a client prod tenant 2026-09-29, rendered report) |
 | `"WY"` | `"atDateAsWeekOfYearString"` (assumed) | week-of-year |
 
 Pair with `notime: "false"` to keep time-of-day in the underlying value (default) or `"true"` to suppress.
@@ -932,18 +951,21 @@ Rules (same as column-level valueexpression — § 6):
 
 **`namekey: "view.relatedcolumn"`.** When the group label comes from a joined record's field, the canonical i18n key is `"view.relatedcolumn"` paired with a two-element `namekeyargkey: [<relation>, <field>]`. Workfront expands this to "Relation: Field" at render time. Citation: `client-b-sample/PROJ-exec-report-uigb.json` middle group level uses `namekeyargkey: ["program", "name"]`.
 
-**Calculated-grouping range buckets — sort-index prefix.** When a `valueexpression` group emits range-label strings — `"0% complete"`, `"1% to 10%"`, `"11% to 20%"`, ..., `"91% to 100%"` — Workfront sorts the group headers alphabetically by the rendered label. Alphabetical ordering of those literal strings is `0%`, `1% to 10%`, `100%`, `11% to 20%`, `21% to 30%`, ... — visually wrong. The empirically-verified fix is a numeric sort-prefix inside the label:
+On the rendered report that label is followed by the value and the row count, so `valuefield: "owner:name"` with `namekeyargkey: ["owner","name"]` shows headers like "Owner: Name: <value> (2)". Adding `"displayname": "Owner"` to the group entry replaces the label: "Owner: <value> (2)". A custom `displayname` on a `template:name` grouping behaved the same. Verified on a client prod tenant 2026-09-29, rendered report.
 
-```
-IF({percentComplete}=0,"01: 0%",
-IF({percentComplete}<11,"02: 1% to 10%",
-IF({percentComplete}<21,"03: 11% to 20%",
-IF({percentComplete}<31,"04: 21% to 30%",
-... ,
-IF({percentComplete}=100,"11: 100%","12: other")))))
+**Calculated-grouping order follows the row sort, not the label.** Group headers render in the order their first row appears under the report's row sort. That holds for `valueexpression` groupings too: Workfront does NOT sort their headers alphabetically. On a PROJ report sorted by `plannedCompletionDate` ascending, 8 buckets labelled "1. ..." to "8. ..." rendered as 8, 7, 6, 3, 4, 5, 2, 1, because that is the order in which the sorted rows first reached each bucket.
+
+Earlier revisions of this section said the headers sort alphabetically and recommended a numeric prefix in the label (`"01: 0%"`, `"02: 1% to 10%"`) to force the order, citing Adobe's advanced-reporting training. The prefix orders nothing on its own. It lines up only when the row sort already runs in bucket order, which is what made it look like a fix. Keep a prefix if it helps readers scan the labels, not as the ordering mechanism.
+
+**What orders the buckets: sort the rows by a field that runs in bucket order.** Set it on the REPORT row, which accepts a reference path:
+
+```bash
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+  -X PUT /attask/api/v22.0/report/<reportID> \
+  --data-urlencode 'updates={"sortBy":"defaultBaseline:plannedCompletionDate","sortType":"desc"}'
 ```
 
-The `01:` / `02:` / ... prefix forces the alphabetical sort to produce the intended order. The prefix is visually mild — consultants either accept it ("01: 0%") or strip it visually with a post-processing CONCAT that drops the first 4 chars before rendering (but doing so reintroduces the sort bug — leave the prefix in). Adobe's advanced-reporting training day 3 walks through this exact problem; the trainer's workaround is the same. Pre-flight does not lint for this; the symptom is purely visual (the report renders, just with rows in the wrong order).
+That rendered the same 8 buckets as 1 to 8. For stage-name buckets on a TASK report, `"sortBy": "taskNumber"` ascending was a usable approximation. Pick the sort field from the bucket expression: if the buckets are ranges of one date or number, sort by that field in the direction the labels run. Pre-flight accepts a reference-path `sortBy` and checks its first hop (`08-pre-flight-validation.md` § 3b). Verified on a client prod tenant 2026-09-29, rendered report.
 
 ## § 13. UIGB.definition top-level
 

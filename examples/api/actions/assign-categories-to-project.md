@@ -97,7 +97,8 @@ So "swap the primary form" and "move a form to the front" are the same operation
 |---|---|
 | Add one or more forms without affecting existing ones | `assignCategories` action |
 | Remove specific forms | `unassignCategories` action |
-| Set the *exact* final set of forms in one call (drop any not in the list) | `PUT /<obj>/<id>` with `updates={"objectCategories":[...]}` (replace) |
+| Set the *exact* final set of forms in one call (drop any not in the list) | `PUT /<obj>/<id>` with `updates={"objectCategories":[...]}` (documented as replace; the detach half is not observed) |
+| Add a form in a plain record PUT, e.g. alongside `DE:` writes | `PUT /<obj>/<id>` with every attached form plus the new one, each with `categoryOrder`. Verified 2026-09-30; calc fields on every form recompute in that call. See `knowledge/custom-forms/09-gotchas.md` § 41 |
 | Change the order forms render in | `reorderCategories` action. Pass the **complete** attached set, or it 400s |
 | Change the primary (featured) form | `PUT /<obj>/<id>` with `categoryID=<newID>` (also moves it to the front) |
 | Find every record a form is attached to | `GET /<obj>/search?objectCategories:categoryID=<id>`, **not** `categoryID=`, which finds only records where it is primary |

@@ -19,6 +19,7 @@ Once you save a custom form, the **Format of a calculated field cannot be change
 - **Use when:** the expression produces a pure numeric result — counts, differences, ratios, raw percentages
 - **Examples:** `DATEDIFF(...)`, `ROUND({percentComplete}, 0)`, `DIV({actualCost}, {plannedCost})`
 - **Notes:** Workfront truncates leading zeros (e.g., `07` becomes `7`). For values starting with 0 that need padding, use Text format and `CONCAT` the leading zero manually.
+- **Over the API:** a Number calc value comes back in `parameterValues` as a float (`40.0`, not `40`), so compare numerically, not as strings. An expression that returns `""` (for example `IF(ISBLANK(x) || ISBLANK(y),"",...)`) leaves the field blank, not 0: the `DE:` key is absent from `parameterValues`, and report averages skip the record. Verified on a client prod tenant 2026-09-30.
 
 ### Currency
 

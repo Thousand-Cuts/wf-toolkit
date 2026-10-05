@@ -40,7 +40,9 @@ A "form" in the UI. Confirmed fields:
 | `enteredByID`, `lastUpdatedByID`, `customerID` | string | System-managed. |
 | `extRefID` | string | External integration reference. |
 
-Forms are attached to records via the **child record's `categoryID` field** — not via a join table. Adding a form to 1,000 projects = 1,000 `categoryID` references on 1,000 project rows.
+Forms are attached to records through the **`ObjectCategory` (OBJCAT) join**, read and written as the record's `objectCategories` collection: one row per attached form, each with a per-record `categoryOrder`. The record's `categoryID` field is only the **primary** form, the one at `categoryOrder` 0 (`09-gotchas` § 36). An earlier revision said attachment lived in `categoryID` alone and that there was no join table; a record can carry several forms, and `categoryID` names just one of them.
+
+To attach a form over the API, PUT the parent record's `objectCategories` with the forms it already has plus the new one (`09-gotchas` § 41 has the body). `POST /objcat` does not attach anything: OBJCAT is not a top-level object you can create directly.
 
 ## Parameter (PARAM)
 

@@ -81,6 +81,14 @@ End-to-end NL-create flow. Updated 2026-05-18 per Phase A empirical findings —
 
 **Total call count:** 1 (Category) + M (groups) + 2N (params + bulk-options) + 1 (final link PUT — also carries cascade rules) = `2 + M + 2N` typical. Cascade rules add zero new HTTP calls; they piggyback on the final PUT.
 
+**Verified for a form of calculated fields** on a client prod tenant 2026-09-30 (REST v17.0). This exact sequence worked first try for a 5-field Project form:
+
+1. `POST /category` with `{"name":"...","objTypes":["PROJ"]}`.
+2. `POST /parameter` per field with `{"name":"<Label>","label":"<Label>","dataType":"NMBR","displayType":"CALC"}` (`"TEXT"` for a text result).
+3. One `PUT /category/<id>` with `categoryParameters:[{"parameterID":"...","displayOrder":n,"customExpression":"<formula>"}, ...]`.
+
+To read the formulas back, name the field: `fields=categoryParameters:parameterID,categoryParameters:customExpression`. A `categoryParameters:*` read omits `customExpression` (`09-gotchas` § 42). Attaching the new form to existing records computes its values in the same call (`09-gotchas` § 41).
+
 ## Bulk-options handling
 
 For DROP / RADIO / CHECKBOX parameters with many options (10+, real-world cases routinely 50–200), the skill supports four input modes:

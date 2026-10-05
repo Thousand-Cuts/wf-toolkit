@@ -35,7 +35,7 @@ Pair with the parity check from `03-clone-and-adapt-recipe.md` Phase 5 for the c
 
 ## 3. Subscriptions and dashboards are NOT touched by modify
 
-If the consultant modifies a report that has subscriptions (`SCHREP` — scheduled report deliveries) or is embedded in dashboards (`PTLSEC` — portal sections referencing the report), the modify writes against the underlying UIFT/UIGB/UIVW/REPORT rows and leaves those external references in place. The next subscription delivery uses the modified report. That's usually the desired behaviour — but the consultant should know.
+If the consultant modifies a report that has subscriptions (`SCHREP`, scheduled report deliveries) or is embedded in dashboards (`PTLTAB` rows whose `PRTBSC` sections point at the report, see #24), the modify writes against the underlying UIFT/UIGB/UIVW/REPORT rows and leaves those external references in place. The next subscription delivery uses the modified report. That's usually the desired behaviour, but the consultant should know.
 
 **What the skill does:** before any modify-flow PUT, run one extra GET to count consumers:
 
@@ -44,12 +44,12 @@ bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22
   --data-urlencode 'reportID=<reportID>' \
   --data-urlencode '$$LIMIT=1' \
   --data-urlencode 'fields=ID'
-# And:
-bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/ptlsec/search \
-  --data-urlencode 'reportID=<reportID>' \
-  --data-urlencode '$$LIMIT=1' \
-  --data-urlencode 'fields=ID'
+# And the dashboard sections that point at it (PTLSEC's portalTabSections collection):
+bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/report/<reportID> \
+  --data-urlencode 'fields=ID,portalTabSections:*'
 ```
+
+The dashboard-section read replaces an earlier `/ptlsec/search?reportID=` call: `PTLSEC` has no `reportID` field, and `PRTBSC` is not a top-level object (#24). The `portalTabSections` collection is in `/report/metadata`, but reading it to count dashboards has not yet been verified against a report known to sit on one.
 
 Surface counts inline:
 
@@ -74,28 +74,28 @@ Workfront may change these URL patterns. If a future version breaks them, switch
 
 ---
 
-## 5. Silent re-resolution of `filterID` / `groupByID` / `viewID`
+## 5. Re-resolution of `filterID` / `groupByID` / `viewID` depends on the endpoint
 
-Workfront sometimes returns a different `filterID` / `groupByID` / `viewID` than the one we POSTed. The behaviour: when the REPORT POST references a UI-object whose `definition` matches an existing UIFT/UIGB/UIVW row byte-for-byte, the server may re-resolve the REPORT row to point at the pre-existing UI-object and orphan the one we just created.
+Whether the parent row keeps the UI-object IDs you send is endpoint-specific, so check it rather than assume it.
 
-**Symptoms:** the report renders correctly. But the smoke-test GET shows the report row's `filterID` is some other ID — not the one returned by the UIFT POST in call 1 of the four-call sequence.
+- **`POST /report` keeps them.** The documented order (POST `/uift`, `/uigb`, `/uivw`, then `/report` with `filterID` / `groupByID` / `viewID`) created 7 reports, and in all 7 the REPORT row read back the exact IDs sent (`GET /report/<id>?fields=filterID,groupByID,viewID`). No re-resolution. Verified on a client prod tenant, v17.0, 2026-09-29.
+- **`POST /ptlsec` does not.** Posting the parent row to `/ptlsec` (the REPORT row's own objCode) re-resolved all three IDs to brand-new UI objects that carried the names sent but not the definitions. Observed on a client prod tenant, v17.0, 2026-09-02. Create reports through `/report`; if a row was already made through `/ptlsec`, PUT the definitions onto the IDs it came back with.
+- **`viewID` is required on `POST /report`.** A body with only `name`, `uiObjCode`, `reportType`, `isReport` and `description` fails with `viewID cannot be null`, and nothing is created. There is no server-side default view, so the UIVW POST can never be skipped.
 
-**Side effects:**
-- The orphaned UIFT/UIGB/UIVW row the skill just created is still in the tenant, unreferenced. The consultant may want to delete it.
-- The UI-object the report now points at is shared with whichever other report originally created it. Modifying it via PUT-in-place will affect both reports. See gotcha #7 below.
+Earlier revisions of this file described a different mechanism for `/report`: the server swapping in a pre-existing UI object whose `definition` matched byte-for-byte. No verification of that is recorded, and the 7-for-7 result above did not show it. It is not ruled out either, which is one reason the smoke test stays.
 
-**What the skill does:** after every REPORT POST, run the smoke-test GET:
+**What the skill does:** after every REPORT POST, read the IDs back and compare them with the IDs returned by calls 1 to 3:
 
 ```bash
 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh /attask/api/v22.0/report/<reportID> \
-  --data-urlencode 'fields=*,filterID,groupByID,viewID'
+  --data-urlencode 'fields=ID,name,uiObjCode,filterID,groupByID,viewID'
 ```
 
-Compare the response IDs against the IDs returned by calls 1–3. Print a diff per mismatch:
+Print a diff per mismatch:
 
-> "Workfront re-resolved this report's `filterID` to `<existing-uift-id>` (we POSTed `<our-uift-id>`). The report renders correctly, but the UIFT row at `<our-uift-id>` is now orphaned. DELETE curl: `curl -sS -X DELETE ...`"
+> "Workfront re-resolved this report's `filterID` to `<other-uift-id>` (we POSTed `<our-uift-id>`). The UIFT row at `<our-uift-id>` is now unreferenced. Check which definition the report actually carries before deleting anything."
 
-This is the #1 silent-failure mode for reports authored via API.
+A mismatch leaves an unreferenced UI object behind, and the object the report points at may be shared with another report (see #7), so a PUT-in-place on it can reach further than intended.
 
 ---
 
@@ -379,6 +379,8 @@ Adobe's Aug 2025 Skill Exchange session confirms this is a known engine limitati
 
 The grouping now references a stored field (the form field's pre-computed value), which the Summary tab and the chart engine both understand. Trade-off: the custom-form field doesn't auto-update on formula changes (gotcha #16) and doesn't recompute live (gotcha #15 cross-link).
 
+**Re-confirmed on a rendered report, and one more limit found.** On a client prod tenant (2026-09-29, rendered report) a text-mode grouping still blocked the chart and left the Summary tab empty, so the reports meant to carry a chart were built on native groupings only (month, `owner:name`, `template:name`). Those native groupings computed correctly on the Summary tab over all rows (monthly counts across 1,038 projects matched). But the Summary tab does not compute `valueexpression`-based aggregators even when the grouping is native: a "Share late (Average)" column was blank, and a `valueexpression` AVG column was left out entirely. A share or count built as in `07-view-patterns.md` § 5 is readable on the Details tab only, or from a stored field.
+
 **Skill behaviour.** When the consultant requests a grouped report AND specifies "with a chart" or "with the summary view enabled," and the grouping logic is non-trivial (range buckets, conditional categories, etc.), the interview offers two paths: (a) text-mode-grouped report WITHOUT a working chart/summary, or (b) custom-form-field-backed grouping WITH a working chart/summary. The consultant picks; the skill does not silently choose. Cross-link to `workfront-calc-fields` for the field setup.
 
 ## 20. "In status X for more than N days": no task field holds it — report on JRNLE, with the right field names
@@ -433,6 +435,94 @@ The UI objects are effectively 1:1 with reports (267 distinct `viewID` across 27
 **Coverage limit — say this out loud when reporting results.** Prompts are only partly reachable. `REPORT.definition.prompt` does exist and is scannable (24 of 200 reports carried one), but gotcha #12 still stands for the rest of the prompt configuration behind `preferenceID`. On the verification tenant every prompt block referenced standard fields (`"valuefield": "portfolio:name"`) and contributed zero `DE:` names, so this surface is untested against a custom-field prompt. Report the scan as "views, filters, groupings, charts, and prompt blocks" rather than as exhaustive.
 
 Verified 2026-08-24 on a sandbox tenant (sandbox), v17.0: `GET /param/metadata` for the absent back-reference; `GET /report/search?fields=ID,name,definition&$$LIMIT=200` → 3 distinct `DE:` names; the four-surface call above over 279 reports → **116** distinct `DE:` names (view 278 / filter 216 / groupBy 228 populated); `fields=ID,viewID,filterID,groupByID` over the same set for the reuse counts.
+
+---
+
+## 23. Dashboards: `POST /ptltab` needs `docID`, and the new dashboard has no owner
+
+**Surprise:** a dashboard (`PTLTAB`) POSTed with just a `name` and `description` fails with `docID cannot be null`. With `docID` set it succeeds, but the response has `userID: null`: the dashboard has no owner, unlike every dashboard built in the UI.
+
+**Mechanic:** `docID` names the application page the tab belongs to. `doc.applicationhome.home` is the value that worked; what other values mean was not tested. `userID` is the owner field on `PTLTAB`, and nothing sets it on an API create.
+
+**Mitigation:** always send `docID: "doc.applicationhome.home"` on the POST, and set `userID` to the intended owner's user ID in the sections PUT that follows (`02-create-from-scratch-recipe.md` § "Compose a dashboard"). When reading dashboards or reports, do not ask for `owner` or `ownerID`: v17.0 rejects both on `PTLTAB` and on `PTLSEC` (`does not support field owner`). Read `userID` or `lastUpdatedBy:name` instead.
+
+Verified on a client prod tenant, v17.0, 2026-09-29. `PTLTAB` metadata fields on that tenant: `ID`, `accessorIDs`, `customerID`, `description`, `displayOrder`, `docID`, `extRefID`, `isPublic`, `lastUpdateDate`, `lastUpdatedByID`, `name`, `nameKey`, `portalProfileID`, `tabname`, `userID`.
+
+---
+
+## 24. Dashboard sections (`PRTBSC`) cannot be POSTed; write them through the dashboard
+
+**Surprise:** the natural second call, `POST /prtbsc` with a report ID and the dashboard ID, fails with `PRTBSC is not a top level object and can't be requested directly in internal`.
+
+**Mechanic:** a dashboard section is a child row of the dashboard, exposed as the `portalTabSections` collection on `PTLTAB`. Like other child collections it is written through a PUT on the parent.
+
+**Mitigation:** one PUT on the dashboard carries every section:
+
+```bash
+WF_ENV_WRITE_ACK=1 bash ${CLAUDE_PLUGIN_ROOT}/skills/_shared/scripts/wf-env-curl.sh \
+  -X PUT /attask/api/v22.0/ptltab/<dashboardID> \
+  --data-urlencode 'updates={"userID":"<ownerUserID>","portalTabSections":[
+    {"portalSectionObjID":"<reportID-1>","portalSectionObjCode":"PTLSEC","internalSectionID":"<reportID-1>","area":1,"displayOrder":0},
+    {"portalSectionObjID":"<reportID-2>","portalSectionObjCode":"PTLSEC","internalSectionID":"<reportID-2>","area":1,"displayOrder":1}]}'
+```
+
+`portalSectionObjID` and `internalSectionID` both carry the report's ID; `portalSectionObjCode` is `PTLSEC`, the report row's own objCode. The PUT returned all 8 sections it was sent.
+
+Two things are **not yet verified**, so say so when using this:
+
+- **What each `area` means on screen.** A UI-built dashboard on the same tenant used `area` values 1, 2 and 3, with `displayOrder` counting from 0 within each area. Which column or region each area renders as was not checked. Place everything in `area: 1` unless the consultant confirms a layout in the UI.
+- **Whether a second PUT replaces or appends.** Only a first PUT onto an empty dashboard was tested. Send the complete section list every time, and read `GET /ptltab/<id>?fields=portalTabSections:*` back before and after.
+
+Verified on a client prod tenant, v17.0, 2026-09-29.
+
+---
+
+## 25. `fields=*` hides `definition` on read
+
+**Surprise:** `GET /uivw/<id>?fields=*,definition` returns the row with no `definition`, on a view that certainly has one. A write that worked then looks like a silent no-op, and a clone or a rollback copy made from that read carries nothing.
+
+**Mechanic:** the `*` wildcard suppresses `definition` even when `definition` is also named in the list. Only an explicit list returns it. A second, independent way to get the same empty result: a scripted GET that sends `--data-urlencode` parameters without curl's `-G` puts them in a request body, which Workfront ignores, so `fields` never applies. `wf-env-curl.sh` adds `-G` to every GET; hand-rolled curl calls do not.
+
+**Mitigation:** whenever a read needs `definition`, name every field:
+
+| Object | Field list |
+|---|---|
+| REPORT | `ID,name,description,uiObjCode,reportType,isReport,filterID,groupByID,viewID,maxResults,sortBy,sortType,sortBy2,sortType2,sortBy3,sortType3,isStandalone,showPrompts,definition` |
+| UIFT | `ID,name,uiObjCode,filterType,isReport,isText,isSavedSearch,definition` |
+| UIGB | `ID,name,uiObjCode,isReport,isText,definition` |
+| UIVW | `ID,name,uiObjCode,layoutType,uiviewType,isReport,isText,isNewFormat,definition` |
+
+Before trusting a `definition: null`, run the same read against an object known to be populated; if that comes back empty too, the read is at fault, not the object. Gotcha #22's four-surface scan already uses explicit lists (`view:definition`, `filter:definition`, `groupBy:definition`) for this reason.
+
+Verified on a client prod tenant, v17.0, 2026-09-02, and relied on again 2026-09-29.
+
+---
+
+## 26. `$$TODAY` in a `valueexpression` is the UTC date, so date buckets roll over in the US evening
+
+**Surprise:** a pipeline report that buckets projects by due date ("Due today", "This week", "Overdue", ...) shows every project one day further along when it is opened in the evening.
+
+**Mechanic:** inside a view or grouping `valueexpression`, `$$TODAY` is the current UTC date. At 8:39 PM EDT on 2026-09-29, `DATEDIFF(CLEARTIME(<a 2026-09-30 date>),$$TODAY)` rendered `0`, and all 8 buckets matched independently computed counts only with "today" = 2026-09-30. The rollover is 8 PM EDT (7 PM EST, 5 PM PDT). A filter-value `$$TODAY` was not tested. Verified on a client prod tenant 2026-09-29, rendered report.
+
+**Mitigation:** say so to the report's audience, and send subscriptions in the morning. When the buckets must be right at any hour, or on a dashboard over more than 200 rows (#27), stamp the bucket into a stored field with a scheduled Fusion run in local time; calculated custom fields cannot use `$$TODAY`. Full write-up: `knowledge/textmode/09-tips-and-gotchas.md` § "`$$TODAY` in a valueexpression is the UTC date".
+
+---
+
+## 27. On a dashboard, a report shows at most 200 rows per page, and group summaries count only that page
+
+**Surprise:** a grouped report that is correct when opened on its own shows smaller group counts and different averages inside a dashboard. "Actual Completion Date: Sep, 2026" read (15), then (200) after raising the row limit, where the report itself said (230).
+
+**Mechanic:**
+
+- An API-created report gets `maxResults: 0`, and a dashboard section renders 15 rows for it. `PUT /report/<id>` with `updates={"maxResults":2000}` raises that, but the section's page-size dropdown stops at 200 (options 50, 75, 100, 200), so a section shows at most 200 rows per page.
+- On the Details tab inside a dashboard, group header counts and aggregator values are computed from the visible page only. Any report with more than 200 rows therefore shows wrong group summaries on a dashboard. Opened as a report ("Open report"), it shows "All (N)" and correct summaries.
+- The Summary tab and charts compute over all rows for native groupings, but not `valueexpression` aggregators, and a text-mode grouping leaves them empty (#19).
+
+**Mitigation, the rule for dashboard reports:** a grouped report is accurate on a dashboard only if (a) it returns 200 rows or fewer, or (b) it relies only on native groupings with counts, or stored-field aggregates, read from the Summary or Chart tab. Date-relative buckets and `valueexpression` aggregates over more rows need a stored field: a calculated custom field, or a scheduled Fusion stamp when the logic involves `$$TODAY` (#26). Set `maxResults` explicitly on reports meant for a dashboard. The dashboard recipe checks this before composing (`02-create-from-scratch-recipe.md` Phase I; shapes in `01-report-object-shape.md` § 8).
+
+**When checking in a browser:** navigating between report URLs by hash in the same tab often leaves the previous report on screen. Reload (F5) after each navigation before reading numbers.
+
+Verified on a client prod tenant 2026-09-29, rendered dashboard and report.
 
 ---
 
